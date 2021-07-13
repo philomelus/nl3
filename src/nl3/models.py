@@ -70,13 +70,13 @@ class Customer(db.Model):
     deliveryNote = db.Column(db.Text(collation='utf8_unicode_ci'), nullable=False)
 
     period = db.relationship('Period', primaryjoin='Customer.billPeriod == Period.id', backref='customers')
-    customers_payment = db.relationship('CustomersPayment', primaryjoin='Customer.lastPayment == CustomersPayment.id', backref='customers')
+    customers_payment = db.relationship('CustomerPayments', primaryjoin='Customer.lastPayment == CustomerPayments.id', backref='customers')
     route = db.relationship('Route', primaryjoin='Customer.route_id == Route.id', backref='customers')
-    type = db.relationship('CustomersType', primaryjoin='Customer.type_id == CustomersType.id', backref='customers')
+    type = db.relationship('CustomerTypes', primaryjoin='Customer.type_id == CustomerTypes.id', backref='customers')
 
 
 
-class CustomersAddress(db.Model):
+class CustomerAddresses(db.Model):
     __tablename__ = 'customers_addresses'
 
     customer_id = db.Column(db.ForeignKey('customers.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False)
@@ -87,11 +87,11 @@ class CustomersAddress(db.Model):
     state = db.Column(db.String(2, 'utf8_unicode_ci'), nullable=False)
     zip = db.Column(db.String(10, 'utf8_unicode_ci'), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='CustomersAddress.customer_id == Customer.id', backref='customers_addresses')
+    customer = db.relationship('Customer', primaryjoin='CustomerAddresses.customer_id == Customer.id', backref='customers_addresses')
 
 
 
-class CustomersAdjustment(db.Model):
+class CustomerAdjustments(db.Model):
     __tablename__ = 'customers_adjustments'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -103,12 +103,12 @@ class CustomersAdjustment(db.Model):
     amount = db.Column(db.Numeric(6, 2), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomersAdjustment.customer_id == Customer.id', backref='customers_adjustments')
-    period = db.relationship('Period', primaryjoin='CustomersAdjustment.period_id == Period.id', backref='customers_adjustments')
+    customer = db.relationship('Customer', primaryjoin='CustomerAdjustments.customer_id == Customer.id', backref='customers_adjustments')
+    period = db.relationship('Period', primaryjoin='CustomerAdjustments.period_id == Period.id', backref='customers_adjustments')
 
 
 
-class CustomersBill(db.Model):
+class CustomerBills(db.Model):
     __tablename__ = 'customers_bills'
 
     cid = db.Column(db.String(6, 'utf8_unicode_ci'), primary_key=True, nullable=False)
@@ -147,11 +147,11 @@ class CustomersBill(db.Model):
     nt3 = db.Column(db.String(36, 'utf8_unicode_ci'), nullable=False)
     nt4 = db.Column(db.String(36, 'utf8_unicode_ci'), nullable=False)
 
-    period = db.relationship('Period', primaryjoin='CustomersBill.iid == Period.id', backref='customers_bills')
+    period = db.relationship('Period', primaryjoin='CustomerBills.iid == Period.id', backref='customers_bills')
 
 
 
-class CustomersBillsLog(db.Model):
+class CustomerBillsLog(db.Model):
     __tablename__ = 'customers_bills_log'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -161,12 +161,12 @@ class CustomersBillsLog(db.Model):
     period_id = db.Column(db.ForeignKey('periods.id', onupdate='CASCADE'), nullable=False, index=True)
     what = db.Column(db.String(255, 'utf8_unicode_ci'), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='CustomersBillsLog.customer_id == Customer.id', backref='customers_bills_logs')
-    period = db.relationship('Period', primaryjoin='CustomersBillsLog.period_id == Period.id', backref='customers_bills_logs')
+    customer = db.relationship('Customer', primaryjoin='CustomerBillsLog.customer_id == Customer.id', backref='customers_bills_logs')
+    period = db.relationship('Period', primaryjoin='CustomerBillsLog.period_id == Period.id', backref='customers_bills_logs')
 
 
 
-class CustomersCombinedBill(db.Model):
+class CustomerCombinedBills(db.Model):
     __tablename__ = 'customers_combined_bills'
 
     customer_id_main = db.Column(db.ForeignKey('customers.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False)
@@ -174,12 +174,12 @@ class CustomersCombinedBill(db.Model):
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
 
-    customer = db.relationship('Customer', primaryjoin='CustomersCombinedBill.customer_id_main == Customer.id', backref='customer_customers_combined_bills')
-    customer1 = db.relationship('Customer', primaryjoin='CustomersCombinedBill.customer_id_secondary == Customer.id', backref='customer_customers_combined_bills_0')
+    customer = db.relationship('Customer', primaryjoin='CustomerCombinedBills.customer_id_main == Customer.id', backref='customer_customers_combined_bills')
+    customer1 = db.relationship('Customer', primaryjoin='CustomerCombinedBills.customer_id_secondary == Customer.id', backref='customer_customers_combined_bills_0')
 
 
 
-class CustomersComplaint(db.Model):
+class CustomerComplaints(db.Model):
     __tablename__ = 'customers_complaints'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -195,12 +195,12 @@ class CustomersComplaint(db.Model):
     ignoreOnBill = db.Column(db.Enum('N', 'Y'), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomersComplaint.customer_id == Customer.id', backref='customers_complaints')
-    period = db.relationship('Period', primaryjoin='CustomersComplaint.period_id == Period.id', backref='customers_complaints')
+    customer = db.relationship('Customer', primaryjoin='CustomerComplaints.customer_id == Customer.id', backref='customers_complaints')
+    period = db.relationship('Period', primaryjoin='CustomerComplaints.period_id == Period.id', backref='customers_complaints')
 
 
 
-class CustomersName(db.Model):
+class CustomerNames(db.Model):
     __tablename__ = 'customers_names'
 
     customer_id = db.Column(db.ForeignKey('customers.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False)
@@ -212,11 +212,11 @@ class CustomersName(db.Model):
     last = db.Column(db.String(30, 'utf8_unicode_ci'), nullable=False)
     surname = db.Column(db.String(10, 'utf8_unicode_ci'), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='CustomersName.customer_id == Customer.id', backref='customers_names')
+    customer = db.relationship('Customer', primaryjoin='CustomerNames.customer_id == Customer.id', backref='customers_names')
 
 
 
-class CustomersPayment(db.Model):
+class CustomerPayments(db.Model):
     __tablename__ = 'customers_payments'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -232,12 +232,12 @@ class CustomersPayment(db.Model):
     tip = db.Column(db.Numeric(10, 2), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomersPayment.customer_id == Customer.id', backref='customers_payments')
-    period = db.relationship('Period', primaryjoin='CustomersPayment.period_id == Period.id', backref='customers_payments')
+    customer = db.relationship('Customer', primaryjoin='CustomerPayments.customer_id == Customer.id', backref='customers_payments')
+    period = db.relationship('Period', primaryjoin='CustomerPayments.period_id == Period.id', backref='customers_payments')
 
 
 
-class CustomersRate(db.Model):
+class CustomerRates(db.Model):
     __tablename__ = 'customers_rates'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -250,13 +250,13 @@ class CustomersRate(db.Model):
     daily_credit = db.Column(db.Numeric(6, 2), nullable=False)
     sunday_credit = db.Column(db.Numeric(6, 2), nullable=False)
 
-    period = db.relationship('Period', primaryjoin='CustomersRate.period_id_begin == Period.id', backref='period_customers_rates')
-    period1 = db.relationship('Period', primaryjoin='CustomersRate.period_id_end == Period.id', backref='period_customers_rates_0')
-    type = db.relationship('CustomersType', primaryjoin='CustomersRate.type_id == CustomersType.id', backref='customers_rates')
+    period = db.relationship('Period', primaryjoin='CustomerRates.period_id_begin == Period.id', backref='period_customers_rates')
+    period1 = db.relationship('Period', primaryjoin='CustomerRates.period_id_end == Period.id', backref='period_customers_rates_0')
+    type = db.relationship('CustomerTypes', primaryjoin='CustomerRates.type_id == CustomerTypes.id', backref='customers_rates')
 
 
 
-class CustomersService(db.Model):
+class CustomerServices(db.Model):
     __tablename__ = 'customers_service'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -270,12 +270,12 @@ class CustomersService(db.Model):
     ignoreOnBill = db.Column(db.Enum('N', 'Y'), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomersService.customer_id == Customer.id', backref='customers_services')
-    period = db.relationship('Period', primaryjoin='CustomersService.period_id == Period.id', backref='customers_services')
+    customer = db.relationship('Customer', primaryjoin='CustomerServices.customer_id == Customer.id', backref='customers_services')
+    period = db.relationship('Period', primaryjoin='CustomerServices.period_id == Period.id', backref='customers_services')
 
 
 
-class CustomersServiceType(db.Model):
+class CustomerServiceTypes(db.Model):
     __tablename__ = 'customers_service_types'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -290,14 +290,15 @@ class CustomersServiceType(db.Model):
     ignoreOnBill = db.Column(db.Enum('N', 'Y'), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomersServiceType.customer_id == Customer.id', backref='customers_service_types')
-    period = db.relationship('Period', primaryjoin='CustomersServiceType.period_id == Period.id', backref='period_period_customers_service_types')
-    period1 = db.relationship('Period', primaryjoin='CustomersServiceType.type_id_from == Period.id', backref='period_period_customers_service_types_0')
-    period2 = db.relationship('Period', primaryjoin='CustomersServiceType.type_id_to == Period.id', backref='period_period_customers_service_types')
+    customer = db.relationship('Customer', primaryjoin='CustomerServiceTypes.customer_id == Customer.id', backref='customer_service_types')
+    # TODO: The following is from period, the other two are from customer types.  Not sure they are ever needed, so they are not created at this point.
+    #period = db.relationship('Period', primaryjoin='CustomerServiceTypes.period_id == Period.id', backref='period_period_customers_service_types')
+    #period1 = db.relationship('Period', primaryjoin='CustomerServiceTypes.type_id_from == Period.id', backref='period_period_customers_service_types_0')
+    #period2 = db.relationship('Period', primaryjoin='CustomerServiceTypes.type_id_to == Period.id', backref='period_period_customers_service_types')
 
 
 
-class CustomersTelephone(db.Model):
+class CustomerTelephones(db.Model):
     __tablename__ = 'customers_telephones'
 
     customer_id = db.Column(db.ForeignKey('customers.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False)
@@ -307,11 +308,11 @@ class CustomersTelephone(db.Model):
     type = db.Column(db.String(20, 'utf8_unicode_ci'), nullable=False)
     number = db.Column(db.String(30, 'utf8_unicode_ci'), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='CustomersTelephone.customer_id == Customer.id', backref='customers_telephones')
+    customer = db.relationship('Customer', primaryjoin='CustomerTelephones.customer_id == Customer.id', backref='customers_telephones')
 
 
 
-class CustomersType(db.Model):
+class CustomerTypes(db.Model):
     __tablename__ = 'customers_types'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -352,14 +353,14 @@ class Group(db.Model):
 
 
 
-class GroupsConfiguration(db.Model):
+class GroupConfigurations(db.Model):
     __tablename__ = 'groups_configuration'
 
     key = db.Column(db.String(255, 'utf8_unicode_ci'), primary_key=True)
     group_id = db.Column(db.ForeignKey('groups.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
     value = db.Column(db.String(255, 'utf8_unicode_ci'), nullable=False)
 
-    group = db.relationship('Group', primaryjoin='GroupsConfiguration.group_id == Group.id', backref='groups_configurations')
+    group = db.relationship('Group', primaryjoin='GroupConfigurations.group_id == Group.id', backref='groups_configurations')
 
 
 
@@ -390,7 +391,7 @@ class Route(db.Model):
 
 
 
-class RoutesChangesNote(db.Model):
+class RouteChangeNotes(db.Model):
     __tablename__ = 'routes_changes_notes'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -400,19 +401,19 @@ class RoutesChangesNote(db.Model):
     updated = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
     note = db.Column(db.String(collation='utf8_unicode_ci'), nullable=False)
 
-    route = db.relationship('Route', primaryjoin='RoutesChangesNote.route_id == Route.id', backref='routes_changes_notes')
+    route = db.relationship('Route', primaryjoin='RouteChangeNotes.route_id == Route.id', backref='routes_changes_notes')
 
 
 
-class RoutesSequence(db.Model):
+class RouteSequences(db.Model):
     __tablename__ = 'routes_sequence'
 
     tag_id = db.Column(db.ForeignKey('customers.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False)
     route_id = db.Column(db.ForeignKey('routes.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, nullable=False, index=True)
     order = db.Column(db.Integer, nullable=False)
 
-    route = db.relationship('Route', primaryjoin='RoutesSequence.route_id == Route.id', backref='routes_sequences')
-    tag = db.relationship('Customer', primaryjoin='RoutesSequence.tag_id == Customer.id', backref='customers_sequences')
+    route = db.relationship('Route', primaryjoin='RouteSequences.route_id == Route.id', backref='routes_sequences')
+    tag = db.relationship('Customer', primaryjoin='RouteSequences.tag_id == Customer.id', backref='customers_sequences')
 
 
 
@@ -442,11 +443,11 @@ class User(db.Model):
 
 
 
-class UsersConfiguration(db.Model):
+class UserConfigurations(db.Model):
     __tablename__ = 'users_configuration'
 
     key = db.Column(db.String(255, 'utf8_unicode_ci'), primary_key=True)
     user_id = db.Column(db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
     value = db.Column(db.String(255, 'utf8_unicode_ci'), nullable=False)
 
-    user = db.relationship('User', primaryjoin='UsersConfiguration.user_id == User.id', backref='users_configurations')
+    user = db.relationship('User', primaryjoin='UserConfigurations.user_id == User.id', backref='users_configurations')
