@@ -1,0 +1,88 @@
+<div id="menu">
+    <div class="w3-bar w3-black">
+        <a href="{$ROOT}index.php" class="w3-bar-item w3-button">Home</a>
+        <div class="w3-dropdown-hover">
+            <button class="w3-button">Customers</button>
+            <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                <a href="{$ROOT}customers/search.php" class="w3-bar-item w3-button">Search</a>
+                <a href="{$ROOT}customers/flagstops.php" class="w3-bar-item w3-button">Flag Stops</a>
+                <a href="{$ROOT}customers/addnew.php" class="w3-bar-item w3-button">Add</a>
+                <a href="{$ROOT}customers/combined.php" class="w3-bar-item w3-button">Combined</a>
+                <hr class="w3-separator">
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Payments</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{$ROOT}customers/payments/addnew.php" class="w3-bar-item w3-button">Add</a>
+                        <a href="{$ROOT}customers/payments/search.php" class="w3-bar-item w3-button">Search</a>
+                    </div>
+                </div>
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Reports</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{$ROOT}customers/reports/ahead.php" class="w3-bar-item w3-button">Ahead</a>
+                        <a href="{$ROOT}customers/reports/behind.php" class="w3-bar-item w3-button">Behind</a>
+                        <a href="{$ROOT}customers/reports/inactive.php" class="w3-bar-item w3-button">Inactive</a>
+                        <a href="{$ROOT}customers/reports/orders.php" class="w3-bar-item w3-button">Orders</a>
+                    </div>
+                </div>
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Billing</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{$ROOT}customers/billing/bill.php" class="w3-bar-item w3-button">Bill</a>
+                        <a href="{$ROOT}customers/billing/log.php" class="w3-bar-item w3-button">Log</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="stores.php" class="w3-bar-item w3-button">Stores &amp; Racks</a>
+        <div class="w3-dropdown-hover">
+            <button class="w3-button">Routes</button>
+            <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                <a href="{$ROOT}routes/sequencing.php" class="w3-bar-item w3-button">Sequencing</a>
+                <hr class="w3-separator">
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Changes</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{$ROOT}routes/changes/notes.php" class="w3-bar-item w3-button">Notes</a>
+                        <a href="{$ROOT}routes/changes/history.php" class="w3-bar-item w3-button">History</a>
+                        <a href="{$ROOT}routes/changes/report.php" class="w3-bar-item w3-button">Report</a>
+                    </div>
+                </div>
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Reports</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{$ROOT}routes/changes/report.php" class="w3-bar-item w3-button">Changes</a>
+                        <a href="{$ROOT}routes/reports/draw.php" class="w3-bar-item w3-button">Draw</a>
+                        <a href="{$ROOT}routes/reports/route.php" class="w3-bar-item w3-button">Route</a>
+                        <a href="{$ROOT}routes/reports/status.php" class="w3-bar-item w3-button">Status</a>
+                        <a href="{$ROOT}routes/reports/tips.php" class="w3-bar-item w3-button">Tips</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w3-dropdown-hover">
+            <button class="w3-button">Admin</button>
+            <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                <a href="{$ROOT}admin/auditlog.php" class="w3-bar-item w3-button">Audit Log</a>
+                <a href="{$ROOT}admin/billing.php" class="w3-bar-item w3-button">Billing</a>
+                <a href="{$ROOT}admin/config.php" class="w3-bar-item w3-button">Configuration</a>
+                <a href="{$ROOT}admin/groups.php" class="w3-bar-item w3-button">Groups</a>
+                <a href="{$ROOT}admin/periods.php" class="w3-bar-item w3-button">Periods</a>
+                <a href="{$ROOT}admin/security.php" class="w3-bar-item w3-button">Security</a>
+                <a href="{$ROOT}admin/routes.php" class="w3-bar-item w3-button">Routes</a>
+                <a href="{$ROOT}admin/users.php" class="w3-bar-item w3-button">Users</a>
+                <hr class="w3-separator">
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Customers</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{$ROOT}admin/customers/billing.php" class="w3-bar-item w3-button">Billing</a>
+                        <a href="{$ROOT}admin/customers/rates.php" class="w3-bar-item w3-button">Rates</a>
+                        <a href="{$ROOT}admin/customers/types.php" class="w3-bar-item w3-button">Types</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="{$ROOT}profile.php" class="w3-bar-item w3-button">Profile</a>
+        <a href="{$ROOT}logout.php" class="w3-bar-item w3-button">Logout</a>
+    </div>
+</div>
