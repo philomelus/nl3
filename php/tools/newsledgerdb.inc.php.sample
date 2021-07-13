@@ -1,0 +1,8 @@
+<?php
+
+	define('DB_SERVER', 'dummy');
+	define('DB_USER', 'dummy');
+	define('DB_PASSWORD', 'dummy');
+	define('DB_DATABASE', 'dummy');
+
+?>

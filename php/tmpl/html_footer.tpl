@@ -1,0 +1,4 @@
+{$script}
+{$scripts}
+    </body>
+</html>

@@ -1,0 +1,19 @@
+
+There is SO much to do!
+
+- Use common formatting in all source code
+
+- Strip all styles into external css files
+- Use a reset.css to start each page, so that all pages start the same
+- Use standard naming convention for styles, so it can be themed easily
+
+- Use a real MVC pattern, if justified.  Not sure that it is at this point, as it would require significant PHP memory usage increase to do so.
+
+- Convert to generic php database api
+
+- Use JavsScript to validate contents of forms as needed
+
+- FULLY validate ALL input, not just generic (i.e. make sure number is integer and in range, not just numeric)
+
+- In some places I use a CONTEXT constant, when PHP doesn't allow constants to be redefined, so they need to be changed to variables.  I know this sounds silly, but there actually are valid uses for it, generically.
+

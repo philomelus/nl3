@@ -1,0 +1,11 @@
+label.control {
+    display: inline-block;
+    vertical-align: baseline;
+    width: 125px;
+    text-align: left;
+}
+
+input.control {
+    width: 263px;
+    display: inline;
+}

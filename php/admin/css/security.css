@@ -1,0 +1,18 @@
+div.gutter {
+    width: 50px;
+    display: inline-block;
+}
+
+label.control {
+    display: inline-block;
+    vertical-align: baseline;
+    width: 75px;
+    text-align: left;
+}
+
+input.control,
+select.control {
+    width: 263px;
+    display: inline;
+}
+

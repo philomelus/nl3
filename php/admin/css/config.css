@@ -1,0 +1,12 @@
+
+label.control {
+    display: inline-block;
+    vertical-align: baseline;
+    text-align: left;
+}
+
+select.control {
+    width: auto;
+    display: inline;
+}
+

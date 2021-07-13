@@ -1,0 +1,26 @@
+table.centered {
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table td:nth-child(n+5) {
+    text-align: right;
+}
+
+td.icon-link,
+td.icon-link a {
+    text-align: center;
+    vertical-align: middle;
+}
+
+img.icon-link {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+table td:nth-child(3),
+table td:nth-child(9) {
+    border-left: 1px solid #ddd;
+}

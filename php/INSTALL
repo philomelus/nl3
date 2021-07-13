@@ -1,0 +1,42 @@
+Newsledger was designed to help run a newspaper delivery business.
+
+The requirements for running it are:
+
+- Web Server (only test against Apache 2.2)
+- PHP 5.2 or above
+- PHP MySQLi Extension
+- MySQL 5.1.4 or above
+
+First step is to extract the contents of the archive in a location where
+your web server can serve its scripts;  It varies by OS and distro, but
+is typically something like /var/www/html, /srv/http, or for a shared host
+most commonly a public_html in your user's home.
+
+$ tar -xvf nl-{version}.tar.gz
+
+Next, create a database on the mysql server.  Something like this will
+work from the command line on a linux host (there are many ways to do this):
+
+$ mysql -u user -p
+mysql> CREATE DATABASE `newsledger`;
+mysql> {ctrl-d}
+
+Then the next two steps create the tables, and populate the minimal required
+data to get it working:
+
+$ mysql -u user -p newsledger <{path}/sql/create-tables.sql
+$ mysql -u user -p newsledger <{path}/sql/insert-initial-data.sql
+
+If you are using something like phpMyAdmin, then you'll want to import the
+sql/create-tables.sql file into the database's SQL tab (or copy and paste,
+whichever is easiest).  Same for sql/insert-initial-data.sql file.
+
+At this point, if everything went good, you should be ready to login for the
+first time.  Don't forget to restart you web server if needed.
+
+The only user available at this point is:
+
+login: admin
+password: p@ssw0rd
+
+(that's a zero in password, not a capital oh)
