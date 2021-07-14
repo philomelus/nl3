@@ -1,10 +1,8 @@
 # coding: utf-8
-from flask_sqlalchemy import SQLAlchemy
 
+from bl3.db import get_db
 
-db = SQLAlchemy()
-
-
+db = get_db()
 
 class Alert(db.Model):
     __tablename__ = 'alerts'
