@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, url_for, request
 from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, logout_user, login_required
 
-from nl import app, db
+from nl import db
 from nl.auth.forms import LoginForm, RegistrationForm
 from nl.models import User
 from nl.auth import bp

@@ -1,6 +1,8 @@
 
-from nl import app, db
+from nl import create_app, db
 from nl.models import *
+
+app = create_app()
 
 @app.shell_context_processor
 def make_shell_context():
