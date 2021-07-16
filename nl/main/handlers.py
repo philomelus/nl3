@@ -11,3 +11,9 @@ from nl.main import bp
 def index():
     return render_template('index.html', title='Home')
 
+
+@bp.route('/profile')
+@login_required
+def profile():
+    pass
+

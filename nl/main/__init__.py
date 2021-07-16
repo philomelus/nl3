@@ -5,5 +5,5 @@ from flask import Blueprint
 bp = Blueprint('main', __name__)
 
 
-from nl.main import routes
+from nl.main import handlers
 

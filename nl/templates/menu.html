@@ -1,7 +1,6 @@
 <div id="menu">
     <div class="w3-bar w3-black">
         <a href="{{ url_for('main.index') }}" class="w3-bar-item w3-button">Home</a>
-	{#
         <div class="w3-dropdown-hover">
             <button class="w3-button">Customers</button>
             <div class="w3-dropdown-content w3-bar-block w3-card-4">
@@ -35,7 +34,7 @@
                 </div>
             </div>
         </div>
-        <a href="{{ url_for('stores') }}" class="w3-bar-item w3-button">Stores &amp; Racks</a>
+        <a href="{{ url_for('stores.index') }}" class="w3-bar-item w3-button">Stores &amp; Racks</a>
         <div class="w3-dropdown-hover">
             <button class="w3-button">Routes</button>
             <div class="w3-dropdown-content w3-bar-block w3-card-4">
@@ -83,8 +82,7 @@
                 </div>
             </div>
         </div>
-        <a href="{{ url_for('profile') }}" class="w3-bar-item w3-button">Profile</a>
-	#}
+        <a href="{{ url_for('main.profile') }}" class="w3-bar-item w3-button">Profile</a>
         <a href="{{ url_for('auth.logout') }}" class="w3-bar-item w3-button">Logout</a>
     </div>
 </div>

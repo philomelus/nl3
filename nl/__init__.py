@@ -20,16 +20,36 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     login.init_app(app)
+
+    # Register error handling blueprint
+    from nl import errors
+    app.register_blueprint(errors.bp)
+
+    # Register main glue blueprint
+    from nl import main
+    app.register_blueprint(main.bp)
+
+    # Register authentication blueprint
+    from nl import auth
+    app.register_blueprint(auth.bp)
+
+    # Register administration blueprint
+    from nl import admin
+    app.register_blueprint(admin.bp)
+
+    # Register customers blueprint
+    from nl import customers
+    app.register_blueprint(customers.bp)
+
+    # Register routes blueprint
+    from nl import routes
+    app.register_blueprint(routes.bp)
+
+    # Register stores and racks blueprint
+    from nl import stores
+    app.register_blueprint(stores.bp)
     
-    from nl.errors import bp as errors_bp
-    app.register_blueprint(errors_bp)
-
-    from nl.auth import bp as auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-
-    from nl.main import bp as main_bp
-    app.register_blueprint(main_bp, url_prefix='/')
-
+    # Setup logging and error reporting
     if not app.debug and not app.testing:
         if app.config['MAIL_SERVER']:
             auth = None
