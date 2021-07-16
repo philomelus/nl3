@@ -1,0 +1,90 @@
+<div id="menu">
+    <div class="w3-bar w3-black">
+        <a href="{{ url_for('index') }}" class="w3-bar-item w3-button">Home</a>
+	{#
+        <div class="w3-dropdown-hover">
+            <button class="w3-button">Customers</button>
+            <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                <a href="{{ url_for('customers.search') }}" class="w3-bar-item w3-button">Search</a>
+                <a href="{{ url_for('customers.flagstops') }}" class="w3-bar-item w3-button">Flag Stops</a>
+                <a href="{{ url_for('customers.addnew') }}" class="w3-bar-item w3-button">Add</a>
+                <a href="{{ url_for('customers.combined') }}" class="w3-bar-item w3-button">Combined</a>
+                <hr class="w3-separator">
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Payments</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{{ url_for('customers.payments.addnew') }}" class="w3-bar-item w3-button">Add</a>
+                        <a href="{{ url_for('customers.payments.search') }}" class="w3-bar-item w3-button">Search</a>
+                    </div>
+                </div>
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Reports</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{{ url_for('customers.reports.ahead') }}" class="w3-bar-item w3-button">Ahead</a>
+                        <a href="{{ url_for('customers.reports.behind') }}" class="w3-bar-item w3-button">Behind</a>
+                        <a href="{{ url_for('customers.reports.inactive') }}" class="w3-bar-item w3-button">Inactive</a>
+                        <a href="{{ url_for('customers.reports.orders') }}" class="w3-bar-item w3-button">Orders</a>
+                    </div>
+                </div>
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Billing</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{{ url_for('customers.billing.bill') }}" class="w3-bar-item w3-button">Bill</a>
+                        <a href="{{ url_for('customers.billing.log') }}" class="w3-bar-item w3-button">Log</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="{{ url_for('stores') }}" class="w3-bar-item w3-button">Stores &amp; Racks</a>
+        <div class="w3-dropdown-hover">
+            <button class="w3-button">Routes</button>
+            <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                <a href="{{ url_for('routes.sequencing') }}" class="w3-bar-item w3-button">Sequencing</a>
+                <hr class="w3-separator">
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Changes</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{{ url_for('routes.changes.notes') }}" class="w3-bar-item w3-button">Notes</a>
+                        <a href="{{ url_for('routes.changes.history') }}" class="w3-bar-item w3-button">History</a>
+                        <a href="{{ url_for('routes.changes.report') }}" class="w3-bar-item w3-button">Report</a>
+                    </div>
+                </div>
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Reports</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{{ url_for('routes.changes.report') }}" class="w3-bar-item w3-button">Changes</a>
+                        <a href="{{ url_for('routes.reports.draw') }}" class="w3-bar-item w3-button">Draw</a>
+                        <a href="{{ url_for('routes.reports.route') }}" class="w3-bar-item w3-button">Route</a>
+                        <a href="{{ url_for('routes.reports.status') }}" class="w3-bar-item w3-button">Status</a>
+                        <a href="{{ url_for('routes.reports.tips') }}" class="w3-bar-item w3-button">Tips</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w3-dropdown-hover">
+            <button class="w3-button">Admin</button>
+            <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                <a href="{{ url_for('admin.auditlog') }}" class="w3-bar-item w3-button">Audit Log</a>
+                <a href="{{ url_for('admin.billing') }}" class="w3-bar-item w3-button">Billing</a>
+                <a href="{{ url_for('admin.config') }}" class="w3-bar-item w3-button">Configuration</a>
+                <a href="{{ url_for('admin.groups') }}" class="w3-bar-item w3-button">Groups</a>
+                <a href="{{ url_for('admin.periods') }}" class="w3-bar-item w3-button">Periods</a>
+                <a href="{{ url_for('admin.security') }}" class="w3-bar-item w3-button">Security</a>
+                <a href="{{ url_for('admin.routes') }}" class="w3-bar-item w3-button">Routes</a>
+                <a href="{{ url_for('admin.users') }}" class="w3-bar-item w3-button">Users</a>
+                <hr class="w3-separator">
+                <div class="w3-dropdown-hover">
+                    <button class="w3-button">Customers</button>
+                    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                        <a href="{{ url_for('admin.customers.billing') }}" class="w3-bar-item w3-button">Billing</a>
+                        <a href="{{ url_for('admin.customers.rates') }}" class="w3-bar-item w3-button">Rates</a>
+                        <a href="{{ url_for('admin.customers.types') }}" class="w3-bar-item w3-button">Types</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="{{ url_for('profile') }}" class="w3-bar-item w3-button">Profile</a>
+	#}
+        <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button">Logout</a>
+    </div>
+</div>

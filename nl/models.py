@@ -1,8 +1,15 @@
 # coding: utf-8
 
-from bl3.db import get_db
+from werkzeug.security import generate_password_hash, check_password_hash
 
-db = get_db()
+from nl import db, login
+from flask_login import UserMixin
+
+
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
 
 class Alert(db.Model):
     __tablename__ = 'alerts'
@@ -67,10 +74,9 @@ class Customer(db.Model):
     notes = db.Column(db.Text(collation='utf8_unicode_ci'))
     deliveryNote = db.Column(db.Text(collation='utf8_unicode_ci'), nullable=False)
 
-    period = db.relationship('Period', primaryjoin='Customer.billPeriod == Period.id', backref='customers')
-    customers_payment = db.relationship('CustomerPayments', primaryjoin='Customer.lastPayment == CustomerPayments.id', backref='customers')
-    route = db.relationship('Route', primaryjoin='Customer.route_id == Route.id', backref='customers')
-    type = db.relationship('CustomerTypes', primaryjoin='Customer.type_id == CustomerTypes.id', backref='customers')
+    period = db.relationship('Period', primaryjoin='Customer.billPeriod == Period.id', backref='customer')
+    route = db.relationship('Route', primaryjoin='Customer.route_id == Route.id', backref='customer')
+    type = db.relationship('CustomerTypes', primaryjoin='Customer.type_id == CustomerTypes.id', backref='customer')
 
 
 
@@ -230,8 +236,8 @@ class CustomerPayments(db.Model):
     tip = db.Column(db.Numeric(10, 2), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomerPayments.customer_id == Customer.id', backref='customers_payments')
-    period = db.relationship('Period', primaryjoin='CustomerPayments.period_id == Period.id', backref='customers_payments')
+    customer = db.relationship('Customer', primaryjoin='CustomerPayments.customer_id == Customer.id', backref='payment')
+    period = db.relationship('Period', primaryjoin='CustomerPayments.period_id == Period.id', backref='period')
 
 
 
@@ -288,11 +294,10 @@ class CustomerServiceTypes(db.Model):
     ignoreOnBill = db.Column(db.Enum('N', 'Y'), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomerServiceTypes.customer_id == Customer.id', backref='customer_service_types')
-    # TODO: The following is from period, the other two are from customer types.  Not sure they are ever needed, so they are not created at this point.
-    #period = db.relationship('Period', primaryjoin='CustomerServiceTypes.period_id == Period.id', backref='period_period_customers_service_types')
-    #period1 = db.relationship('Period', primaryjoin='CustomerServiceTypes.type_id_from == Period.id', backref='period_period_customers_service_types_0')
-    #period2 = db.relationship('Period', primaryjoin='CustomerServiceTypes.type_id_to == Period.id', backref='period_period_customers_service_types')
+    customer = db.relationship('Customer', primaryjoin='CustomerServiceTypes.customer_id == Customer.id', backref='service_types')
+    #period = db.relationship('Period', primaryjoin='CustomerServiceTypes.period_id == Period.id', backref='customer_service_types_periods')  
+    #from_type = db.relationship('CustomerTypes', primaryjoin='CustomerServiceTypes.type_id_from == CustomerTypes.id', backref='customers_service_types_from_types')
+    #to_type = db.relationship('CustomerTypes', primaryjoin='CustomerServiceTypes.type_id_to == CustomerTypes.id', backref='customers_service_types_to_types')
 
 
 
@@ -348,6 +353,9 @@ class Group(db.Model):
 
     id = db.Column(db.SmallInteger, primary_key=True)
     name = db.Column(db.String(collation='utf8_unicode_ci'), nullable=False)
+
+    def __repr__(self):
+        return '<Group {}>'.format(self.name)
 
 
 
@@ -426,8 +434,7 @@ t_security = db.Table(
 )
 
 
-
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.SmallInteger, primary_key=True)
@@ -439,8 +446,16 @@ class User(db.Model):
 
     group = db.relationship('Group', primaryjoin='User.group_id == Group.id', backref='users')
 
+    def __repr__(self):
+        return '<User {}>'.format(self.login)
 
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
 
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
+    
 class UserConfigurations(db.Model):
     __tablename__ = 'users_configuration'
 
@@ -448,4 +463,5 @@ class UserConfigurations(db.Model):
     user_id = db.Column(db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
     value = db.Column(db.String(255, 'utf8_unicode_ci'), nullable=False)
 
-    user = db.relationship('User', primaryjoin='UserConfigurations.user_id == User.id', backref='users_configurations')
+    user = db.relationship('User', primaryjoin='UserConfigurations.user_id == User.id', backref='user_configurations')
+

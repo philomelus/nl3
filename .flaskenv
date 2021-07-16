@@ -1,2 +1,2 @@
 FLASK_ENV=development
-FLASK_APP=src/nl3
+FLASK_APP=nl3.py

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width:device-width, initial-scale=1">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='w3.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+	{% block styles %}{% endblock %}
+    </head>
+    <body>
+	{% block header %}{% endblock %}
+	{% block menu %}
+	{% include 'menu.html' %}
+	{% endblock %}
+	{% block messages %}
+	{% for message in get_flashed_messages() %}
+	<div class="flash">{{ message }}</div>
+	{% endfor %}
+	{% endblock %}
+	{% block content %}{% endblock %}
+	{% block scripts %}{% endblock %}
+    </body>
+</html>
+
