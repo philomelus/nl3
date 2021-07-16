@@ -15,6 +15,9 @@ db = SQLAlchemy(app)
 login = LoginManager(app)
 login.login_view = 'login'
 
+from nl.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
+
 if not app.debug:
     if app.config['MAIL_SERVER']:
         auth = None
@@ -45,5 +48,5 @@ if not app.debug:
     app.logger.info('Newsledger startup.')
 
 
-from nl import routes, models, errors
+from nl import routes, models
 
