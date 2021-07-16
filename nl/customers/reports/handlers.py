@@ -1,4 +1,5 @@
 
+from flask import render_template
 from flask_login import login_required
 
 from nl.customers.reports import bp
@@ -7,23 +8,23 @@ from nl.customers.reports import bp
 @bp.route('/ahead', methods=('GET', 'POST'))
 @login_required
 def ahead():
-    pass
+    return render_template('working.html', path='Customers / Reports / Ahead')
 
 
 @bp.route('/behind', methods=('GET', 'POST'))
 @login_required
 def behind():
-    pass
+    return render_template('working.html', path='Customers / Reports / Behind')
 
 
 @bp.route('/inactive', methods=('GET', 'POST'))
 @login_required
 def inactive():
-    pass
+    return render_template('working.html', path='Customers / Reports / Inactive')
 
 
 @bp.route('/orders', methods=('GET', 'POST'))
 @login_required
 def orders():
-    pass
+    return render_template('working.html', path='Customers / Reports / Orders')
 

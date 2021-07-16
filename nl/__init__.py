@@ -2,7 +2,7 @@
 import logging
 import os
 
-from flask import Flask
+from flask import Flask, g
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -78,7 +78,12 @@ def create_app(config_class=Config):
 
         app.logger.setLevel(logging.INFO)
         app.logger.info('Newsledger startup.')
-        
+
+    # Populate common globals
+    # TODO:  This doesn't appear to work ... not sure why
+    with app.app_context():
+        g.title = 'Newsledger'
+    
     return app
 
 

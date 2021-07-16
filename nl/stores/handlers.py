@@ -1,4 +1,5 @@
 
+from flask import render_template
 from flask_login import login_required
 
 from nl.stores import bp
@@ -8,5 +9,5 @@ from nl.stores import bp
 @bp.route('/index', methods=('GET', 'POST'))
 @login_required
 def index():
-    pass
+    return render_template('working.html', path='Stores & Racks')
 

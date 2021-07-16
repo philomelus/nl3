@@ -1,4 +1,5 @@
 
+from flask import render_template
 from flask_login import login_required
 
 from nl.customers import bp
@@ -7,23 +8,23 @@ from nl.customers import bp
 @bp.route('/search', methods=('GET', 'POST'))
 @login_required
 def search():
-    pass
+    return render_template('working.html', path='Customers / Search')
 
 
 @bp.route('/flagstops', methods=('GET', 'POST'))
 @login_required
 def flagstops():
-    pass
+    return render_template('working.html', path='Customers / Flag Stops')
 
 
 @bp.route('/addnew', methods=('GET', 'POST'))
 @login_required
 def addnew():
-    pass
+    return render_template('working.html', path='Customers / Add')
 
 
 @bp.route('/combined', methods=('GET', 'POST'))
 @login_required
 def combined():
-    pass
+    return render_template('working.html', path='Customers / Combined')
 

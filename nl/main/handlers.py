@@ -9,11 +9,12 @@ from nl.main import bp
 @bp.route('/index')
 @login_required
 def index():
-    return render_template('index.html', title='Home')
+    return render_template('index.html', path='Home')
 
 
 @bp.route('/profile')
 @login_required
 def profile():
-    pass
+    return render_template('working.html', path='Profile')
+
 

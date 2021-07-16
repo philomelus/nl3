@@ -1,4 +1,5 @@
 
+from flask import render_template
 from flask_login import login_required
 
 from nl.admin import bp
@@ -7,47 +8,47 @@ from nl.admin import bp
 @bp.route('/auditlog', methods=('GET', 'POST'))
 @login_required
 def auditlog():
-    pass
+    return render_template('working.html', path='Admin / Audit Log')
 
 
 @bp.route('/billing', methods=('GET', 'POST'))
 @login_required
 def billing():
-    pass
+    return render_template('working.html', path='Admin / Billing')
 
 
 @bp.route('/config', methods=('GET', 'POST'))
 @login_required
 def config():
-    pass
+    return render_template('working.html', path='Admin / Configuration')
 
 
 @bp.route('/groups', methods=('GET', 'POST'))
 @login_required
 def groups():
-    pass
+    return render_template('working.html', path='Admin / Groups')
 
 
 @bp.route('/periods', methods=('GET', 'POST'))
 @login_required
 def periods():
-    pass
+    return render_template('working.html', path='Admin / Periods')
 
 
 @bp.route('/security', methods=('GET', 'POST'))
 @login_required
 def security():
-    pass
+    return render_template('working.html', path='Admin / Security')
 
 
 @bp.route('/routes', methods=('GET', 'POST'))
 @login_required
 def routes():
-    pass
+    return render_template('working.html', path='Admin / Routes')
 
 
 @bp.route('/users', methods=('GET', 'POST'))
 @login_required
 def users():
-    pass
+    return render_template('working.html', path='Admin / Users')
 
