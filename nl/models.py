@@ -44,6 +44,13 @@ class Configuration(db.Model):
     key = db.Column(db.String(255, 'utf8_unicode_ci'), primary_key=True)
     value = db.Column(db.String(255, 'utf8_unicode_ci'), nullable=False)
 
+    @staticmethod
+    def get(key, default=None):
+        value = Configuration.query.filter_by(key=key).first().value
+        if value is None:
+            return default
+        return value
+
 
 class Customer(db.Model):
     __tablename__ = 'customers'

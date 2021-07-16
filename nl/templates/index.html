@@ -1,6 +1,49 @@
 {% extends "base.html" %}
 
-{% block content %}
-<h1>Coming soon to a web server near you!</h1>
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 {% endblock %}
 
+{% block content %}
+<div class="w3-row">
+    <div class="w3-row">
+        <div class="w3-twothird w3-center">
+            <p>Active Customers:&nbsp;&nbsp;{{ totalCount }}</p>
+            <p>Active Customers that Still Owe:&nbsp;&nbsp;{{ activeAndOwe }}</p>
+            <p>Active Customers Paid-Ahead:&nbsp;&nbsp;{{ activeAndAhead }}</p>
+            <p>Bills Printed For {{ period }}:&nbsp;&nbsp;{{ lastBills }}</p>
+        </div>
+        <div class="w3-third">
+	    {{ calendar|safe }}
+        </div>
+    </div>
+</div>
+<div>
+    <table class="w3-table w3-bordered" id="dist">
+        <caption>Customers per Delivery Type per Route</caption>
+        <thead>
+            <tr>
+                <th>Type</th>
+		{% for route in routes %}
+                <th>{{ route }}</th>
+		{% endfor %}
+                <th>#</th>
+            </tr>
+        </thead>
+        <tbody>
+	    {% for row in cpdt %}
+            <tr>
+		{% for col in row %}
+		{% if loop.first %}
+                <td>{{ col[1] }}</td>
+		{% else %}
+                <td>{{ col }}</td>
+		{% endif %}
+		{% endfor %}
+            </tr>
+	    {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+	
