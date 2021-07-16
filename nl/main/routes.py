@@ -2,11 +2,11 @@
 from flask import render_template
 from flask_login import login_required
 
-from nl import app, db
+from nl.main import bp
 
 
-@app.route('/')
-@app.route('/index')
+@bp.route('/')
+@bp.route('/index')
 @login_required
 def index():
     return render_template('index.html', title='Home')
