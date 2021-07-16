@@ -29,6 +29,7 @@ def make_shell_context():
             'Route': Route,
             'RouteChangeNotes': RouteChangeNotes,
             'RouteSequences': RouteSequences,
+            'Security': Security,
             'User': User,
             'UserConfigurations': UserConfigurations
             }
