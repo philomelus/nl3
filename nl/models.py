@@ -1,10 +1,10 @@
 # coding: utf-8
 
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import current_user, UserMixin
+from sqlalchemy import select
 
 from nl import db, login
-from flask_login import UserMixin
-
 
 @login.user_loader
 def load_user(id):
@@ -82,6 +82,18 @@ class Customer(db.Model):
     route = db.relationship('Route', primaryjoin='Customer.route_id == Route.id', backref='customer')
     type = db.relationship('CustomerTypes', primaryjoin='Customer.type_id == CustomerTypes.id', backref='customer')
 
+    def address(self, sequence=1):
+        """Return specific customer address."""
+        return CustomerAddresses.query.filter_by(customer_id=self.id, sequence=sequence).first()
+
+    def name(self, sequence=1):
+        """Return specific customer name."""
+        return CustomerNames.query.filter_by(customer_id=self.id, sequence=sequence).first()
+    
+    def telephone(self, sequence=1):
+        """Return specific customer telephone."""
+        return CustomerTelephones.query.filter_by(customer_id=self.id, sequence=sequence).first()
+
 
 class CustomerAddresses(db.Model):
     __tablename__ = 'customers_addresses'
@@ -94,7 +106,11 @@ class CustomerAddresses(db.Model):
     state = db.Column(db.String(2, 'utf8_unicode_ci'), nullable=False)
     zip = db.Column(db.String(10, 'utf8_unicode_ci'), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='CustomerAddresses.customer_id == Customer.id', backref='customers_addresses')
+    customer = db.relationship('Customer', primaryjoin='CustomerAddresses.customer_id == Customer.id', backref='addresses')
+
+    # Types of addresses
+    SEQ_DELIVERY = 1
+    SEQ_BILLING = 101
 
 
 class CustomerAdjustments(db.Model):
@@ -177,8 +193,8 @@ class CustomerCombinedBills(db.Model):
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
 
-    customer = db.relationship('Customer', primaryjoin='CustomerCombinedBills.customer_id_main == Customer.id', backref='customer_customers_combined_bills')
-    customer1 = db.relationship('Customer', primaryjoin='CustomerCombinedBills.customer_id_secondary == Customer.id', backref='customer_customers_combined_bills_0')
+    #customer = db.relationship('Customer', primaryjoin='CustomerCombinedBills.customer_id_main == Customer.id', backref='customer_customers_combined_bills')
+    #customer1 = db.relationship('Customer', primaryjoin='CustomerCombinedBills.customer_id_secondary == Customer.id', backref='customer_customers_combined_bills_0')
 
 
 class CustomerComplaints(db.Model):
@@ -213,8 +229,14 @@ class CustomerNames(db.Model):
     last = db.Column(db.String(30, 'utf8_unicode_ci'), nullable=False)
     surname = db.Column(db.String(10, 'utf8_unicode_ci'), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='CustomerNames.customer_id == Customer.id', backref='customers_names')
+    customer = db.relationship('Customer', primaryjoin='CustomerNames.customer_id == Customer.id', backref='names')
 
+    # TODO:  These are common for address, names, and telephones ... but not all are used in all of them
+    SEQ_DELIVERY1 = 1
+    SEQ_DELIVERY2 = 2
+    SEQ_BILLING1 = 101
+    SEQ_BILLING2 = 102
+    
 
 class CustomerPayments(db.Model):
     __tablename__ = 'customers_payments'
@@ -234,6 +256,11 @@ class CustomerPayments(db.Model):
 
     customer = db.relationship('Customer', primaryjoin='CustomerPayments.customer_id == Customer.id', backref='payment')
     period = db.relationship('Period', primaryjoin='CustomerPayments.period_id == Period.id', backref='period')
+
+    PMT_CHECK = 1
+    PMT_MONEYORDER = 2
+    PMT_CASH = 3
+    PMT_CREDIT = 4
 
 
 class CustomerRates(db.Model):
@@ -303,9 +330,16 @@ class CustomerTelephones(db.Model):
     type = db.Column(db.String(20, 'utf8_unicode_ci'), nullable=False)
     number = db.Column(db.String(30, 'utf8_unicode_ci'), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='CustomerTelephones.customer_id == Customer.id', backref='customers_telephones')
+    customer = db.relationship('Customer', primaryjoin='CustomerTelephones.customer_id == Customer.id', backref='telephones')
 
+    TEL_DELIVERY1 = 1
+    TEL_DELIVERY2 = 2
+    TEL_DELIVERY3 = 3
+    TEL_BILLING1 = 101
+    TEL_BILLING1 = 102
+    TEL_BILLING1 = 103
 
+    
 class CustomerTypes(db.Model):
     __tablename__ = 'customers_types'
 
@@ -445,5 +479,13 @@ class UserConfigurations(db.Model):
     user_id = db.Column(db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
     value = db.Column(db.String(255, 'utf8_unicode_ci'), nullable=False)
 
-    user = db.relationship('User', primaryjoin='UserConfigurations.user_id == User.id', backref='user_configurations')
+    user = db.relationship('User', primaryjoin='UserConfigurations.user_id == User.id', backref='configurations')
 
+    @staticmethod
+    def get(key, user=None, default=None):
+        if user == None:
+            user = current_user.id
+        value = UserConfiguration.query.filter_by(key=key, user=user).first().value
+        if value is None:
+            return default
+        return value

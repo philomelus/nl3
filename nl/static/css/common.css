@@ -32,3 +32,21 @@ body {
     margin-right: auto;
 }
 
+.flashes {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid black;
+}
+
+.flash {
+    text-align: center;
+    font-size: 125%;
+}
+
+.flash .success {
+    color: green;
+}
+
+.flash .fail {
+       color: red;
+}

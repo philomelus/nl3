@@ -10,7 +10,8 @@ class Config(object):
 
     SQLALCHEMY_DATABASE_URI='mysql+pymysql://newui:newuiNEWUI@gearhart.rnstech.com:3306/newui'
     SQLALCHEMY_TRACK_MODIFICATIONS=False
-
+    #SQLALCHEMY_ECHO = True
+    
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None

@@ -1,0 +1,38 @@
+<div class="w3-bar w3-black">
+{% if left %}
+    {% if refresh %}
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="refresh">Refresh</button>
+    {% endif %}
+    {% if clear %}
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="refresh">Clear</button>
+    {% endif %}
+{% endif %}
+    <div class="w3-bar-item">Show</div>
+    <input class="w3-bar-item w3-input w3-border" type="text" name="limit" value="{{ limit }}" size="3">
+    <div class="w3-bar-item">from</div>
+    <input class="w3-bar-item w3-input w3-border" type="text" name="offset" value="{{ offset }}" size="3">
+    &nbsp;&nbsp;
+    {% if offset == 0 or max_ == 0 %}
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="begin" disabled="disabled">&lt;&lt;</button>
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="prev" disabled="disabled">&lt;</button>
+    {% else %}
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="begin"{{ lessstate }}>&lt;&lt;</button>
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="prev"{{ lessstate }}>&lt;</button>
+    {% endif %}
+    {% if max_ == 0 or (max_ > 0 and offset + limit >= max_) %}
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="next" disabled="disabled">&gt;</button>
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="end" disabled="disabled">&gt;&gt;</button>
+    {% else %}
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="next">&gt;</button>
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="end">&gt;&gt;</button>
+    {% endif %}
+    &nbsp;&nbsp;
+{% if not left %}
+    {% if refresh %}
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="refresh">Refresh</button>
+    {% endif %}
+    {% if clear %}
+    <button class="w3-bar-item w3-button w3-border" type="submit" name="action" value="clear">Clear</button>
+    {% endif %}
+{% endif %}
+</div>
