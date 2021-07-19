@@ -1,6 +1,7 @@
 
 from nl import create_app, db
 from nl.models import *
+from sqlalchemy import distinct, func, select
 
 app = create_app()
 
@@ -33,7 +34,10 @@ def make_shell_context():
             'RouteSequences': RouteSequences,
             'Security': Security,
             'User': User,
-            'UserConfigurations': UserConfigurations
+            'UserConfigurations': UserConfigurations,
+            'distinct': distinct,
+            'func': func,
+            'select': select,
             }
 
 

@@ -86,6 +86,9 @@ class Customer(db.Model):
         """Return specific customer address."""
         return CustomerAddresses.query.filter_by(customer_id=self.id, sequence=sequence).first()
 
+    def combineds(self):
+        return CustomerCombinedBills.query.filter_by(customer_id_main=self.id).all()
+    
     def name(self, sequence=1):
         """Return specific customer name."""
         return CustomerNames.query.filter_by(customer_id=self.id, sequence=sequence).first()
@@ -193,10 +196,7 @@ class CustomerCombinedBills(db.Model):
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
 
-    #customer = db.relationship('Customer', primaryjoin='CustomerCombinedBills.customer_id_main == Customer.id', backref='customer_customers_combined_bills')
-    #customer1 = db.relationship('Customer', primaryjoin='CustomerCombinedBills.customer_id_secondary == Customer.id', backref='customer_customers_combined_bills_0')
-
-
+    
 class CustomerComplaints(db.Model):
     __tablename__ = 'customers_complaints'
 

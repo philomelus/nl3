@@ -7,6 +7,11 @@ from nl.models import Customer
 from nl.utils import ignore_yes_no
 
 
+class CombinedForm(FlaskForm):
+    refresh = SubmitField('Refresh')
+    add = SubmitField('Add New')
+
+
 class SearchForm(FlaskForm):
     action = HiddenField()
     address = StringField('Address', validators=[Optional(),])

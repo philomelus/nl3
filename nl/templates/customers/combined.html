@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customers/combined.css') }}">
+{% endblock %}
+
+{% block content %}
+<form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.combined') }}">
+    <button type="submit" name="action" value="Refresh" class="w3-button w3-border">
+	<img src="{{ url_for('static', filename='img/refresh.png') }}" alt="Refresh"/>
+    </button>
+    <button onclick="add_combined(); return false;" class="w3-button w3-border">
+	<img src="{{ url_for('static', filename='img/add_s.png') }}" alt="Add New"/>
+    </button>
+    <table class="w3-table w3-bordered w3-margin-top centered">
+        <thead>
+            <tr>
+                <th class="w3-center" colspan="3">{{ count }}</th>
+                <th>CustID</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>CustID</th>
+                <th>Name</th>
+                <th colspan="3">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+	    {% for c in combined %}
+	    <tr>
+                <td class="icon-link">
+                    <img src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete Combined Customer">
+                </td>
+                <td class="icon-link">
+                    <img onclick="add_another({{ c.id }})" src="{{ url_for('static', filename='img/add.png') }}" alt="A" title="Add another Customer to this Combined Customer">
+                </td>
+                <td>{{ '%06d'|format(c.id) }}</td>
+                <td>{{ c.name }}</td>
+                <td>{{ c.address }}</td>
+
+		
+		{% if c.count > 1 %}
+                <td>{{ '%06d'|format(c.others[0].id) }}</td>
+                <td>{{ c.others[0].name }}</td>
+                <td>{{ c.others[0].address }}</td>
+                <td class="icon-link">
+                    <img onclick="edit_combined({{ c.id }},{{ c.others[0].id }})" src="{{ url_for('static', filename='img/edit.png') }}" alt="E" title="Edit this Combined Customer">
+                </td>
+                <td class="icon-link">
+                    <img src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete this Combined Customer">
+                </td>
+		{% for o in c.others[1:] %}
+            </tr>
+            <tr>
+                <td class="icon-link">&nbsp;</td>
+                <td class="icon-link">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>{{ '%06d'|format(o.id) }}</td>
+                <td>{{ o.name }}</td>
+                <td>{{ o.address }}</td>
+		<td class="icon-link">
+		    <img onclick="edit_combined({{ c.id }},{{ o.id }})" src="{{ url_for('static', filename='img/edit.png') }}" alt="E" title="Edit this Combined Customer">
+		</td>
+		<td class="icon-link">
+		    <img src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete this Combined Customer">
+		</td>
+		{% endfor %}
+		{% else %}
+                <td>{{ '%06d'|format(c.others[0].id) }}</td>
+                <td>{{ c.others[0].name }}</td>
+                <td>{{ c.others[0].address }}</td>
+		<td class="icon-link">
+		    <img onclick="edit_combined({{ c.id }},{{ c.others[0].id }})" src="{{ url_for('static', filename='img/edit.png') }}" alt="E" title="Edit this Combined Customer">
+		</td>
+		<td class="icon-link">
+		    &nbsp;
+		</td>
+		{% endif %}
+	    </tr>
+	    {% endfor %}
+	</tbody>
+    </table>
+    <div id="addcombined" class="w3-modal">
+	<div class="w3-modal-content w3-card-4">
+	    <div class="w3-center w3-padding w3-light-blue">
+		Add Combined
+		<br>
+		<span onclick="document.getElementById('addcombined').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+	    </div>
+	    <div class="w3-container w3-margin-bottom">
+		<div class="w3-padding">
+		    Enter Customer ID's of customers who's bills to combine<br>
+		    (secondary is added to main's bill):
+		</div>
+		<div class="w3-row">
+		    <label class="control">Main ID</label>
+		    <input class="w3-input w3-border control" type="text" id="addcombinedmainid" name="main" size="10" required>
+		    <img class="w3-button w3-border" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
+		</div>
+		<div class="w3-row">
+		    <label class="control">Secondary ID</label>
+		    <input class="w3-input w3-border control" type="text" name="secondary" size="10" required>
+		    <img class="w3-button w3-border" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
+		</div>
+	    </div>
+	    <div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
+		<button class="w3-button w3-border" type="submit">Add Combined</button>
+		<button onclick="document.getElementById('addcombined').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
+	    </div>
+	</div>
+    </div>
+    <div id="addanother" class="w3-modal">
+	<div class="w3-modal-content w3-card-4">
+	    <div class="w3-center w3-padding w3-light-blue">
+		Add Combined
+		<br>
+		<span onclick="document.getElementById('addanother').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+	    </div>
+	    <div class="w3-container w3-margin-bottom">
+		<div class="w3-padding">
+		    Enter Customer ID of customer to add to mains bill:
+		</div>
+		<div class="w3-row">
+		    <label class="control">Main ID</label>
+		    <input class="w3-input w3-border control" type="text" id="addanothermainid" name="main" size="10" readonly>
+		    <img class="w3-button w3-border" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
+		</div>
+		<div class="w3-row">
+		    <label class="control">Secondary ID</label>
+		    <input class="w3-input w3-border control" type="text" id="addanothersecondaryid" name="secondary" size="10" required>
+		    <img class="w3-button w3-border" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
+		</div>
+	    </div>
+	    <div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
+		<button class="w3-button w3-border" type="submit">Add Combined</button>
+		<button onclick="document.getElementById('addanother').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
+	    </div>
+	</div>
+    </div>
+    <div id="editcombined" class="w3-modal">
+	<div class="w3-modal-content w3-card-4">
+	    <div class="w3-center w3-padding w3-light-blue">
+		Edit Combined
+		<br>
+		<span onclick="document.getElementById('editcombined').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+	    </div>
+	    <div class="w3-container w3-margin-bottom">
+		<div class="w3-padding">
+		    Update secondary Customer ID to add to main's bill:
+		</div>
+		<div class="w3-row">
+		    <label class="control">Main ID</label>
+		    <input class="w3-input w3-border control" type="text" id="editcombinedmainid" name="main" size="10" readonly>
+		    <img class="w3-button w3-border" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
+		</div>
+		<div class="w3-row">
+		    <label class="control">Secondary ID</label>
+		    <input class="w3-input w3-border control" type="text" id="editcombinedsecondaryid" name="secondary" size="10" required>
+		    <img class="w3-button w3-border" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
+		</div>
+	    </div>
+	    <div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
+		<button class="w3-button w3-border" type="submit">Save</button>
+		<button onclick="document.getElementById('editcombined').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
+	    </div>
+	</div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/customers/combined.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,46 @@
+td.icon-link
+{
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 0;
+}
+
+td.icon-link:first-child {
+    border-left: 1px solid #ddd;
+}
+
+td.icon-link:nth-child(3) {
+    padding-right: 8px;
+    border-right: 1px solid #ddd;
+}
+
+td.icon-link img {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+#addanother > div,
+#addcombined > div,
+#editcombined > div {
+    max-width: 600px;
+}
+
+#addanother label.control,
+#addcombined label.control,
+#editcombined label.control {
+    display: inline-block;
+    vertical-align: baseline;
+    width: 100px;
+    text-align: left;
+}
+
+#addanother input.control,
+#addcombined input.control,
+#editcombined input.control {
+    width: auto;
+    display: inline-block;
+    background-color: #ffffdf;
+    text-align: center;
+    margin-bottom: 2px;
+}

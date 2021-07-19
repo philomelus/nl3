@@ -2,8 +2,9 @@
 from flask import render_template, request, flash, current_app
 from flask_login import login_required
 
+from nl import db
 from nl.customers import bp
-from nl.customers.forms import SearchForm
+from nl.customers.forms import CombinedForm, SearchForm
 from nl.utils import (pagination, route_choices, customer_type_choices, flash_success,
                       flash_fail, ignore_yes_no)
 
@@ -180,5 +181,44 @@ def addnew():
 @bp.route('/combined', methods=('GET', 'POST'))
 @login_required
 def combined():
-    return render_template('working.html', path='Customers / Combined')
+    form = CombinedForm
+    from nl.models import Customer, CustomerAddresses, CustomerCombinedBills, CustomerNames
+    from sqlalchemy import asc, select, distinct
+ 
+    primary = db.session.execute(select(distinct(CustomerCombinedBills.customer_id_main))).scalars().all()
+    
+    combined = []
+    for p in primary:
+        info = Customer.query.filter_by(id=p).first()
+        others =[]
+
+        secondaries = db.session.execute(select(distinct(CustomerCombinedBills.customer_id_secondary))
+                                         .filter(CustomerCombinedBills.customer_id_main==p)).scalars().all()
+        for s in secondaries:
+            oi = Customer.query.filter_by(id=s).first()
+            n = oi.name()
+            name = n.first
+            if n.last:
+                name += ' ' + n.last
+            others.append({
+                'id': oi.id,
+                'name': name,
+                'address': oi.address().address1
+            })
+
+        n = info.name()
+        name = n.first
+        if n.last:
+            name += ' ' + n.last
+        combined.append({
+            'id': info.id,
+            'name': name,
+            'address': info.address().address1,
+            'count': len(others),
+            'others': others
+        })
+    count = len(combined)
+
+    return render_template('customers/combined.html', path='Customers / Combined',
+                           form=form, count=count, combined=combined)
 
