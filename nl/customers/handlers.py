@@ -171,12 +171,6 @@ def search():
                            paginate=pagination(offset=offset, limit=limit, max=count))
 
 
-@bp.route('/flagstops', methods=('GET', 'POST'))
-@login_required
-def flagstops():
-    return render_template('working.html', path='Customers / Flag Stops')
-
-
 @bp.route('/addnew', methods=('GET', 'POST'))
 @login_required
 def addnew():
