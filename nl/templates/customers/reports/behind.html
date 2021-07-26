@@ -1,0 +1,40 @@
+{# -*- mode: jinja2; -*- #}
+
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/reports/behind.css') }}">
+{% endblock %}
+
+{% block content %}
+    {% if form.errors %}
+	{% for message in form.errors %}
+	    <div class="error">{{ message }}</div>
+	{% endfor %}
+    {% endif %}
+    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.reports.behind') }}">
+	<div class="w3-row">
+	    <div class="control">
+		<input class="w3-input w3-border control" id="one" type="radio" name="what" value="one"{{ one }}>
+		<label class="control" for="one">Behind 1 period</label>
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="control">
+		<input class="w3-input w3-border control" id="many" type="radio" name="what" value="many"{{ many }}>
+		<label class="control" for="many">Behind more than 1 period</label>
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="control">
+		<input class="w3-input w3-border control" id="nopmts" type="radio" name="what" value="nopmts"{{ nopmts }}>
+		<label class="control" for="nopmts">Behind more than 1 period and have No Payments</label>
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="update">
+		Update
+	    </button>
+	</div>
+{% endblock %}
+

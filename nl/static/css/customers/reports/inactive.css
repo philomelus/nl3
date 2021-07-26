@@ -1,0 +1,26 @@
+
+label.control {
+    display: inline-block;
+    vertical-align: baseline;
+    text-align: left;
+}
+
+input.control,
+select.control {
+    width: auto;
+    display: inline-block;
+    background-color: #ffffdf;
+}
+
+div.left {
+    width: 150px;
+    display: inline-block;
+    text-align: left;
+}
+
+div.right {
+    width: 150px;
+    display: inline-block;
+    text-align: left;
+}
+

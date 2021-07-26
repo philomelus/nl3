@@ -1,0 +1,20 @@
+
+button img {
+    width: 16px;
+    height: 16px;
+}
+
+input.control {
+    display: inline-block;
+    width: auto;
+    background-color: #ffffdf;
+    margin-bottom: 2px;
+}
+
+div.control {
+    display: inline-block;
+    min-width: 325px;
+    width: auto;
+    text-align: left;
+}
+

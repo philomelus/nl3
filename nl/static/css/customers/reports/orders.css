@@ -1,0 +1,14 @@
+
+input.control {
+    display: inline-block;
+    width: auto;
+    background-color: #ffffdf;
+    margin-bottom: 2px;
+}
+
+div.control {
+    display: inline-block;
+    width: auto;
+    text-align: left;
+}
+
