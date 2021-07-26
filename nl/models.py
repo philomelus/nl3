@@ -112,8 +112,8 @@ class CustomerAddresses(db.Model):
     customer = db.relationship('Customer', primaryjoin='CustomerAddresses.customer_id == Customer.id', backref='addresses')
 
     # Types of addresses
-    SEQ_DELIVERY = 1
-    SEQ_BILLING = 101
+    ADD_DELIVERY = 1
+    ADD_BILLING = 101
 
 
 class CustomerAdjustments(db.Model):
@@ -232,10 +232,10 @@ class CustomerNames(db.Model):
     customer = db.relationship('Customer', primaryjoin='CustomerNames.customer_id == Customer.id', backref='names')
 
     # TODO:  These are common for address, names, and telephones ... but not all are used in all of them
-    SEQ_DELIVERY1 = 1
-    SEQ_DELIVERY2 = 2
-    SEQ_BILLING1 = 101
-    SEQ_BILLING2 = 102
+    NAM_DELIVERY1 = 1
+    NAM_DELIVERY2 = 2
+    NAM_BILLING1 = 101
+    NAM_BILLING2 = 102
     
 
 class CustomerPayments(db.Model):

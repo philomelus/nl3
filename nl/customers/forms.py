@@ -1,10 +1,71 @@
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, IntegerField, HiddenField, SubmitField
+from wtforms import StringField, SelectField, IntegerField, HiddenField, SubmitField, FormField, TextAreaField
+from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
 from nl.models import Customer
-from nl.utils import ignore_yes_no
+from nl.utils import ignore_yes_no, name_title_choices, route_choices
+
+
+__all__ = ['AddNewForm', 'CombinedForm', 'SearchForm']
+
+
+class AddressForm(FlaskForm):
+    address1 = StringField('Address')
+    address2 = StringField('Address 2')
+    city = StringField('City')
+    state = SelectField('Sate')
+    postal = StringField('Postal')
+
+
+class NameForm(FlaskForm):
+    title = SelectField('Title', choices=name_title_choices)
+    first = StringField('First Name')
+    last = StringField('Last Name')
+    surname = StringField('Surname')
+
+    
+class TelephoneForm(FlaskForm):
+    type_ = SelectField()
+    number = StringField()
+    
+        
+class DeliveryForm(FlaskForm):
+    address = FormField(AddressForm)
+    name_ = FormField(NameForm)
+    name2 = FormField(NameForm, label="Alternate Name")
+    route = SelectField('Route')
+    start_date = DateField('Start Date')
+    telephone1 = FormField(TelephoneForm, label='Telephone 1')
+    telephone2 = FormField(TelephoneForm, label='Telephone 2')
+    telephone3 = FormField(TelephoneForm, label='Telephone 3')
+    dtype = SelectField('Delivery Type')
+
+    
+class BillingForm(FlaskForm):
+    address = FormField(AddressForm)
+    name_ = FormField(NameForm)
+    name2 = FormField(NameForm)
+    telephone1 = FormField(TelephoneForm)
+    telephone2 = FormField(TelephoneForm)
+    telephone3 = FormField(TelephoneForm)
+
+class NotesForm(FlaskForm):
+    billing = TextAreaField('Billing Notes')
+    delivery = TextAreaField('Delivery Notes')
+    notes = TextAreaField('Notes')
+
+        
+class AddNewForm(FlaskForm):
+
+    action = HiddenField()
+    limit = IntegerField()
+    offset = IntegerField()
+
+    billing = FormField(BillingForm)
+    delivery = FormField(DeliveryForm)
+    notes_ = FormField(NotesForm)
 
 
 class CombinedForm(FlaskForm):

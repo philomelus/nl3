@@ -2,6 +2,22 @@
 from flask import render_template, flash
 
 
+__all__ = [
+    'customer_type_choices',
+    'flash_fail',
+    'flash_success',
+    'ignore_yes_no',
+    'money_choices',
+    'name_title_choices',
+    'pagination',
+    'payment_type_choices',
+    'payment_type_op_choices',
+    'period_choices'
+    'state_choices',
+    'telephone_type_choices',
+]
+
+
 def customer_type_choices(any=True):
     """
     Return list of (CustomerTypes.id, CustomerTypes.abbr).
@@ -61,6 +77,39 @@ def pagination(**kwargs):
                            prefix=prefix, offset=offset, limit=limit, max_=max_)
 
 
+money_choices = [
+    (0, '>='),
+    (1, '>'),
+    (2, '='),
+    (3, '<'),
+    (4, '<=')
+]
+
+name_title_choices = [
+    (0, ''),
+    (1, 'Mr'),
+    (2, 'Mrs'),
+    (3, 'Ms'),
+    (4, 'Miss')
+]
+
+
+payment_type_choices = [
+    (0, 'Check'),
+    (1, 'Money Order'),
+    (2, 'Cash'),
+    (3, 'Credit')
+]
+
+
+payment_type_op_choices = payment_type_choices + [(99, 'Any')]
+
+
+def period_choices():
+    # TODO:  Yeah, maybe ... ;-)
+    return [(0, 'Any')]
+
+
 def route_choices(any=True):
     """
     Return list of (Route.id, Route.title).
@@ -74,5 +123,77 @@ def route_choices(any=True):
     for route in Route.query.filter_by(active='Y').order_by(Route.title).all():
         routes.append([route.id, route.title])
     return routes
-    
+
+
+state_choices = [
+    ('AL', 'Alabama'),
+    ('AK', 'Alaska'),
+    ('AZ', 'Arizona'),
+    ('AR', 'Arkansas'),
+    ('CA',  'California'),
+    ('CO', 'Colorado'),
+    ('CT', 'Connecticut'),
+    ('DE', 'Delaware'),
+    ('FL', 'Florida'),
+    ('GA', 'Georgia'),
+    ('HI', 'Hawaii'),
+    ('ID', 'Idaho'),
+    ('IL', 'Illinois'),
+    ('IN', 'Indiana'),
+    ('IA', 'Iowa'),
+    ('KS', 'Kansas'),
+    ('KY', 'Kentucky'),
+    ('LA', 'Louisiana'),
+    ('ME', 'Maine'),
+    ('MD', 'Maryland'),
+    ('MA', 'Massachusetts'),
+    ('MI', 'Michigan'),
+    ('MN', 'Minnesota'),
+    ('MS', 'Mississippi'),
+    ('MO', 'Missouri'),
+    ('MT', 'Montana'),
+    ('NE', 'Nebraska'),
+    ('NV', 'Nevada'),
+    ('NH', 'New Hampshire'),
+    ('NJ', 'New Jersey'),
+    ('NM', 'New Mexico'),
+    ('NY', 'New York'),
+    ('NC', 'North Carolina'),
+    ('ND', 'North Dakota'),
+    ('OH', 'Ohio'),
+    ('OK', 'Oklahoma'),
+    ('OR', 'Oregon'),
+    ('PA', 'Pennsylvania'),
+    ('PR', 'Puerto Rico '),
+    ('RI', 'Rhode Island'),
+    ('SC', 'South Carolina'),
+    ('SD', 'South Dakota'),
+    ('TN', 'Tennessee'),
+    ('TX', 'Texas'),
+    ('UT', 'Utah'),
+    ('VT', 'Vermont'),
+    ('VI', 'Virgin Islands'),
+    ('VA', 'Virginia'),
+    ('WA', 'Washington'),
+    ('WV', 'West Virginia'),
+    ('WI', 'Wisconsin'),
+    ('WY', 'Wyoming')
+]
+
+
+telephone_type_choices = [
+    'Main',
+    'Alternate',
+    'Mobile',
+    'Evening',
+    'Day',
+    'Office',
+    'Message',
+    'Pager',
+    'Business',
+    'Mobile (Office)',
+    'Mobile (Business)',
+    'Mobile (Day)',
+    'Mobile (Evening)'
+]
 

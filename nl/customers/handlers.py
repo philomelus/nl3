@@ -4,14 +4,280 @@ from flask_login import login_required
 
 from nl import db
 from nl.customers import bp
-from nl.customers.forms import CombinedForm, SearchForm
+from nl.customers.forms import AddNewForm, CombinedForm, SearchForm
 from nl.utils import (pagination, route_choices, customer_type_choices, flash_success,
-                      flash_fail, ignore_yes_no)
+                      flash_fail, ignore_yes_no, state_choices, telephone_type_choices)
+
+
+@bp.route('/addnew', methods=('GET', 'POST'))
+@login_required
+def addnew():
+    """
+    Add new customer form/logic.
+    """
+    form = AddNewForm()
+    form.delivery.route.choices = route_choices(False)
+    form.delivery.dtype.choices = customer_type_choices(False)
+    form.delivery.address.state.choices = state_choices
+    form.delivery.telephone1.type_.choices = telephone_type_choices
+    form.delivery.telephone2.type_.choices = telephone_type_choices
+    form.delivery.telephone3.type_.choices = telephone_type_choices
+    form.billing.address.state.choices = state_choices
+    form.billing.telephone1.type_.choices = telephone_type_choices
+    form.billing.telephone2.type_.choices = telephone_type_choices
+    form.billing.telephone3.type_.choices = telephone_type_choices
+
+    if form.validate_on_submit():
+        from nl.models import Customer, CustomerAddresses, CustomerNames, CustomerTelephones, CustomerTypes, Route, RouteSequences
+
+        def add_name(id, field, seq):
+            n = CustomerNames()
+            n.customer_id = id
+            n.title = field.title.data
+            n.first = field.first.data
+            n.last = field.last.data
+            n.surname = field.surname.data
+            n.sequence = seq
+            db.session.add(n)
+
+        def add_telephone(id, field, seq):
+            t = CustomerTelephones()
+            t.customer_id = id
+            t.type = field.type_.data
+            t.number = field.number.data
+            t.sequence = seq
+            db.session.add(t)
+        
+        c = Customer()
+        c.route_id = form.delivery.route.data
+        c.type_id = form.delivery.dtype.data
+        c.active = 'Y'
+        c.routeList = 'Y'
+        c.started = form.delivery.start_date.data
+        c.rateType = 'STANDARD'
+        c.rateOverride = 0
+        c.billType = form.delivery.dtype.data
+        c.billBalance = 0
+        c.billStopped = 'Y'
+        c.billCount = 1
+        c.billPeriod = None
+        c.billQuantity = 1
+        c.billStart = None
+        c.billEnd = None
+        c.billDue = None
+        c.balance = 0
+        c.lastPayment = None
+        c.billNote = form.notes_.billing.data
+        c.notes = form.notes_.notes.data
+        c.deliveryNote = form.notes_.delivery.data
+        db.session.add(c)
+        cust_id = c.id
+        
+        n = CustomerNames()
+        n.customer_id = cust_id
+        n.title = form.delivery.name_.title.data
+        n.first = form.delivery.name_.first.data
+        n.last = form.delivery.name_.last.data
+        n.surname = form.delivery.name_.surname.data
+        n.sequence = CustomerNames.NAM_DELIVERY1
+        db.session.add(n)
+        
+        name = form.delivery.name2.first.data
+        if name:
+            add_name(cust_id, form.delivery.name2, CustomerNames.NAM_DELIVERY2)
+            # n = CustomerNames()
+            # n.customer_id = c.id
+            # n.title = form.delivery.name2.title.data
+            # n.first = name
+            # n.last = form.delivery.name2.last.data
+            # n.surname = form.delivery.name2.surname.data
+            # n.sequence = CustomerNames.SEQ_DELIVERY2
+            # db.session.add(n)
+
+        name = form.billing.name_.first.data
+        if name:
+            add_name(cust_id, form.billing.name_, CustomerNames.NAM_BILLING1)
+            # n = CustomerNames()
+            # n.customer_id = c.id
+            # n.title = form.billing.name.title.data
+            # n.first = name
+            # n.last = form.billing.name.last.data
+            # n.surname = form.billing.name.surname.data
+            # n.sequence = CustomerNames.SEQ_BILLING1
+            # db.session.add(n)
+            
+        name = form.billing.name2.first.data
+        if name:
+            add_name(cust_id, form.billing.name2, CustomerNames.NAM_BILLING2)
+            # n = CustomerNames()
+            # n.customer_id = c.id
+            # n.title = form.billing.name2.title.data
+            # n.first = name
+            # n.last = form.billing.name2.last.data
+            # n.surname = form.billing.name2.surname.data
+            # n.sequence = CustomerNames.SEQ_BILLING2
+            # db.session.add(n)
+
+        a = CustomerAddresses()
+        a.customer_id = cust_id
+        a.address1 = form.delivery.address.address1.data
+        a.address2 = form.delivery.address.address2.data
+        a.city = form.delivery.address.city.data
+        a.state = form.delivery.address.state.data
+        a.zip = form.delivery.address.postal.data
+        a.sequence = CustomerAddresses.ADD_DELIVERY
+        db.session.add(a)
+
+        addr = form.billing.address.address1.data
+        if addr:
+            a = CustomerAddresses()
+            a.customer_id = cust_id
+            a.address1 = form.billing.address.address1.data
+            a.address2 = form.billing.address.address2.data
+            a.city = form.billing.address.city.data
+            a.state = form.billing.address.state.data
+            a.zip = form.billing.address.postal.data
+            a.sequence = CustomerAddresses.ADD_BILLING
+            db.session.add(a)
+            
+        t = CustomerTelephones()
+        t.customer_id = cust_id
+        t.type = form.delivery.telephone1.type_.data
+        t.number = form.delivery.telephone1.number.data
+        t.sequence = CustomerTelephones.TEL_DELIVERY1
+        db.session.add(t)
+
+        tele = form.delivery.telephone2.number.data
+        if tele:
+            add_telephone(cust_id, form.delivery.telephone2, CustomerTelephones.TEL_DELIVERY2)
+            # t = CustomerTelephones()
+            # t.customer_id = c.id
+            # t.type = form.delivery.telephone2.type_.data
+            # t.number = tele
+            # t.sequence = CustomerTelephones.SEQ_DELIVERY2
+            # db.session.add(t)
+        
+        tele = form.delivery.telephone3.number.data
+        if tele:
+            add_telephone(cust_id, form.delivery.telephone3, CustomerTelephones.TEL_DELIVERY3)
+            # t = CustomerTelephones()
+            # t.customer_id = c.id
+            # t.type = form.delivery.telephone3.type_.data
+            # t.number = tele
+            # t.sequence = CustomerTelephones.SEQ_DELIVERY3
+            # db.session.add(t)
+        
+        tele = form.billing.telephone1.number.data
+        if tele:
+            add_telephone(cust_id, form.billing.telephone1, CustomerTelephones.TEL_BILLING1)
+            # t = CustomerTelephones()
+            # t.customer_id = c.id
+            # t.type = form.billing.telephone1.type_.data
+            # t.number = tele
+            # t.sequence = CustomerTelephones.SEQ_BILLING1
+            # db.session.add(t)
+        
+        tele = form.billing.telephone2.number.data
+        if tele:
+            add_telephone(cust_id, form.billing.telephone2, CustomerTelephones.TEL_BILLING2)
+            # t = CustomerTelephones()
+            # t.customer_id = c.id
+            # t.type = form.billing.telephone2.type_.data
+            # t.number = tele
+            # t.sequence = CustomerTelephones.SEQ_BILLING2
+            # db.session.add(t)
+        
+        tele = form.billing.telephone3.number.data
+        if tele:
+            add_telephone(cust_id, form.billing.telephone3, CustomerTelephones.TEL_BILLING3)
+            # t = CustomerTelephones()
+            # t.customer_id = c.id
+            # t.type = form.billing.telephone3.type_.data
+            # t.number = tele
+            # t.sequence = CustomerTelephones.SEQ_BILLING3
+            # db.session.add(t)
+
+        s = RouteSequences()
+        s.tag_id = cust_id
+        s.route_id = c.route_id
+        s.order = 99999
+        db.session.add(s)
+
+        dt = CustomerTypes.query.filter_by(id=c.type_id).first()
+        if dt.newChange == 'Y':
+            s = CustomerServices()
+            s.customer_id = cust_id
+            s.period_id = None
+            s.type = 'START'
+            s.when = c.started
+            s.why = 'New customer'
+            s.ignoreOnBill = 'N'
+            s.note = ''
+            db.session.add(dt)
+
+        db.session.commot()
+
+        flash_success(f'New customer id is {cust_id}')
+
+        # TODO: Reset form data
+        
+    return render_template('customers/addnew.html', path='Customers / Add', form=form)
+
+
+@bp.route('/combined', methods=('GET', 'POST'))
+@login_required
+def combined():
+    """
+    Customer Combined bills form/logic.
+    """
+    form = CombinedForm
+    from nl.models import Customer, CustomerAddresses, CustomerCombinedBills, CustomerNames
+    from sqlalchemy import asc, select, distinct
+ 
+    primary = db.session.execute(select(distinct(CustomerCombinedBills.customer_id_main))).scalars().all()
+    
+    combined = []
+    for p in primary:
+        info = Customer.query.filter_by(id=p).first()
+        others =[]
+
+        secondaries = db.session.execute(select(distinct(CustomerCombinedBills.customer_id_secondary))
+                                         .filter(CustomerCombinedBills.customer_id_main==p)).scalars().all()
+        for s in secondaries:
+            oi = Customer.query.filter_by(id=s).first()
+            n = oi.name()
+            name = n.first
+            if n.last:
+                name += ' ' + n.last
+            others.append({
+                'id': oi.id,
+                'name': name,
+                'address': oi.address().address1
+            })
+
+        n = info.name()
+        name = n.first
+        if n.last:
+            name += ' ' + n.last
+        combined.append({
+            'id': info.id,
+            'name': name,
+            'address': info.address().address1,
+            'count': len(others),
+            'others': others
+        })
+    count = len(combined)
+
+    return render_template('customers/combined.html', path='Customers / Combined',
+                           form=form, count=count, combined=combined)
 
 
 @bp.route('/search', methods=('GET', 'POST'))
 @login_required
 def search():
+    """
+    Customer search form/logic.
+    """
     # Create/setup form
     form = SearchForm()
     form.route.choices = route_choices()
@@ -171,54 +437,4 @@ def search():
                            doResults=doResults, count=count, customers=customers,
                            paginate=pagination(offset=offset, limit=limit, max=count))
 
-
-@bp.route('/addnew', methods=('GET', 'POST'))
-@login_required
-def addnew():
-    return render_template('working.html', path='Customers / Add')
-
-
-@bp.route('/combined', methods=('GET', 'POST'))
-@login_required
-def combined():
-    form = CombinedForm
-    from nl.models import Customer, CustomerAddresses, CustomerCombinedBills, CustomerNames
-    from sqlalchemy import asc, select, distinct
- 
-    primary = db.session.execute(select(distinct(CustomerCombinedBills.customer_id_main))).scalars().all()
-    
-    combined = []
-    for p in primary:
-        info = Customer.query.filter_by(id=p).first()
-        others =[]
-
-        secondaries = db.session.execute(select(distinct(CustomerCombinedBills.customer_id_secondary))
-                                         .filter(CustomerCombinedBills.customer_id_main==p)).scalars().all()
-        for s in secondaries:
-            oi = Customer.query.filter_by(id=s).first()
-            n = oi.name()
-            name = n.first
-            if n.last:
-                name += ' ' + n.last
-            others.append({
-                'id': oi.id,
-                'name': name,
-                'address': oi.address().address1
-            })
-
-        n = info.name()
-        name = n.first
-        if n.last:
-            name += ' ' + n.last
-        combined.append({
-            'id': info.id,
-            'name': name,
-            'address': info.address().address1,
-            'count': len(others),
-            'others': others
-        })
-    count = len(combined)
-
-    return render_template('customers/combined.html', path='Customers / Combined',
-                           form=form, count=count, combined=combined)
 
