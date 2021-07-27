@@ -12,75 +12,98 @@
 	    {{ form.customer.label(class='control') }}
             <div class="control">
 		{{ form.customer(class='w3-input w3-border control', id='cid', size=6) }}
-		<button name="action" value="Show" onclick="return false;"><img src="{{ url_for('static', filename='img/refresh.png') }}" alt="R"/></button>
-		{% for error in form.customer.errors %}
-		    <div class="error">{{ error }}</div>
-		{% endfor %}
             </div>
 	</div>
-	{% if custInfo %}
+	{% if form.customer.errors %}
 	    <div class="w3-row">
-		<table class="w3-table w3-border info">
-		    <tbody>
-			<tr>
-			    <td class="{{ custInfo.color }}">{{ custInfo.name }}</td>
-			    <td class="{{ custInfo.color }}">{{ custInfo.address }}</td>
-			    <td class="{{ custInfo.color }}">{{ custInfo.telephone }}</td>
-			    <td class="{{ custInfo.color }}">{{ custInfo.route }}</td>
-			    <td class="{{ custInfo.color }}">{{ custInfo.type }}</td>
-			</tr>
-		</table>
+		<div class="control">
+		    {% for error in form.customer.errors %}
+			<div class="error">{{ error }}</div>
+		    {% endfor %}
+		</div>
 	    </div>
 	{% endif %}
 	<div class="w3-row">
 	    {{ form.type_.label(class='control') }}
             <div class="control">
 		{{ form.type_(class='w3-select w3-border control') }}
-		{% for error in form.type_.errors %}
-		    <div class="error">{{ error }}</div>
-		{% endfor %}
             </div>
 	</div>
+	{% if form.type_.errors %}
+	    <div class="w3-row">
+		<div class="control">
+		    {% for error in form.type_.errors %}
+			<div class="error">{{ error }}</div>
+		    {% endfor %}
+		</div>
+	    </div>
+	{% endif %}
 	<div class="w3-row">
-	    {{ form.id.label(class='control') }}    
+	    {{ form.id_.label(class='control') }}
             <div class="control">
-		{{ form.id(class='w3-input w3-border control') }}
+		{{ form.id_(class='w3-input w3-border control') }}
 		(Check Number)
-		{% for error in form.id.errors %}
-		    <div class="error">{{ error }}</div>
-		{% endfor %}
             </div>
 	</div>
+	{% if form.id_.errors %}
+	    <div class="w3-row">
+		<div class="control">
+		    {% for error in form.id_.errors %}
+			<div class="error">{{ error }}</div>
+		    {% endfor %}
+		</div>
+	    </div>
+	{% endif %}
 	<div class="w3-row">
-	    {{ form.amount.label(class='control') }}    
+	    {{ form.amount.label(class='control') }}
             <div class="control">
-		{{ form.amount(class='w3-input w3-border control', size=8) }}
-		{% for error in form.amount.errors %}
-		    <div class="error">{{ error }}</div>
-		{% endfor %}
+		{{ form.amount(class='w3-input w3-border w3-center control', size=8) }}
             </div>
 	</div>
+	{% if form.amount.errors %}
+	    <div class="w3-row">
+		<div class="control">
+		    {% for error in form.amount.errors %}
+			<div class="error">{{ error }}</div>
+		    {% endfor %}
+		</div>
+	    </div>
+	{% endif %}
 	<div class="w3-row">
 	    {{ form.tip.label(class='control') }}    
             <div class="control">
-		{{ form.tip(class='w3-input w3-border control', size=8) }}
-		{% for error in form.tip.errors %}
-		    <div class="error">{{ error }}</div>
-		{% endfor %}
+		{{ form.tip(class='w3-input w3-border w3-center control', size=8) }}
             </div>
 	</div>
+	{% if form.tip.errors %}
+	    <div class="w3-row">
+		<div class="control">
+		    {% for error in form.tip.errors %}
+			<div class="error">{{ error }}</div>
+		    {% endfor %}
+		</div>
+	    </div>
+	{% endif %}
 	<div class="w3-row">
 	    {{ form.notes.label(class='control', id='notes') }}    
             <div class="control">
 		{{ form.notes(class='w3-input w3-border control', rows=4, cols=40) }}
-		{% for error in form.notes.errors %}
-		    <div class="error">{{ error }}</div>
-		{% endfor %}
             </div>
-
 	</div>
+	{% if form.notes.errors %}
+	    <div class="w3-row">
+		<div class="control">
+		    {% for error in form.notes.errors %}
+			<div class="error">{{ error }}</div>
+		    {% endfor %}
+		</div>
+	    </div>
+	{% endif %}
 	<div class="w3-row">
-            <button type="submit" name="action" value="submit">Submit</button>
+            <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="submit">
+		Add Payment
+	    </button>
 	</div>
+	{{ form.hidden_tag() }}
     </form>
 {% endblock %}

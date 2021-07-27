@@ -1,4 +1,6 @@
 
+from enum import Enum
+
 from flask import render_template, flash
 
 
@@ -12,6 +14,7 @@ __all__ = [
     'pagination',
     'payment_type_choices',
     'payment_type_op_choices',
+    'PaymentType',
     'period_choices'
     'state_choices',
     'telephone_type_choices',
@@ -93,12 +96,17 @@ name_title_choices = [
     (4, 'Miss')
 ]
 
+class PaymentType(Enum):
+    CHECK = 0
+    MONEYORDER = 1
+    CASH = 2
+    CREDIT = 3
 
 payment_type_choices = [
-    (0, 'Check'),
-    (1, 'Money Order'),
-    (2, 'Cash'),
-    (3, 'Credit')
+    (PaymentType.CHECK.value, 'Check'),
+    (PaymentType.MONEYORDER.value, 'Money Order'),
+    (PaymentType.CASH.value, 'Cash'),
+    (PaymentType.CREDIT.value, 'Credit')
 ]
 
 

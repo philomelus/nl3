@@ -1,24 +1,38 @@
 
 from flask_wtf import FlaskForm
-from wtforms import (StringField, SelectField, IntegerField, HiddenField,
-                     SubmitField, FormField, TextAreaField, DecimalField)
+from wtforms import (
+    FloatField,
+    FormField,
+    HiddenField,
+    IntegerField,
+    SelectField,
+    StringField,
+    SubmitField,
+    TextAreaField,
+)
 from wtforms.fields.html5 import DateField, TimeField
-from wtforms.validators import Optional, Required
+from wtforms.validators import InputRequired, Optional, ValidationError
 
-from nl.utils import payment_type_choices, payment_type_op_choices, money_choices
+from nl.utils import PaymentType, payment_type_choices, payment_type_op_choices, money_choices
 
 
 __all__ = ['AddNewForm', 'SearchForm']
 
 
+def check_id(form, field):
+    if form.type_.data in (PaymentType.CHECK.value, PaymentType.MONEYORDER.value):
+        if len(field.data) == 0:
+            raise ValidationError("Payment ID is invalid")
+
+
 class AddNewForm(FlaskForm):
     action = HiddenField()
 
-    customer = IntegerField('Customer ID', validators=[Required()])
-    type_ = SelectField('Type', validators=[Required()], choices=payment_type_choices)
-    id = StringField('ID', validators=[Optional()])
-    amount = DecimalField('Amount', validators=[Required()], places=2)
-    tip = DecimalField('Tip', validators=[Optional()], places=2)
+    customer = IntegerField('Customer ID', validators=[InputRequired()])
+    type_ = SelectField('Type', validators=[InputRequired()], choices=payment_type_choices, coerce=int)
+    id_ = StringField('ID', validators=[check_id])
+    amount = FloatField('Amount', validators=[InputRequired()])
+    tip = FloatField('Tip', validators=[Optional()])
     notes = TextAreaField('Notes', validators=[Optional()])
 
 
@@ -29,7 +43,7 @@ class SearchForm(FlaskForm):
 
     after_date = DateField('After', validators=[Optional()])
     after_time = TimeField(validators=[Optional()])
-    amount = DecimalField('Amount', validators=[Optional()], places=2)
+    amount = FloatField('Amount', validators=[Optional()])
     amount_op = SelectField(validators=[Optional()], choices=money_choices)
     before_date = DateField('Before', validators=[Optional()])
     before_time = TimeField(validators=[Optional()])
@@ -38,7 +52,7 @@ class SearchForm(FlaskForm):
     notes = StringField('Notes', validators=[Optional()])
     payment = StringField('Payment ID', validators=[Optional()])
     period = SelectField('Period', validators=[Optional()])
-    tip = DecimalField('Tip', validators=[Optional()], places=2)
+    tip = FloatField('Tip', validators=[Optional()])
     tip_op = SelectField(validators=[Optional()], choices=money_choices)
     type_ = SelectField('Type', validators=[Optional()], choices=payment_type_op_choices)
     

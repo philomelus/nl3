@@ -30,12 +30,13 @@ div.control {
     text-align: left;
 }
 
-label.vtop {
-    vertical-align: top;
-}
-
 .info {
     margin-left: auto;
     margin-right: auto;
     width: auto;
+}
+
+div.control div.error {
+    text-align: left !important;
+    margin-left: 70px;
 }

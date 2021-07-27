@@ -47,6 +47,12 @@ body {
     color: green;
 }
 
+div.error,
 .flash .fail {
        color: red;
+}
+
+div.error {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

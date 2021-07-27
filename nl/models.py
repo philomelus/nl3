@@ -257,11 +257,6 @@ class CustomerPayments(db.Model):
     customer = db.relationship('Customer', primaryjoin='CustomerPayments.customer_id == Customer.id', backref='payment')
     period = db.relationship('Period', primaryjoin='CustomerPayments.period_id == Period.id', backref='period')
 
-    PMT_CHECK = 1
-    PMT_MONEYORDER = 2
-    PMT_CASH = 3
-    PMT_CREDIT = 4
-
 
 class CustomerRates(db.Model):
     __tablename__ = 'customers_rates'
