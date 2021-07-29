@@ -257,7 +257,7 @@ class CustomerPayments(db.Model):
     customer = db.relationship('Customer', primaryjoin='CustomerPayments.customer_id == Customer.id', backref='payment')
     period = db.relationship('Period', primaryjoin='CustomerPayments.period_id == Period.id', backref='period')
 
-
+    
 class CustomerRates(db.Model):
     __tablename__ = 'customers_rates'
 

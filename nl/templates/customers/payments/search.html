@@ -80,33 +80,69 @@
         </div>
         <div class="w3-row">
 	    <div class="left">
-		{{ form.after_date.label(class='control') }}
-		{{ form.after_date(class='w3-input w3-border control') }}
-		{{ form.after_time(class='w3-input w3-border control') }}
-		{% for error in form.after_date.errors %}
-		    <div class="error">{{ error }}</div>
-		{% endfor %}
-		{% for error in form.after_time.errors %}
+		{{ form.after.label(class='control') }}
+		{{ form.after(class='w3-input w3-border control') }}
+		{% for error in form.after.errors %}
 		    <div class="error">{{ error }}</div>
 		{% endfor %}
 	    </div>
 	    <div class="gutter">&nbsp;</div>
 	    <div class="right">
-		{{ form.before_date.label(class='control') }}
-		{{ form.before_date(class='w3-input w3-border control') }}
-		{{ form.before_time(class='w3-input w3-border control') }}
-		{% for error in form.before_date.errors %}
-		    <div class="error">{{ error }}</div>
-		{% endfor %}
-		{% for error in form.before_time.errors %}
+		{{ form.before.label(class='control') }}
+		{{ form.before(class='w3-input w3-border control') }}
+		{% for error in form.before.errors %}
 		    <div class="error">{{ error }}</div>
 		{% endfor %}
 	    </div>
         </div>
 	{{ paginate|safe }}
+	{{ form.hidden_tag() }}
     </form>
-    {% if results %}
+    {% if doResults %}
 	<div class="w3-row"><hr></div>
-	{{ results }}
+	<table class="w3-table w3-bordered w3-margin-top">
+	    <thead>
+		<tr>
+		    <th colspan="3">{{ count }}</th>
+		    <th>CustID</th>
+		    <th>When</th>
+		    <th>Period</th>
+		    <th>Type</th>
+		    <th>ID</th>
+		    <th>Amount</th>
+		    <th>Tip</th>
+		</tr>
+	    </thead>
+	    <tbody>
+		{% if count > 0 %}
+		    {% for p in payments %}
+			<tr>
+			    <td class="icon-link">
+				<img src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Payment">
+			    </td>
+			    <td class="icon-link">
+				<img src="{{ url_for('static', filename='img/edit.png') }}" alt="E" title="Edit Payment">
+			    </td>
+			    <td class="icon-link">
+				<img src="{{ url_for('static', filename='img/delete.png') }}" alt="E" title="Delete Payment">
+			    </td>
+			    <td>{{ '%08d'|format(p.customer_id) }}</td>
+			    <td>{{ p.when }}</td>
+			    <td>Dunno</td>
+			    <td>{{ p.type }}</td>
+			    <td>{{ p.id }}</td>
+			    {% if p.amount < 0 %}
+				<td class="w3-text-red">{{ p.amount }}</td>
+			    {% else %}
+				<td>{{ p.amount }}</td>
+			    {% endif %}
+			    <td>{{ p.tip }}</td>
+			</tr>
+		    {% endfor %}
+		{% else %}
+		    <tr><td class="w3-center" colspan="10">No Matching Payments</td></tr>
+		{% endif %}
+	    </tbody>
+	</table>
     {% endif %}
 {% endblock %}

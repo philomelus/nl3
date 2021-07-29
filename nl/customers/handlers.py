@@ -1,5 +1,5 @@
 
-from flask import render_template, request, flash, current_app
+from flask import render_template, request, flash, current_app, url_for, redirect
 from flask_login import login_required
 
 from nl import db
@@ -85,38 +85,14 @@ def addnew():
         name = form.delivery.name2.first.data
         if name:
             add_name(cust_id, form.delivery.name2, CustomerNames.NAM_DELIVERY2)
-            # n = CustomerNames()
-            # n.customer_id = c.id
-            # n.title = form.delivery.name2.title.data
-            # n.first = name
-            # n.last = form.delivery.name2.last.data
-            # n.surname = form.delivery.name2.surname.data
-            # n.sequence = CustomerNames.SEQ_DELIVERY2
-            # db.session.add(n)
 
         name = form.billing.name_.first.data
         if name:
             add_name(cust_id, form.billing.name_, CustomerNames.NAM_BILLING1)
-            # n = CustomerNames()
-            # n.customer_id = c.id
-            # n.title = form.billing.name.title.data
-            # n.first = name
-            # n.last = form.billing.name.last.data
-            # n.surname = form.billing.name.surname.data
-            # n.sequence = CustomerNames.SEQ_BILLING1
-            # db.session.add(n)
             
         name = form.billing.name2.first.data
         if name:
             add_name(cust_id, form.billing.name2, CustomerNames.NAM_BILLING2)
-            # n = CustomerNames()
-            # n.customer_id = c.id
-            # n.title = form.billing.name2.title.data
-            # n.first = name
-            # n.last = form.billing.name2.last.data
-            # n.surname = form.billing.name2.surname.data
-            # n.sequence = CustomerNames.SEQ_BILLING2
-            # db.session.add(n)
 
         a = CustomerAddresses()
         a.customer_id = cust_id
@@ -150,52 +126,22 @@ def addnew():
         tele = form.delivery.telephone2.number.data
         if tele:
             add_telephone(cust_id, form.delivery.telephone2, CustomerTelephones.TEL_DELIVERY2)
-            # t = CustomerTelephones()
-            # t.customer_id = c.id
-            # t.type = form.delivery.telephone2.type_.data
-            # t.number = tele
-            # t.sequence = CustomerTelephones.SEQ_DELIVERY2
-            # db.session.add(t)
         
         tele = form.delivery.telephone3.number.data
         if tele:
             add_telephone(cust_id, form.delivery.telephone3, CustomerTelephones.TEL_DELIVERY3)
-            # t = CustomerTelephones()
-            # t.customer_id = c.id
-            # t.type = form.delivery.telephone3.type_.data
-            # t.number = tele
-            # t.sequence = CustomerTelephones.SEQ_DELIVERY3
-            # db.session.add(t)
         
         tele = form.billing.telephone1.number.data
         if tele:
             add_telephone(cust_id, form.billing.telephone1, CustomerTelephones.TEL_BILLING1)
-            # t = CustomerTelephones()
-            # t.customer_id = c.id
-            # t.type = form.billing.telephone1.type_.data
-            # t.number = tele
-            # t.sequence = CustomerTelephones.SEQ_BILLING1
-            # db.session.add(t)
         
         tele = form.billing.telephone2.number.data
         if tele:
             add_telephone(cust_id, form.billing.telephone2, CustomerTelephones.TEL_BILLING2)
-            # t = CustomerTelephones()
-            # t.customer_id = c.id
-            # t.type = form.billing.telephone2.type_.data
-            # t.number = tele
-            # t.sequence = CustomerTelephones.SEQ_BILLING2
-            # db.session.add(t)
         
         tele = form.billing.telephone3.number.data
         if tele:
             add_telephone(cust_id, form.billing.telephone3, CustomerTelephones.TEL_BILLING3)
-            # t = CustomerTelephones()
-            # t.customer_id = c.id
-            # t.type = form.billing.telephone3.type_.data
-            # t.number = tele
-            # t.sequence = CustomerTelephones.SEQ_BILLING3
-            # db.session.add(t)
 
         s = RouteSequences()
         s.tag_id = cust_id
@@ -219,7 +165,7 @@ def addnew():
 
         flash_success(f'New customer id is {cust_id}')
 
-        # TODO: Reset form data
+        return redirect(url_for('customers.addnew'))
         
     return render_template('customers/addnew.html', path='Customers / Add', form=form)
 
@@ -296,17 +242,7 @@ def search():
         offset = form.offset.data or 0
         action = form.action.data
         if action == 'clear':
-            form.customer.data = None
-            form.route.data = '0'
-            form.dtype.data = '0'
-            form.routeList.data = '0'
-            form.billing.data = '0'
-            form.name.data = None
-            form.address.data = None
-            form.postal.data = None
-            form.telephone.data = None
-            form.offset.data = 0
-            offset = 0
+            return redirect(url_for('customers.search'))
         elif action == 'prev':
             offset -= limit
             if offset < 0:
@@ -323,7 +259,6 @@ def search():
         if doResults:
             # Build query
             qry = Customer.query.distinct(Customer.id)
-            filters = {}
 
             # customer id
             customer = form.customer.data
@@ -423,8 +358,7 @@ def search():
                     'telephone': c.telephone().number,
                     'route': c.route.title,
                     'balance': c.billBalance
-                    })
-            doResults = True
+                })
         else:
             count = 0
             customers = []

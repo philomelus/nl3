@@ -9,11 +9,10 @@ __all__ = [
     'flash_fail',
     'flash_success',
     'ignore_yes_no',
-    'money_choices',
+    'money_ops_choices',
+    'MoneyOps',
     'name_title_choices',
     'pagination',
-    'payment_type_choices',
-    'payment_type_op_choices',
     'PaymentType',
     'period_choices'
     'state_choices',
@@ -80,13 +79,22 @@ def pagination(**kwargs):
                            prefix=prefix, offset=offset, limit=limit, max_=max_)
 
 
-money_choices = [
-    (0, '>='),
-    (1, '>'),
-    (2, '='),
-    (3, '<'),
-    (4, '<=')
-]
+class MoneyOps(Enum):
+    GREATER_EQUAL = 0
+    GREATER = 1
+    EQUAL = 2
+    LESS = 3
+    LESS_EQUAL = 4
+
+    @classmethod
+    def choices(cls):
+        return [
+            (MoneyOps.GREATER_EQUAL.value, '>='),
+            (MoneyOps.GREATER.value, '>'),
+            (MoneyOps.EQUAL.value, '='),
+            (MoneyOps.LESS.value, '<'),
+            (MoneyOps.LESS_EQUAL.value, '<=')
+        ]
 
 name_title_choices = [
     (0, ''),
@@ -102,20 +110,36 @@ class PaymentType(Enum):
     CASH = 2
     CREDIT = 3
 
-payment_type_choices = [
-    (PaymentType.CHECK.value, 'Check'),
-    (PaymentType.MONEYORDER.value, 'Money Order'),
-    (PaymentType.CASH.value, 'Cash'),
-    (PaymentType.CREDIT.value, 'Credit')
-]
+    @classmethod
+    def choices(cls):
+        return [
+            (PaymentType.CHECK.value, 'Check'),
+            (PaymentType.MONEYORDER.value, 'Money Order'),
+            (PaymentType.CASH.value, 'Cash'),
+            (PaymentType.CREDIT.value, 'Credit')
+        ]
+
+    @classmethod
+    def ops_choices(cls):
+        return [(99, 'Any'),] + cls.choices()
 
 
-payment_type_op_choices = payment_type_choices + [(99, 'Any')]
+def period_choices(any=False):
+    """
+    Return list of (id, title) for periods.
 
+    any = If true, add 'Any' as first element of list, with value 0.
+    """
+    
+    from nl.models import Period
 
-def period_choices():
-    # TODO:  Yeah, maybe ... ;-)
-    return [(0, 'Any')]
+    opts = []
+    if any:
+        opts.append((0, 'Any'))
+    for period in Period.query.all():
+        opts.append((period.id, period.title))
+    
+    return opts
 
 
 def route_choices(any=True):
