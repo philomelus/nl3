@@ -1,20 +1,48 @@
+@media screen {
+    button img {
+	width: 16px;
+	height: 16px;
+    }
 
-button img {
-    width: 16px;
-    height: 16px;
+    input.control {
+	display: inline-block;
+	width: auto;
+	background-color: #ffffdf;
+	margin-bottom: 2px;
+    }
+
+    div.control {
+	display: inline-block;
+	min-width: 325px;
+	width: auto;
+	text-align: left;
+    }
+    #report-title {
+	font-size: 175%;
+	text-align: center;
+    }
+    #report-sub-title {
+	font-size: 150%;
+	text-align: center;
+    }
 }
 
-input.control {
-    display: inline-block;
-    width: auto;
-    background-color: #ffffdf;
-    margin-bottom: 2px;
+@media print {
+    .flashes {
+	display: none;
+    }
+    #menu {
+	display: none;
+    }
+    form {
+	display: none;
+    }
+    #report-title {
+	font-size: 175%;
+	text-align: center;
+    }
+    #report-sub-title {
+	font-size: 150%;
+	text-align: center;
+    }
 }
-
-div.control {
-    display: inline-block;
-    min-width: 325px;
-    width: auto;
-    text-align: left;
-}
-

@@ -1,5 +1,5 @@
 
-from flask import render_template, request, flash, current_app, url_for, redirect
+from flask import render_template, request, flash, current_app, url_for, redirect, make_response
 from flask_login import login_required
 
 from nl import db
@@ -7,7 +7,6 @@ from nl.customers import bp
 from nl.customers.forms import AddNewForm, CombinedForm, SearchForm
 from nl.utils import (pagination, route_choices, customer_type_choices, flash_success,
                       flash_fail, ignore_yes_no, state_choices, telephone_type_choices)
-
 
 @bp.route('/addnew', methods=('GET', 'POST'))
 @login_required
@@ -216,6 +215,23 @@ def combined():
 
     return render_template('customers/combined.html', path='Customers / Combined',
                            form=form, count=count, combined=combined)
+
+
+@bp.route('/css')
+def css():
+    """
+    Return CSS for customer delivery types (set in database).
+    """
+
+    from nl.models import CustomerTypes
+
+    types = CustomerTypes.query.all()
+    css = '.dt0000 { background-color: white; }\n'
+    for t in types:
+        css += f'.dt{t.id:04d} {{ background-color: #{t.color:06x}; }}\n'
+    response = make_response(css)
+    response.headers['Content-Type'] = 'text/css; charset=utf-8'
+    return response
 
 
 @bp.route('/search', methods=('GET', 'POST'))

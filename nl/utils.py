@@ -38,9 +38,11 @@ def customer_type_choices(any=True):
 def flash_success(message):
     flash('<span class="success">' + message + '</span>')
 
+    
 def flash_fail(message):
     flash('<span class="fail">' + message + '</span>')
-    
+
+
 # Select choices
 ignore_yes_no = [(0, 'Ignore'),
                  (1, 'Yes'),

@@ -2,7 +2,7 @@
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, UserMixin
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 from nl import db, login
 
@@ -88,7 +88,32 @@ class Customer(db.Model):
 
     def combineds(self):
         return CustomerCombinedBills.query.filter_by(customer_id_main=self.id).all()
-    
+
+    def rate(self):
+        """
+        Return the users current rate.
+        """
+        # Simply replace standard rate?
+        if self.rateType == 'REPLACE':
+            return self.rateOverride
+
+        # Locate currently active rate
+        period = Configuration.get('billing-period')
+        r = CustomerRates.query\
+            .filter(CustomerRates.type_id==self.type_id)\
+            .filter(CustomerRates.period_id_begin<=period)\
+            .filter(or_(CustomerRates.period_id_end>=period,
+                        CustomerRates.period_id_end==None))\
+            .first()
+
+        # Standard rate
+        if self.rateType == 'STANDARD':
+            return r.rate
+
+        # Surcharge them!
+        assert self.rateType == 'SURCHARGE'
+        return r.rate + self.rateOverride
+        
     def name(self, sequence=1):
         """Return specific customer name."""
         return CustomerNames.query.filter_by(customer_id=self.id, sequence=sequence).first()
@@ -271,8 +296,8 @@ class CustomerRates(db.Model):
     daily_credit = db.Column(db.Numeric(6, 2), nullable=False)
     sunday_credit = db.Column(db.Numeric(6, 2), nullable=False)
 
-    period = db.relationship('Period', primaryjoin='CustomerRates.period_id_begin == Period.id', backref='period_customers_rates')
-    period1 = db.relationship('Period', primaryjoin='CustomerRates.period_id_end == Period.id', backref='period_customers_rates_0')
+    first_period = db.relationship('Period', primaryjoin='CustomerRates.period_id_begin == Period.id', backref='rate_first_period')
+    last_period = db.relationship('Period', primaryjoin='CustomerRates.period_id_end == Period.id', backref='rate_last_period')
     type = db.relationship('CustomerTypes', primaryjoin='CustomerRates.type_id == CustomerTypes.id', backref='customers_rates')
 
 

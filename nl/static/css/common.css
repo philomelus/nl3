@@ -56,3 +56,9 @@ div.error {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+@media print {
+    #header {
+	display: none;
+    }
+}
