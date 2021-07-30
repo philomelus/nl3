@@ -4,6 +4,7 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/search.css') }}">
+<link rel="stylesheet" href="{{ url_for('customers.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -120,7 +121,7 @@
     <tbody>
 	{% if count > 0 %}
     	{% for c in customers %}
-        <tr class="{{ c.type }}">
+        <tr class="dt{{ '%04d'|format(c.type_id) }}">
             <td class="icon-link">
                 <img src="{{ url_for('static', filename='img/payments.png') }}" alt="P" title="Add payment for Customer">
             </td>

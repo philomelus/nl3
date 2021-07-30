@@ -363,10 +363,14 @@ def search():
             customers = []
             for c in records:
                 rec = c.name()
-                name = rec.first
-                if len(rec.last) > 0:
-                    name += ' ' + rec.last
+                if rec:
+                    name = rec.first
+                    if len(rec.last) > 0:
+                        name += ' ' + rec.last
+                else:
+                    name = '<unknown>'
                 customers.append({
+                    'type_id': c.type.id,
                     'type': c.type.abbr,
                     'id': c.id,
                     'name': name,
