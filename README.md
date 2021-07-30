@@ -1,3 +1,4 @@
-# nl3
+Newsledger 3.0
 
-ssh -L 3307:gearhart.rnstech.com:3306 rgibson@gearhart.rnstech.com
+This is a complete rewrite of Newsledger (sf.net/projects/newsledger), using python.
+
