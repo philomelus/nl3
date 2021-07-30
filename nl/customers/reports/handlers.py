@@ -5,6 +5,12 @@ from flask_login import login_required
 from nl.customers.reports import bp
 from nl.customers.reports.forms import *
 
+__all__ = [
+    'ahead',
+    'behind',
+    'inactive',
+    'orders'
+]
 
 @bp.route('/ahead', methods=('GET', 'POST'))
 @login_required
@@ -30,14 +36,12 @@ def ahead():
 
         flagstoptype = Configuration.get('flag-stop-type')
         
-        qry = Customer.query
-        #qry = qry.join(Customer.addresses.and_(CustomerAddresses.sequence==CustomerAddresses.ADD_DELIVERY))
-        #qry = qry.join(Customer.names.and_(CustomerNames.sequence==CustomerNames.NAM_DELIVERY1))
-        qry = qry.join(RouteSequences, Customer.id==RouteSequences.tag_id)
-        qry = qry.filter(Customer.balance<0)
-        qry = qry.filter(Customer.active=='Y')
-        qry = qry.filter(Customer.type_id!=flagstoptype)
-        qry = qry.order_by(Customer.route_id, RouteSequences.order)
+        qry = Customer.query\
+                      .join(RouteSequences, Customer.id==RouteSequences.tag_id)\
+                      .filter(Customer.balance<0)\
+                      .filter(Customer.active=='Y')\
+                      .filter(Customer.type_id!=flagstoptype)\
+                      .order_by(Customer.route_id, RouteSequences.order)
         records = qry.all()
 
         report = []
@@ -87,12 +91,171 @@ def ahead():
 @login_required
 def behind():
     form = BehindForm()
-    one = ' checked'
-    many = ''
-    nopmts = ''
+    what = form.what.data
+    if what:
+        one = many = nopmts = ''
+        if what == 'one':
+            one = ' checked'
+        elif what == 'many':
+            many = ' checked'
+        elif what == 'nopmts':
+            nopmts = ' checked'
+    else:
+        one = ' checked'
+        many = nopmts = ''
+    
+    vars = {
+        'form': form,
+        'one': one,
+        'many': many,
+        'nopmts': nopmts
+    }
+    if form.validate_on_submit():
+        if what == 'one':
+            return behind_one(vars)
+        elif what == 'many':
+            return behind_many(vars)
+        elif what == 'nopmts':
+            return behind_nopmts(vars)
+        
     return render_template('customers/reports/behind.html',
-                           path='Customers / Reports / Behind',
-                           form=form, one=one, many=many, nopmts=nopmts)
+                           path='Customers / Reports / Behind', **vars)
+
+
+def behind_one(vars):
+    from nl.models import Customer, RouteSequences
+
+    from flask import current_app
+    current_app.logger.debug('behind_one called')
+    
+    qry = Customer.query\
+                  .join(RouteSequences, Customer.id==RouteSequences.tag_id)\
+                  .filter(Customer.balance<0)\
+                  .filter(Customer.active=='Y')\
+                  .order_by(Customer.route_id, RouteSequences.order)
+    records = qry.all()
+
+    report = []
+    count = 0
+    for c in records:
+        rate = c.rate()
+        diff = c.balance - (2 * rate)
+        if diff >= 0 and diff <= rate:
+            n = c.name()
+            name = n.first
+            if n.last:
+                name += ' ' + n.last
+            report.append({
+                'id': c.id,
+                'name': name,
+                'address': c.address().address1,
+                'tid': c.type.id,
+                'type': c.type.abbr,
+                'route': c.route.title,
+                'balance': c.balance,
+                'count': abs(c.balance / rate)
+            });
+            count += 1
+    title = f'Customers Behind 1 Period'
+    subtitle = '{} Customer'.format(count)
+    if count == 0 or count > 1:
+        subtitle += 's'
+
+    return render_template('customers/reports/behind.html',
+                           path='Customers / Reports / Behind', **vars,
+                           report_title=title, subtitle=subtitle, report=report,
+                           count=count, doReport=True)
+
+
+def behind_many(vars):
+    from nl.models import Customer, RouteSequences
+
+    from flask import current_app
+    current_app.logger.debug('behind_one called')
+    
+    qry = Customer.query\
+                  .join(RouteSequences, Customer.id==RouteSequences.tag_id)\
+                  .filter(Customer.balance<0)\
+                  .filter(Customer.active=='Y')\
+                  .order_by(Customer.route_id, RouteSequences.order)
+    records = qry.all()
+
+    report = []
+    count = 0
+    for c in records:
+        rate = c.rate()
+        diff = c.balance - (3 * rate)
+        if diff >= 0:
+            n = c.name()
+            name = n.first
+            if n.last:
+                name += ' ' + n.last
+            report.append({
+                'id': c.id,
+                'name': name,
+                'address': c.address().address1,
+                'tid': c.type.id,
+                'type': c.type.abbr,
+                'route': c.route.title,
+                'balance': c.balance,
+                'count': abs(c.balance / rate)
+            });
+            count += 1
+    title = f'Customers Behind More Than 1 Period'
+    subtitle = '{} Customer'.format(count)
+    if count == 0 or count > 1:
+        subtitle += 's'
+
+    return render_template('customers/reports/behind.html',
+                           path='Customers / Reports / Behind', **vars,
+                           report_title=title, subtitle=subtitle, report=report,
+                           count=count, doReport=True)
+
+
+def behind_nopmts(vars):
+    from nl.models import Customer, RouteSequences
+
+    from flask import current_app
+    current_app.logger.debug('behind_one called')
+
+    sq = Customer.query.join(Customer.payments)
+    qry = Customer.query\
+                  .join(RouteSequences, Customer.id==RouteSequences.tag_id)\
+                  .filter(Customer.balance<0)\
+                  .filter(Customer.active=='Y')\
+                  .order_by(Customer.route_id, RouteSequences.order)
+    records = qry.all()
+
+    report = []
+    count = 0
+    for c in records:
+        rate = c.rate()
+        diff = c.balance - (3 * rate)
+        if diff >= 0 and len(c.payments) == 0:
+            n = c.name()
+            name = n.first
+            if n.last:
+                name += ' ' + n.last
+            report.append({
+                'id': c.id,
+                'name': name,
+                'address': c.address().address1,
+                'tid': c.type.id,
+                'type': c.type.abbr,
+                'route': c.route.title,
+                'balance': c.balance,
+                'count': abs(c.balance / rate)
+            });
+            count += 1
+    title = f'Customers Behind  1 Period With No Payments'
+    subtitle = '{} Customer'.format(count)
+    if count == 0 or count > 1:
+        subtitle += 's'
+
+    return render_template('customers/reports/behind.html',
+                           path='Customers / Reports / Behind', **vars,
+                           report_title=title, subtitle=subtitle, report=report,
+                           count=count, doReport=True)
 
 
 @bp.route('/inactive', methods=('GET', 'POST'))

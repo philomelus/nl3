@@ -279,8 +279,8 @@ class CustomerPayments(db.Model):
     tip = db.Column(db.Numeric(10, 2), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomerPayments.customer_id == Customer.id', backref='payment')
-    period = db.relationship('Period', primaryjoin='CustomerPayments.period_id == Period.id', backref='period')
+    customer = db.relationship('Customer', primaryjoin='CustomerPayments.customer_id == Customer.id', backref='payments')
+    period = db.relationship('Period', primaryjoin='CustomerPayments.period_id == Period.id', backref='payment_periods')
 
     
 class CustomerRates(db.Model):

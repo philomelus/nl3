@@ -1,7 +1,8 @@
 
 from nl import create_app, db
 from nl.models import *
-from sqlalchemy import distinct, func, select
+from sqlalchemy import distinct, func, select, and_, or_
+from pprint import pprint
 
 app = create_app()
 
@@ -38,6 +39,9 @@ def make_shell_context():
             'distinct': distinct,
             'func': func,
             'select': select,
+            'and_': and_,
+            'or_': or_,
+            'pp': pprint,
             }
 
 

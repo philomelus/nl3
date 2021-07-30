@@ -7,11 +7,6 @@
 {% endblock %}
 
 {% block content %}
-    {% if form.errors %}
-	{% for message in form.errors %}
-	    <div class="error">{{ message }}</div>
-	{% endfor %}
-    {% endif %}
     <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.reports.behind') }}">
 	<div class="w3-row">
 	    <div class="control">
@@ -36,5 +31,53 @@
 		Update
 	    </button>
 	</div>
+	{{ form.hidden_tag() }}
+    </form>
+    {% if doReport %}
+	<form class="w3-container w3-margin-top w3-center">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="print" onclick="window.print(); return false;">
+		Print report
+	    </button>
+	    <hr>
+	</form>
+	<div id="report-title">{{ report_title }}</div>
+	<div id="report-sub-title">{{ subtitle }}</div>
+	<table class="w3-table w3-bordered w3-center">
+	    <thead>
+		<tr>
+		    <th>Account</th>
+		    <th>Name</th>
+		    <th>Address</th>
+		    <th>Telephone</th>
+		    <th>Start Date</th>
+		    <th>Type</th>
+		    <th>Route</th>
+		    <th>Balance</th>
+		</tr>
+	    </thead>
+	    <tbody>
+		{% if count > 0 %}
+		    {% for c in report %}
+			<tr class="dt{{ '%04d'|format(c.tid) }}">
+			    <td>{{ '%06d'|format(c.id) }}</td>
+			    <td>{{ c.name }}</td>
+			    <td>{{ c.address }}</td>
+			    <td>{{ c.telephone }}</td>
+			    <td>{{ c.started }}</td>
+			    <td>{{ c.type }}</td>
+			    <td>{{ c.route }}</td>
+			    {% if c.balance < 0 %}
+				<td>$<span class="w3-text-red">{{ c.balance }}</span></td>
+			    {% else %}
+				<td>${{ c.balance }}</td>
+			    {% endif %}
+			</tr>
+		    {% endfor %}
+		{% else %}
+		    <tr><td colspan="8" class="w3-center">None</td></tr>
+		{% endif %}
+	    </tbody>
+	</table>
+    {% endif %}
 {% endblock %}
 
