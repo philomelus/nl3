@@ -153,7 +153,6 @@ def behind_one(vars):
                 'type': c.type.abbr,
                 'route': c.route.title,
                 'balance': c.balance,
-                'count': abs(c.balance / rate)
             });
             count += 1
     title = f'Customers Behind 1 Period'
@@ -198,7 +197,6 @@ def behind_many(vars):
                 'type': c.type.abbr,
                 'route': c.route.title,
                 'balance': c.balance,
-                'count': abs(c.balance / rate)
             });
             count += 1
     title = f'Customers Behind More Than 1 Period'
@@ -244,7 +242,6 @@ def behind_nopmts(vars):
                 'type': c.type.abbr,
                 'route': c.route.title,
                 'balance': c.balance,
-                'count': abs(c.balance / rate)
             });
             count += 1
     title = f'Customers Behind  1 Period With No Payments'
@@ -262,10 +259,52 @@ def behind_nopmts(vars):
 @login_required
 def inactive():
     form = InactiveForm()
+    doReport = False
     
+    if form.validate_on_submit():
+        from nl.models import Customer, RouteSequences
+
+        routeList = form.routeList.data
+
+        qry = Customer.query\
+                      .join(RouteSequences, Customer.id==RouteSequences.tag_id)\
+                      .filter(Customer.active=='N')
+        if routeList == '1':
+            qry = qry.filter(Customer.routeList=='Y')
+        elif routeList == '2':
+            qry = qry.filter(Customer.routeList=='N')
+        records = qry.order_by(Customer.route_id, RouteSequences.order).all()
+
+        report = []
+        count = 0
+        for c in records:
+            n = c.name()
+            name = n.first
+            if n.last:
+                name += ' ' + n.last
+            report.append({
+                'id': c.id,
+                'name': name,
+                'address': c.address().address1,
+                'tid': c.type.id,
+                'type': c.type.abbr,
+                'route': c.route.title,
+            });
+            count += 1
+        subtitle = '{} Customer'.format(count)
+        if count == 0 or count > 1:
+            subtitle += 's'
+        doReport = True
+    else:
+        routeList = '1'
+        report = []
+        subtitle = ''
+        count = 0
+
     return render_template('customers/reports/inactive.html',
                            path='Customers / Reports / Inactive',
-                           form=form)
+                           form=form, routeList=routeList, subtitle=subtitle, report=report,
+                           doReport=doReport, count=count)
 
 
 @bp.route('/orders', methods=('GET', 'POST'))

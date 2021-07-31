@@ -4,6 +4,7 @@
 
 {% block styles %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/reports/inactive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('customers.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -12,15 +13,7 @@
 	    <div class="error">{{ message }}</div>
 	{% endfor %}
     {% endif %}
-    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.reports.behind') }}">
-	<div class="w3-row">
-	    <div class="left">
-		{{ form.active.label(class="control") }}
-	    </div>
-	    <div class="right">
-		{{ form.active(class="w3-select w3-border w3-margin-top control") }}
-	    </div>
-	</div>
+    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.reports.inactive') }}">
 	<div class="w3-row">
 	    <div class="left">
 		{{ form.routeList.label(class='control') }}
@@ -30,22 +23,47 @@
 	    </div>
 	</div>
 	<div class="w3-row">
-	    <div class="left">
-		{{ form.pending.label(class='control') }}
-	    </div>
-	    <div class="right">
-		{{ form.pending(class='w3-select w3-border w3-margin-top control') }}
-	    </div>
-	</div>
-	<div class="w3-row">
-	    {{ form.stopped.label(class='control') }}
-	    {{ form.stopped(class='w3-input w3-border w3-margin-top control', size=2) }}
-	    Periods Ago
-	</div>
-	<div class="w3-row">
 	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="update">
 		Update
 	    </button>
 	</div>
+	{{ form.hidden_tag() }}
+    </form>
+    {% if doReport %}
+	<form class="w3-container w3-margin-top w3-center">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="print" onclick="window.print(); return false;">
+		Print report
+	    </button>
+	    <hr>
+	</form>
+	<div id="report-title">Inactivity Report</div>
+	<div id="report-subtitle">{{ subtitle }}</div>
+	<table class="w3-table w3-bordered w3-center">
+	    <thead>
+		<tr>
+		    <th>CustID</th>
+		    <th>Name</th>
+		    <th>Address</th>
+		    <th>Type</th>
+		    <th>Rte</th>
+		</tr>
+	    </thead>
+	    <tbody>
+		{% if count > 0 %}
+		    {% for c in report %}
+			<tr class="dt{{ '%04d'|format(c.tid) }}">
+			    <td>{{ '%06d'|format(c.id) }}</td>
+			    <td>{{ c.name }}</td>
+			    <td>{{ c.address }}</td>
+			    <td>{{ c.type }}</td>
+			    <td>{{ c.route }}</td>
+			</tr>
+		    {% endfor %}
+		{% else %}
+		    <tr><td class="w3-center" span="6">None</td></tr>
+		{% endif %}
+	    </tbody>
+	</table>
+    {% endif %}
 {% endblock %}
 

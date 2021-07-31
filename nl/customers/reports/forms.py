@@ -38,10 +38,7 @@ class BehindForm(FlaskForm):
     
 class InactiveForm(FlaskForm):
     action = HiddenField()
-    active = SelectField('Active', choices=ignore_yes_no)
-    pending = SelectField('With Pending Stops', choices=ignore_yes_no)
     routeList = SelectField('Route List', choices=ignore_yes_no)
-    stopped = IntegerField('Last Stopped')
 
 
 class OrdersForm(FlaskForm):
