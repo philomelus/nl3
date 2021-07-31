@@ -306,13 +306,3 @@ def inactive():
                            form=form, routeList=routeList, subtitle=subtitle, report=report,
                            doReport=doReport, count=count)
 
-
-@bp.route('/orders', methods=('GET', 'POST'))
-@login_required
-def orders():
-    form = OrdersForm()
-    
-    return render_template('customers/reports/orders.html',
-                           path='Customers / Reports / Orders',
-                           form=form)
-

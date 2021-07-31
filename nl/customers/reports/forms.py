@@ -21,7 +21,6 @@ __all__ = [
     'AheadForm',
     'BehindForm',
     'InactiveForm',
-    'OrdersForm'
 ]
 
 
@@ -40,8 +39,3 @@ class InactiveForm(FlaskForm):
     action = HiddenField()
     routeList = SelectField('Route List', choices=ignore_yes_no)
 
-
-class OrdersForm(FlaskForm):
-    action = HiddenField()
-    when = DateField('Week that includes')
-    
