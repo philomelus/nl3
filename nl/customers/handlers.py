@@ -169,54 +169,6 @@ def addnew():
     return render_template('customers/addnew.html', path='Customers / Add', form=form)
 
 
-@bp.route('/combined', methods=('GET', 'POST'))
-@login_required
-def combined():
-    """
-    Customer Combined bills form/logic.
-    """
-    form = CombinedForm
-    from nl.models import Customer, CustomerAddresses, CustomerCombinedBills, CustomerNames
-    from sqlalchemy import asc, select, distinct
- 
-    primary = db.session.execute(select(distinct(CustomerCombinedBills.customer_id_main))).scalars().all()
-    
-    combined = []
-    for p in primary:
-        info = Customer.query.filter_by(id=p).first()
-        others =[]
-
-        secondaries = db.session.execute(select(distinct(CustomerCombinedBills.customer_id_secondary))
-                                         .filter(CustomerCombinedBills.customer_id_main==p)).scalars().all()
-        for s in secondaries:
-            oi = Customer.query.filter_by(id=s).first()
-            n = oi.name()
-            name = n.first
-            if n.last:
-                name += ' ' + n.last
-            others.append({
-                'id': oi.id,
-                'name': name,
-                'address': oi.address().address1
-            })
-
-        n = info.name()
-        name = n.first
-        if n.last:
-            name += ' ' + n.last
-        combined.append({
-            'id': info.id,
-            'name': name,
-            'address': info.address().address1,
-            'count': len(others),
-            'others': others
-        })
-    count = len(combined)
-
-    return render_template('customers/combined.html', path='Customers / Combined',
-                           form=form, count=count, combined=combined)
-
-
 @bp.route('/css')
 def css():
     """
