@@ -4,17 +4,17 @@ from flask_login import login_required
 
 from nl import db
 from nl.customers import bp
-from nl.customers.forms import AddNewForm, CombinedForm, SearchForm
+from nl.customers.forms import CreateForm, SearchForm
 from nl.utils import (pagination, route_choices, customer_type_choices, flash_success,
                       flash_fail, ignore_yes_no, state_choices, telephone_type_choices)
 
-@bp.route('/addnew', methods=('GET', 'POST'))
+@bp.route('/create', methods=('GET', 'POST'))
 @login_required
-def addnew():
+def create():
     """
     Add new customer form/logic.
     """
-    form = AddNewForm()
+    form = CreateForm()
     form.delivery.route.choices = route_choices(False)
     form.delivery.dtype.choices = customer_type_choices(False)
     form.delivery.address.state.choices = state_choices
@@ -27,146 +27,136 @@ def addnew():
     form.billing.telephone3.type_.choices = telephone_type_choices
 
     if form.validate_on_submit():
-        from nl.models import Customer, CustomerAddresses, CustomerNames, CustomerTelephones, CustomerTypes, Route, RouteSequences
+        from nl.models import (
+            Customer,
+            CustomerAddresses,
+            CustomerNames,
+            CustomerServices,
+            CustomerTelephones,
+            CustomerTypes,
+            Route,
+            RouteSequences
+        )
+        from datetime import datetime
 
-        def add_name(id, field, seq):
+        def add_name(customer, field, seq):
             n = CustomerNames()
-            n.customer_id = id
+            n.created = datetime.now()
             n.title = field.title.data
             n.first = field.first.data
             n.last = field.last.data
             n.surname = field.surname.data
             n.sequence = seq
-            db.session.add(n)
+            customer.names.append(n)
 
-        def add_telephone(id, field, seq):
+        def add_telephone(customer, field, seq):
             t = CustomerTelephones()
-            t.customer_id = id
+            t.created = datetime.now()
             t.type = field.type_.data
             t.number = field.number.data
             t.sequence = seq
-            db.session.add(t)
+            customer.telephones.append(t)
+
+        with db.session.no_autoflush:
+            c = Customer()
+            c.route_id = form.delivery.route.data
+            c.type_id = form.delivery.dtype.data
+            c.active = 'Y'
+            c.routeList = 'Y'
+            c.started = form.delivery.start_date.data
+            c.rateType = 'STANDARD'
+            c.rateOverride = 0
+            c.billType = form.delivery.dtype.data
+            c.billBalance = 0
+            c.billStopped = 'Y'
+            c.billCount = 1
+            c.billPeriod = None
+            c.billQuantity = 1
+            c.billStart = None
+            c.billEnd = None
+            c.billDue = None
+            c.balance = 0
+            c.lastPayment = None
+            c.billNote = form.notes_.billing.data
+            c.notes = form.notes_.notes.data
+            c.deliveryNote = form.notes_.delivery.data
+            db.session.add(c)
+
+            # Customer names
+            add_name(c, form.delivery.name_, CustomerNames.NAM_DELIVERY1)
+            name = form.delivery.name2.first.data
+            if name:
+                add_name(c, form.delivery.name2, CustomerNames.NAM_DELIVERY2)
+            name = form.billing.name_.first.data
+            if name:
+                add_name(c, form.billing.name_, CustomerNames.NAM_BILLING1)
+            name = form.billing.name2.first.data
+            if name:
+                add_name(c, form.billing.name2, CustomerNames.NAM_BILLING2)
+
+            # Customer addresses
+            da = CustomerAddresses()
+            da.address1 = form.delivery.address.address1.data
+            da.address2 = form.delivery.address.address2.data
+            da.city = form.delivery.address.city.data
+            da.state = form.delivery.address.state.data
+            da.zip = form.delivery.address.postal.data
+            da.sequence = CustomerAddresses.ADD_DELIVERY
+            c.addresses.append(da)
+
+            addr = form.billing.address.address1.data
+            if addr:
+                ba = CustomerAddresses()
+                ba.address1 = form.billing.address.address1.data
+                ba.address2 = form.billing.address.address2.data
+                ba.city = form.billing.address.city.data
+                ba.state = form.billing.address.state.data
+                ba.zip = form.billing.address.postal.data
+                ba.sequence = CustomerAddresses.ADD_BILLING
+                c.addresses.append(ba)
+
+            # Customer telephones
+            add_telephone(c, form.delivery.telephone1, CustomerTelephones.TEL_DELIVERY1)
+            tele = form.delivery.telephone2.number.data
+            if tele:
+                add_telephone(c, form.delivery.telephone2, CustomerTelephones.TEL_DELIVERY2)
+            tele = form.delivery.telephone3.number.data
+            if tele:
+                add_telephone(c, form.delivery.telephone3, CustomerTelephones.TEL_DELIVERY3)
+            tele = form.billing.telephone1.number.data
+            if tele:
+                add_telephone(c, form.billing.telephone1, CustomerTelephones.TEL_BILLING1)
+            tele = form.billing.telephone2.number.data
+            if tele:
+                add_telephone(c, form.billing.telephone2, CustomerTelephones.TEL_BILLING2)
+            tele = form.billing.telephone3.number.data
+            if tele:
+                add_telephone(c, form.billing.telephone3, CustomerTelephones.TEL_BILLING3)
+
+            s = RouteSequences()
+            s.route_id = c.route_id
+            s.order = 99999
+            c.sequences.append(s)
+
+            dt = CustomerTypes.query.filter_by(id=c.type_id).first()
+            if dt.newChange == 'Y':
+                s = CustomerServices()
+                s.created = datetime.now()
+                s.period_id = None
+                s.type = 'START'
+                s.when = c.started
+                s.why = 'New customer'
+                s.ignoreOnBill = 'N'
+                s.note = ''
+                c.services.append(s)
+
+        db.session.commit()
+
+        flash_success(f'New customer id is {c.id}')
+
+        return redirect(url_for('customers.create'))
         
-        c = Customer()
-        c.route_id = form.delivery.route.data
-        c.type_id = form.delivery.dtype.data
-        c.active = 'Y'
-        c.routeList = 'Y'
-        c.started = form.delivery.start_date.data
-        c.rateType = 'STANDARD'
-        c.rateOverride = 0
-        c.billType = form.delivery.dtype.data
-        c.billBalance = 0
-        c.billStopped = 'Y'
-        c.billCount = 1
-        c.billPeriod = None
-        c.billQuantity = 1
-        c.billStart = None
-        c.billEnd = None
-        c.billDue = None
-        c.balance = 0
-        c.lastPayment = None
-        c.billNote = form.notes_.billing.data
-        c.notes = form.notes_.notes.data
-        c.deliveryNote = form.notes_.delivery.data
-        db.session.add(c)
-        cust_id = c.id
-        
-        n = CustomerNames()
-        n.customer_id = cust_id
-        n.title = form.delivery.name_.title.data
-        n.first = form.delivery.name_.first.data
-        n.last = form.delivery.name_.last.data
-        n.surname = form.delivery.name_.surname.data
-        n.sequence = CustomerNames.NAM_DELIVERY1
-        db.session.add(n)
-        
-        name = form.delivery.name2.first.data
-        if name:
-            add_name(cust_id, form.delivery.name2, CustomerNames.NAM_DELIVERY2)
-
-        name = form.billing.name_.first.data
-        if name:
-            add_name(cust_id, form.billing.name_, CustomerNames.NAM_BILLING1)
-            
-        name = form.billing.name2.first.data
-        if name:
-            add_name(cust_id, form.billing.name2, CustomerNames.NAM_BILLING2)
-
-        a = CustomerAddresses()
-        a.customer_id = cust_id
-        a.address1 = form.delivery.address.address1.data
-        a.address2 = form.delivery.address.address2.data
-        a.city = form.delivery.address.city.data
-        a.state = form.delivery.address.state.data
-        a.zip = form.delivery.address.postal.data
-        a.sequence = CustomerAddresses.ADD_DELIVERY
-        db.session.add(a)
-
-        addr = form.billing.address.address1.data
-        if addr:
-            a = CustomerAddresses()
-            a.customer_id = cust_id
-            a.address1 = form.billing.address.address1.data
-            a.address2 = form.billing.address.address2.data
-            a.city = form.billing.address.city.data
-            a.state = form.billing.address.state.data
-            a.zip = form.billing.address.postal.data
-            a.sequence = CustomerAddresses.ADD_BILLING
-            db.session.add(a)
-            
-        t = CustomerTelephones()
-        t.customer_id = cust_id
-        t.type = form.delivery.telephone1.type_.data
-        t.number = form.delivery.telephone1.number.data
-        t.sequence = CustomerTelephones.TEL_DELIVERY1
-        db.session.add(t)
-
-        tele = form.delivery.telephone2.number.data
-        if tele:
-            add_telephone(cust_id, form.delivery.telephone2, CustomerTelephones.TEL_DELIVERY2)
-        
-        tele = form.delivery.telephone3.number.data
-        if tele:
-            add_telephone(cust_id, form.delivery.telephone3, CustomerTelephones.TEL_DELIVERY3)
-        
-        tele = form.billing.telephone1.number.data
-        if tele:
-            add_telephone(cust_id, form.billing.telephone1, CustomerTelephones.TEL_BILLING1)
-        
-        tele = form.billing.telephone2.number.data
-        if tele:
-            add_telephone(cust_id, form.billing.telephone2, CustomerTelephones.TEL_BILLING2)
-        
-        tele = form.billing.telephone3.number.data
-        if tele:
-            add_telephone(cust_id, form.billing.telephone3, CustomerTelephones.TEL_BILLING3)
-
-        s = RouteSequences()
-        s.tag_id = cust_id
-        s.route_id = c.route_id
-        s.order = 99999
-        db.session.add(s)
-
-        dt = CustomerTypes.query.filter_by(id=c.type_id).first()
-        if dt.newChange == 'Y':
-            s = CustomerServices()
-            s.customer_id = cust_id
-            s.period_id = None
-            s.type = 'START'
-            s.when = c.started
-            s.why = 'New customer'
-            s.ignoreOnBill = 'N'
-            s.note = ''
-            db.session.add(dt)
-
-        db.session.commot()
-
-        flash_success(f'New customer id is {cust_id}')
-
-        return redirect(url_for('customers.addnew'))
-        
-    return render_template('customers/addnew.html', path='Customers / Add', form=form)
+    return render_template('customers/create.html', path='Customers / Add', form=form)
 
 
 @bp.route('/css')

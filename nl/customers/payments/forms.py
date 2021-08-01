@@ -16,7 +16,7 @@ from wtforms.validators import InputRequired, Optional, ValidationError
 from nl.utils import PaymentType, MoneyOps
 
 
-__all__ = ['AddNewForm', 'SearchForm']
+__all__ = ['CreateForm', 'SearchForm']
 
 
 def check_id(form, field):
@@ -25,7 +25,7 @@ def check_id(form, field):
             raise ValidationError("Payment ID is invalid")
 
 
-class AddNewForm(FlaskForm):
+class CreateForm(FlaskForm):
     action = HiddenField()
     amount = FloatField('Amount', validators=[InputRequired()])
     customer = IntegerField('Customer ID', validators=[InputRequired()])

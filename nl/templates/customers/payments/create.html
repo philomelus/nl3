@@ -3,11 +3,11 @@
 {% extends "base.html" %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/payments/addnew.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/payments/create.css') }}">
 {% endblock %}
 
 {% block content %}
-    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.payments.addnew') }}">
+    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.payments.create') }}">
 	<div class="w3-row">
 	    {{ form.customer.label(class='control') }}
             <div class="control">

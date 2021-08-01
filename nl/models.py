@@ -315,8 +315,8 @@ class CustomerServices(db.Model):
     ignoreOnBill = db.Column(db.Enum('N', 'Y'), nullable=False)
     note = db.Column(db.Text(collation='utf8_unicode_ci'))
 
-    customer = db.relationship('Customer', primaryjoin='CustomerServices.customer_id == Customer.id', backref='customers_services')
-    period = db.relationship('Period', primaryjoin='CustomerServices.period_id == Period.id', backref='customers_services')
+    customer = db.relationship('Customer', primaryjoin='CustomerServices.customer_id == Customer.id', backref='services')
+    period = db.relationship('Period', primaryjoin='CustomerServices.period_id == Period.id', backref='customer_services')
 
 
 class CustomerServiceTypes(db.Model):

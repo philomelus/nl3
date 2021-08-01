@@ -2,11 +2,11 @@
 {% extends "base.html" %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/customers/addnew.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customers/create.css') }}">
 {% endblock %}
 
 {% block content %}
-<form class="w3-container w3-margin-top w3-center" method="post" action="">
+<form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.create') }}">
     <div>Required Fields In <span class="w3-text-red">Red</span></div>
     <table class="w3-table w3-margin-top centered w3-border">
 	<tbody>

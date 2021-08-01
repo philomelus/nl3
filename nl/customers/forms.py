@@ -8,7 +8,7 @@ from nl.models import Customer
 from nl.utils import ignore_yes_no, name_title_choices, route_choices
 
 
-__all__ = ['AddNewForm', 'CombinedForm', 'SearchForm']
+__all__ = ['CreateForm', 'SearchForm']
 
 
 class AddressForm(FlaskForm):
@@ -57,7 +57,7 @@ class NotesForm(FlaskForm):
     notes = TextAreaField('Notes')
 
         
-class AddNewForm(FlaskForm):
+class CreateForm(FlaskForm):
 
     action = HiddenField()
     limit = IntegerField()

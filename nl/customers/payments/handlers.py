@@ -8,13 +8,13 @@ from flask_login import login_required
 from nl import db
 from nl.utils import flash_success, MoneyOps, pagination, PaymentType, period_choices
 from nl.customers.payments import bp
-from nl.customers.payments.forms import AddNewForm, SearchForm
+from nl.customers.payments.forms import CreateForm, SearchForm
 
 
-@bp.route('/addnew', methods=('GET', 'POST'))
+@bp.route('/create', methods=('GET', 'POST'))
 @login_required
-def addnew():
-    form = AddNewForm()
+def create():
+    form = CreateForm()
     if form.validate_on_submit():
         from nl.models import Configuration, Customer, CustomerPayments
 
@@ -52,9 +52,9 @@ def addnew():
 
         flash_success(f'Added payment of {p.amount} to customer {p.customer_id}')
 
-        return redirect(url_for('customers.payments.addnew'))
+        return redirect(url_for('customers.payments.create'))
     
-    return render_template('customers/payments/addnew.html', path='Customers / Payments / Add',
+    return render_template('customers/payments/create.html', path='Customers / Payments / Add',
                            form=form)
 
 

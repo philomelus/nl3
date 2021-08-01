@@ -5,13 +5,13 @@
             <button class="w3-button">Customers</button>
             <div class="w3-dropdown-content w3-bar-block w3-card-4">
                 <a href="{{ url_for('customers.search') }}" class="w3-bar-item w3-button">Search</a>
-                <a href="{{ url_for('customers.addnew') }}" class="w3-bar-item w3-button">Add</a>
+                <a href="{{ url_for('customers.create') }}" class="w3-bar-item w3-button">Add</a>
                 <a href="{{ url_for('customers.combined.index') }}" class="w3-bar-item w3-button">Combined</a>
                 <hr class="w3-separator">
                 <div class="w3-dropdown-hover">
                     <button class="w3-button">Payments</button>
                     <div class="w3-dropdown-content w3-bar-block w3-card-4">
-                        <a href="{{ url_for('customers.payments.addnew') }}" class="w3-bar-item w3-button">Add</a>
+                        <a href="{{ url_for('customers.payments.create') }}" class="w3-bar-item w3-button">Add</a>
                         <a href="{{ url_for('customers.payments.search') }}" class="w3-bar-item w3-button">Search</a>
                     </div>
                 </div>
