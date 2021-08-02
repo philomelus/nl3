@@ -17,14 +17,6 @@ def create():
     form = CreateForm()
     form.delivery.route.choices = route_choices(False)
     form.delivery.dtype.choices = customer_type_choices(False)
-    form.delivery.address.state.choices = state_choices
-    form.delivery.telephone1.type_.choices = telephone_type_choices
-    form.delivery.telephone2.type_.choices = telephone_type_choices
-    form.delivery.telephone3.type_.choices = telephone_type_choices
-    form.billing.address.state.choices = state_choices
-    form.billing.telephone1.type_.choices = telephone_type_choices
-    form.billing.telephone2.type_.choices = telephone_type_choices
-    form.billing.telephone3.type_.choices = telephone_type_choices
 
     if form.validate_on_submit():
         from nl.models import (

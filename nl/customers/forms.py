@@ -5,7 +5,7 @@ from wtforms.fields.html5 import DateField
 from wtforms.validators import Optional
 
 from nl.models import Customer
-from nl.utils import ignore_yes_no, name_title_choices, route_choices
+from nl.utils import ignore_yes_no, name_title_choices, state_choices, telephone_type_choices
 
 
 __all__ = ['CreateForm', 'SearchForm']
@@ -15,7 +15,7 @@ class AddressForm(FlaskForm):
     address1 = StringField('Address')
     address2 = StringField('Address 2')
     city = StringField('City')
-    state = SelectField('Sate')
+    state = SelectField('Sate', choices=state_choices)
     postal = StringField('Postal')
 
 
@@ -27,7 +27,7 @@ class NameForm(FlaskForm):
 
     
 class TelephoneForm(FlaskForm):
-    type_ = SelectField()
+    type_ = SelectField(choices=telephone_type_choices)
     number = StringField()
     
         

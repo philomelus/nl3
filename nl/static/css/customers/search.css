@@ -29,8 +29,7 @@ div.right {
     text-align: left;
 }
 
-td.icon-link
-{
+td.icon-link {
     text-align: center;
     vertical-align: middle;
     padding: 0 0;
@@ -38,6 +37,7 @@ td.icon-link
 }
 
 td.icon-link:first-child {
+    padding-left: inherit !important;
     border-left: 1px solid #ddd;
 }
 
