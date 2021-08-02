@@ -5,8 +5,17 @@ from flask_login import login_required
 from nl import db
 from nl.customers import bp
 from nl.customers.forms import CreateForm, SearchForm
-from nl.utils import (pagination, route_choices, customer_type_choices, flash_success,
-                      flash_fail, ignore_yes_no, state_choices, telephone_type_choices)
+from nl.utils import (
+    customer_type_choices,
+    flash_fail,
+    flash_success,
+    ignore_yes_no,
+    pagination,
+    PaymentType,
+    route_choices,
+    state_choices,
+    telephone_type_choices,
+)
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
@@ -323,6 +332,7 @@ def search():
         customers = []
     return render_template('customers/search.html', path='Customers / Search', form=form,
                            doResults=doResults, count=count, customers=customers,
-                           paginate=pagination(offset=offset, limit=limit, max=count))
+                           paginate=pagination(offset=offset, limit=limit, max=count),
+                           PaymentType=PaymentType)
 
 

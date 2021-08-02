@@ -11,8 +11,12 @@ function complaint(cid)
     document.getElementById('complaint').style.display='block';
 }
 
-function payment(cid)
+function payment(cid, name, address, type)
 {
+    $('#payment-cid').val(cid);
+    $('#payment-name').text(name);
+    $('#payment-address').text(address);
+    $('#payment-dtype').text(type);
     document.getElementById('payment').style.display='block';
 }
 

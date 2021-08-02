@@ -123,7 +123,8 @@
     		    {% for c in customers %}
 			<tr class="dt{{ '%04d'|format(c.type_id) }}">
 			    <td class="icon-link">
-				<img onclick="payment({{ c.id }})" src="{{ url_for('static', filename='img/payments.png') }}" alt="P" title="Add payment for Customer">
+				<img onclick="payment({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+				     src="{{ url_for('static', filename='img/payments.png') }}" alt="P" title="Add payment for Customer">
 			    </td>
 			    <td class="icon-link">
 				{% if c.type == flagStopId %}

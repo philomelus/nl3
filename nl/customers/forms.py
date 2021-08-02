@@ -51,6 +51,7 @@ class BillingForm(FlaskForm):
     telephone2 = FormField(TelephoneForm)
     telephone3 = FormField(TelephoneForm)
 
+    
 class NotesForm(FlaskForm):
     billing = TextAreaField('Billing Notes')
     delivery = TextAreaField('Delivery Notes')
@@ -66,11 +67,6 @@ class CreateForm(FlaskForm):
     billing = FormField(BillingForm)
     delivery = FormField(DeliveryForm)
     notes_ = FormField(NotesForm)
-
-
-class CombinedForm(FlaskForm):
-    refresh = SubmitField('Refresh')
-    add = SubmitField('Add New')
 
 
 class SearchForm(FlaskForm):

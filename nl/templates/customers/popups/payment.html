@@ -6,17 +6,55 @@
 	    <br>
 	    <span onclick="document.getElementById('payment').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
 	</div>
-	<div class="w3-container w3-margin-bottom">
-	    <div class="w3-padding">
-		Content goes here
+	<div id="payment-inner" class="w3-container w3-margin-top w3-margin-bottom">
+	    <div class="w3-row">
+		<label class="control top-align">Customer</label>
+		<div class="control">
+		    <input type="hidden" id="payment-cid" name="payment-cid">
+		    <div id="payment-name"></div>
+		    <div id="payment-dtype"></div>
+		    <div id="payment-address"></div>
+		</div>
 	    </div>
 	    <div class="w3-row">
-		<label class="control">Example Control</label>
-		<input class="w3-input w3-border control" type="text" id="" name="" size="10" required>
+		<label class="control">Type</label>
+		<div class="control">
+		    <select class="w3-select w3-border control" id="payment-type" name="payment-type">
+			<option value="{{ PaymentType.CHECK.value }}">Check</option>
+			<option value="{{ PaymentType.MONEYORDER.value }}">Money Order</option>
+			<option value="{{ PaymentType.CASH.value }}">Cash</option>
+			<option value="{{ PaymentType.CREDIT.value }}">Credit</option>
+		    </select>
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control">ID</label>
+		<div class="control">
+		    <input class="w3-input w3-border control" type="text" id="payment-id" name="payment-id">
+		    (Check Number)
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control">Amount</label>
+		<div class="control">
+		    <input class="w3-input w3-border control" type="text" id="payment-amount" name="payment-amount" size="8">
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control">Tip</label>
+		<div class="control">
+		    <input class="w3-input w3-border control" type="text" id="payment-tip" name="payment-tip" size="8">
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control top-align">Notes</label>
+		<div class="control">
+		    <textarea class="w3-input w3-border control" id="payment-note" name="payment-note" cols=40 rows=4></textarea>
+		</div>
 	    </div>
 	</div>
 	<div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
-	    <button class="w3-button w3-border" type="submit">Complete Action</button>
+	    <button class="w3-button w3-border" type="submit">Add Payment</button>
 	    <button onclick="document.getElementById('payment').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
 	</div>
     </div>
