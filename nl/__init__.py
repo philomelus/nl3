@@ -29,6 +29,10 @@ def create_app(config_class=Config):
     from nl import main
     app.register_blueprint(main.bp)
 
+    # Register API blueprint
+    from nl import api
+    app.register_blueprint(api.bp, url_prefix='/api')
+    
     # Register authentication blueprint
     from nl import auth
     app.register_blueprint(auth.bp)
