@@ -17,7 +17,18 @@ function payment(cid, name, address, type)
     $('#payment-name').text(name);
     $('#payment-address').text(address);
     $('#payment-dtype').text(type);
-    document.getElementById('payment').style.display='block';
+    $('#payment').css('display', 'block');
+}
+
+function payment_click()
+{
+    // Hide form
+    $('#payment').css('display', 'none');
+
+    // Request payment be added
+
+    // Report success/fail/error message on completion
+    // $('.flashes') add '<div class="">message</div>' 
 }
 
 function service(cid)
