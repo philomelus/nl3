@@ -8,7 +8,8 @@ load_dotenv(os.path.join(basedir, '.env'))
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'thisshouldbemoresecure'
 
-    SQLALCHEMY_DATABASE_URI='mysql+pymysql://newui:newuiNEWUI@gearhart.rnstech.com:3306/newui'
+    #SQLALCHEMY_DATABASE_URI='mysql+pymysql://newui:newuiNEWUI@gearhart.rnstech.com:3306/newui'
+    SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(basedir, 'dev.db')
     SQLALCHEMY_TRACK_MODIFICATIONS=False
     #SQLALCHEMY_ECHO = True
     
