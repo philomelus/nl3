@@ -306,3 +306,120 @@ def inactive():
                            form=form, routeList=routeList, subtitle=subtitle, report=report,
                            doReport=doReport, count=count)
 
+
+@bp.route('/info', methods=('GET', 'POST'))
+@login_required
+def info():
+    form = InfoForm()
+    doReport = False
+
+    if form.validate_on_submit():
+        from nl.models import (
+            Customer,
+            CustomerAddresses,
+            CustomerNames,
+            CustomerTelephones,
+            RouteSequences,
+        )
+
+        def nam(rec):
+            n = rec.first
+            if rec.last:
+                n += ' ' + rec.last
+            return n
+        
+        qry = Customer.query\
+                      .join(RouteSequences, Customer.id==RouteSequences.tag_id)\
+                      .filter(Customer.active=='Y', Customer.routeList=='Y')\
+                      .order_by(Customer.route_id, RouteSequences.order)
+        records = qry.all()
+        report = []
+        for c in records:
+            names = CustomerNames.query.filter(CustomerNames.customer_id==c.id)\
+                                       .order_by(CustomerNames.sequence)\
+                                       .all()
+            addresses = CustomerAddresses.query.filter(CustomerAddresses.customer_id==c.id)\
+                                               .order_by(CustomerAddresses.sequence)\
+                                               .all()
+            telephones = CustomerTelephones.query.filter(CustomerTelephones.customer_id==c.id)\
+                                                 .order_by(CustomerTelephones.sequence)\
+                                                 .all()
+            record = {}
+
+            # Delivery names
+            record['name'] = nam(names[0])
+            if len(names) > 1:
+                for n in names:
+                    if n.sequence == CustomerNames.NAM_DELIVERY2:
+                        record['name2'] = nam(n)
+                        break
+
+            # Delivery address
+            record['address1'] = addresses[0].address1
+            record['address2'] = addresses[0].address2
+            record['city'] = addresses[0].city
+            record['state'] = addresses[0].state
+            record['zip'] = addresses[0].zip
+
+            # Delivery telephones
+            record['telephone1'] = dict(type=telephones[0].type,
+                                        number=telephones[0].number)
+            if len(telephones) > 1:
+                for t in telephones:
+                    if t.sequence == CustomerTelephones.TEL_DELIVERY2:
+                        record['telephone2'] = dict(type=t.type, number=t.number)
+                    elif t.sequence == CustomerTelephones.TEL_DELIVERY3:
+                        record['telephone3'] = dict(type=t.type, number=t.number)
+
+            # Delivery info
+            record['route'] = c.route_id
+            record['type'] = c.type.name
+            record['type_abbr'] = c.type.abbr
+            record['balance'] = c.balance
+            record['notes'] = c.notes
+            record['delivery_note'] = c.deliveryNote
+            record['bill_note'] = c.billNote
+
+            # Rate info
+            record['rate_type'] = c.rateType
+            record['rate_extra'] = c.rateOverride
+            record['rate_final'] = c.rate()
+            
+            # Billing?
+            if len(addresses) > 1:
+                if addresses[0].address1 != addresses[1].address1\
+                   or addresses[0].address2 != addresses[1].address2:
+                    billing = {}
+                    for n in names:
+                        if n.sequence == CustomerNames.NAM_BILLING1:
+                            billing['name'] = nam(n)
+                        elif n.sequence == CustomerNames.NAM_BILLING2:
+                            billing['name2'] = nam(n)
+                    billing['address1'] = addresses[1].address1
+                    billing['address2'] = addresses[1].address2
+                    billing['city'] = addresses[1].city
+                    billing['state'] = addresses[1].state
+                    billing['zip'] = addresses[1].zip
+                    for t in telephones:
+                        if t.sequence == CustomerTelephones.TEL_BILLING1:
+                            billing['telephone1'] = dict(type=t.type, number=t.number)
+                        elif t.sequence == CustomerTelephones.TEL_BILLING2:
+                            billing['telephone2'] = dict(type=t.type, number=t.number)
+                        elif t.sequence == CustomerTelephones.TEL_BILLING3:
+                            billing['telephone3'] = dict(type=t.type, number=t.number)
+                    record['billing'] = billing
+                else:
+                    record['billing'] = None
+            else:
+                record['billing'] = None
+            
+            report.append(record)
+        count = len(report)
+        doReport = True
+    else:
+        count = 0
+        report = []
+    
+    return render_template('customers/reports/info.html',
+                           path='Customer / Reports / Info', form=form,
+                           doReport=doReport, count=count, report=report)

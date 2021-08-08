@@ -1,0 +1,14 @@
+UPDATE customers SET billStart = '2005-05-01' WHERE billStart IS NULL;
+UPDATE customers SET billEnd = '2005-05-01' WHERE billEnd IS NULL;
+UPDATE customers SET billDue = '2005-05-01' WHERE billDue IS NULL;
+UPDATE customers_adjustments SET created = '2005-05-01 08:00:00' WHERE created = '0000-00-00 00:00:00';
+UPDATE customers_adjustments SET updated = '2005-05-01 08:00:00' WHERE updated = '0000-00-00 00:00:00';
+UPDATE customers_bills SET created = '2005-05-01 08:00:00' WHERE created = '0000-00-00 00:00:00';
+UPDATE customers_names SET created = '2005-05-01 08:00:00' WHERE created = '0000-00-00 00:00:00';
+UPDATE customers_names SET updated = '2005-05-01 08:00:00' WHERE updated = '0000-00-00 00:00:00';
+UPDATE customers_rates SET created = '2005-05-01 08:00:00' WHERE created = '0000-00-00 00:00:00';
+UPDATE customers_rates SET updated = '2005-05-01 08:00:00' WHERE updated = '0000-00-00 00:00:00';
+UPDATE routes SET created = '2005-05-01 08:00:00' WHERE created = '0000-00-00 00:00:00';
+UPDATE routes SET updated = '2005-05-01 08:00:00' WHERE updated = '0000-00-00 00:00:00';
+UPDATE routes_changes_notes SET created = '2005-05-01 08:00:00' WHERE created = '0000-00-00 00:00:00';
+UPDATE routes_changes_notes SET updated = '2005-05-01 08:00:00' WHERE updated = '0000-00-00 00:00:00';

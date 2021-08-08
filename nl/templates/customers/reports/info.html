@@ -1,0 +1,251 @@
+{# -*- mode: jinja2; -*- #}
+
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/reports/info.css') }}">
+{% endblock %}
+
+{% block content %}
+    <form class="w3-container w3-margin-top w3-center" method="POST" action="{{ url_for('customers.reports.info') }}">
+	<div class="w3-row">
+	    <div class="left">
+		{{ form.id_.label(class='control') }}
+	    </div>
+	    <div class="right">
+		{{ form.id_(class='w3-input w3-border control') }}
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="left">
+		{{ form.billing.label(class='control') }}
+	    </div>
+	    <div class="right">
+		{{ form.billing(class='w3-input w3-border control') }}
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="right">
+		{{ form.balance.label() }}
+	    </div>
+	    <div class="right">
+		{{ form.balance() }}
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="left">
+		{{ form.notes.label(class='control') }}
+	    </div>
+	    <div class="right">
+		{{ form.notes(class='w3-input w3-border control') }}
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="left">
+		{{ form.delivery_note.label(class='control') }}
+	    </div>
+	    <div class="right">
+		{{ form.delivery_note(class='w3-input w3-border control') }}
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="left">
+		{{ form.billing_note.label(class='control') }}
+	    </div>
+	    <div class="right">
+		{{ form.billing_note(class='w3-input w3-border control') }}
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="left">
+		{{ form.route.label(class='control') }}
+	    </div>
+	    <div class="right">
+		{{ form.route(class='w3-input w3-border control') }}
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="left">
+		{{ form.rate.label(class='control') }}
+	    </div>
+	    <div class="right">
+		{{ form.rate(class='w3-input w3-border control') }}
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="update">
+		Update
+	    </button>
+	</div>
+	{{ form.hidden_tag() }}
+    </form>
+    {% if doReport %}
+	<form class="w3-container w3-margin-top w3-center">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="print" onclick="window.print(); return false;">
+		Print report
+	    </button>
+	    <hr>
+	</form>
+	<div id="report-title">Customers Report</div>
+	<div id="report-subtitle">{{ subtitle }}</div>
+	<table class="w3-table w3-center">
+	    <tbody>
+		{% if count > 0 %}
+		    {% for c in report %}
+			{% if c.billing %}
+			    <tr class="separator">
+				<td class="section">Delivery</td>
+			    </tr>
+		            <tr>
+				<th>Name</th>
+				<td>
+				    {{ c.name }}
+				    {% if c.name2 %}
+					<br>
+					{{ c.name2 }}
+				    {% endif %}
+				</td>
+			    </tr>
+			{% else %}
+			    <tr class="separator">
+				<th>Name</th>
+				<td>
+				    {{ c.name }}
+				    {% if c.name2 %}
+					<br>
+					{{ c.name2 }}
+				    {% endif %}
+				</td>
+			    </tr>
+			{% endif %}
+			
+		        <tr>
+			    <th>Address</th>
+			    <td>
+				{{ c.address1 }}<br>
+				{% if c.address2 %}
+				    {{ c.address2 }}<br>
+				{% endif %}
+				{{ c.city }}
+				{{ c.state }}
+				{{ c.postal }}
+			    </td>
+			</tr>
+		        <tr>
+			    <th>Telephone</th>
+			    <td>
+				{{ c.telephone1.type }}
+				{{ c.telephone1.number }}
+				{% if c.telephone2 %}
+				    <br>
+				    {{ c.telephone2.type }}
+				    {{ c.telephone2.number }}
+				{% endif %}
+				{% if c.telephone3 %}
+				    <br>
+				    {{ c.telephone3.type }}
+				    {{ c.telephone3.number }}
+				{% endif %}
+			    </td>
+			</tr>
+		        <tr>
+			    <th>Route</th>
+			    <td>{{ c.route }}</td>
+			</tr>
+         	        <tr>
+			    <th>Delivery Type</th>
+			    <td>({{ c.type_abbr }})&nbsp;{{ c.type }}<td>
+			</tr>
+		        <tr>
+			    <th>Rate</th>
+			    <td>
+				{% if c.rate_type == 'SURCHARGE' %}
+				    Additional: {{ c.rate_extra }}<br>
+				    Total: {{ c.rate_final }}
+				{% elif c.rate_type == 'OVERRIDE' %}
+				    {{ c.rate_extra }}
+				{% else %}
+				    {{ c.rate_final }}
+				{% endif %}
+			    </td>
+			</tr>
+			<tr>
+			    <th>Balance</th>
+			    <td>{{ c.balance }}</td>
+			</tr>
+			{% if c.notes %}
+		            <tr>
+				<th>Note</th>
+				<td>{{ c.notes }}</td>
+			    </tr>
+			{% endif %}
+			{% if c.delivery_note %}
+			    <tr>
+				<th>Delivery Note</th>
+				<td>{{ c.delivery_note }}</td>
+			    </tr>
+			{% endif %}
+			{% if c.billing_note %}
+			    <tr>
+				<th>Billing Note</th>
+				<td>{{ c.billing_note }}</td>
+			    </tr>
+			{% endif %}
+			{% if c.billing %}
+			    <tr>
+				<td class="section">Billing</td>
+			    </tr>
+			    {% if c.billing.name %}
+				<tr>
+				    <th>Name</th>
+				    <td>
+					{{ c.billing.name }}
+					{% if c.billing.name2 %}
+					    <br>
+					    {{ c.billing.name2 }}
+					{% endif %}
+				    </td>
+				</tr>
+			    {% endif %}
+		            <tr>
+				<th>Address</th>
+				<td>
+				    {{ c.billing.address1 }}<br>
+				    {% if c.billing.address2 %}
+					{{ c.billing.address2 }}<br>
+				    {% endif %}
+				    {{ c.billing.city }}
+				    {{ c.billing.state }}
+				    {{ c.billing.postal }}
+				</td>
+			    </tr>
+			    {% if c.billing.telephone1 %}
+				<tr>
+				    <th>Telephone</th>
+				    <td>
+					{{ c.billing.telephone1.type }}
+					{{ c.billing.telephone1.number }}
+					{% if c.billing.telephone2 %}
+					    <br>
+					    {{ c.billing.telephone2.type }}
+					    {{ c.billing.telephone2.number }}
+					{% endif %}
+					{% if c.billing.telephone3 %}
+					    <br>
+					    {{ c.billing.telephone3.type }}
+					    {{ c.billing.telephone3.number }}
+					{% endif %}
+				    </td>
+				</tr>
+			    {% endif %}
+			{% endif %}
+		    {% endfor %}
+		{% else %}
+		    <tr><td class="w3-center" span="6">None</td></tr>
+		{% endif %}
+	    </tbody>
+	</table>
+    {% endif %}
+    
+{% endblock %}
+

@@ -1,17 +1,34 @@
 
 from flask_wtf import FlaskForm
 from wtforms import (
+    BooleanField,
+    # CheckboxField,
     # DecimalField,
+    # DecimalRangeField,
+    # EmailField,
+    # FieldList,
+    # FileField,
+    # FloatField,
     # FormField,
     HiddenField,
     IntegerField,
-    RadioField,
+    # IntegerRangeField,
+    # MultipleFileField,
+    # PasswordField,
+    # RadioField,
+    # SearchField,
     SelectField,
+    # SelectMultipleField,
     StringField,
     # SubmitField,
+    # TelField,
     # TextAreaField,
+    # URLField,
 )
-from wtforms.fields.html5 import DateField, TimeField
+from wtforms.fields.html5 import (
+    DateField,
+    TimeField,
+)
 from wtforms.validators import Optional, Required
 
 from nl.utils import ignore_yes_no
@@ -21,6 +38,7 @@ __all__ = [
     'AheadForm',
     'BehindForm',
     'InactiveForm',
+    'InfoForm',
 ]
 
 
@@ -38,4 +56,16 @@ class BehindForm(FlaskForm):
 class InactiveForm(FlaskForm):
     action = HiddenField()
     routeList = SelectField('Route List', choices=ignore_yes_no)
+
+
+class InfoForm(FlaskForm):
+    action = HiddenField()
+    id_ = BooleanField('Customer ID')
+    billing = BooleanField('Billing')
+    billing_note = BooleanField('Billing Note')
+    balance = BooleanField('Balance')
+    delivery_note = BooleanField('Delivery Note')
+    notes = BooleanField('Notes')
+    rate = BooleanField('Rate')
+    route = BooleanField('Route')
 

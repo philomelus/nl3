@@ -356,8 +356,8 @@ class CustomerTelephones(db.Model):
     TEL_DELIVERY2 = 2
     TEL_DELIVERY3 = 3
     TEL_BILLING1 = 101
-    TEL_BILLING1 = 102
-    TEL_BILLING1 = 103
+    TEL_BILLING2 = 102
+    TEL_BILLING3 = 103
 
     
 class CustomerTypes(db.Model):
