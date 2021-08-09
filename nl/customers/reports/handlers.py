@@ -317,7 +317,9 @@ def info():
         from nl.models import (
             Customer,
             CustomerAddresses,
+            CustomerAdjustments,
             CustomerNames,
+            CustomerPayments,
             CustomerTelephones,
             RouteSequences,
         )
@@ -345,7 +347,8 @@ def info():
                                                  .order_by(CustomerTelephones.sequence)\
                                                  .all()
             record = {}
-
+            record['id'] = c.id
+            
             # Delivery names
             record['name'] = nam(names[0])
             if len(names) > 1:
@@ -359,7 +362,7 @@ def info():
             record['address2'] = addresses[0].address2
             record['city'] = addresses[0].city
             record['state'] = addresses[0].state
-            record['zip'] = addresses[0].zip
+            record['postal'] = addresses[0].zip
 
             # Delivery telephones
             record['telephone1'] = dict(type=telephones[0].type,
@@ -412,6 +415,43 @@ def info():
                     record['billing'] = None
             else:
                 record['billing'] = None
+
+            # Adjustments?
+            if form.adjustments.data:
+                adjrecs = CustomerAdjustments.query\
+                                             .filter(CustomerAdjustments.customer_id==c.id)\
+                                             .order_by(CustomerAdjustments.period_id,
+                                                       CustomerAdjustments.created,
+                                                       CustomerAdjustments.updated)\
+                                             .all()
+                adjustments = []
+                for adj in adjrecs:
+                    adjustment = {}
+                    adjustment['period'] = adj.period.title
+                    adjustment['amount'] = adj.amount
+                    adjustment['desc'] = adj.desc
+                    adjustments.append(adjustment)
+                record['adjustments'] = adjustments
+            
+            # Payments
+            if form.payments.data:
+                pmtrecs = CustomerPayments.query\
+                                          .filter(CustomerPayments.customer_id==c.id)\
+                                          .order_by(CustomerPayments.period_id,
+                                                    CustomerPayments.date,
+                                                    CustomerPayments.created,
+                                                    CustomerPayments.updated)\
+                                          .all()
+                payments = []
+                for p in pmtrecs:
+                    payment = {}
+                    payment['period'] = p.period.title
+                    payment['amount'] = p.amount
+                    payment['tip'] = p.tip
+                    payment['type'] = p.type
+                    payment['extra1'] = p.extra1
+                    payments.append(payment)
+                record['payments'] = payments
             
             report.append(record)
         count = len(report)

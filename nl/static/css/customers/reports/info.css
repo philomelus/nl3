@@ -1,6 +1,7 @@
 @media screen {
     label.control {
 	display: inline-block;
+	min-width: 200px;
 	vertical-align: baseline;
 	text-align: left;
     }
@@ -13,13 +14,13 @@
     }
 
     div.left {
-	width: 150px;
+	min-width: 300px;
 	display: inline-block;
 	text-align: left;
     }
 
     div.right {
-	width: 150px;
+	min-width: 300px;
 	display: inline-block;
 	text-align: left;
     }
@@ -37,13 +38,17 @@
     tr.separator {
 	border-top: 2px solid black;
     }
-
     .section {
 	font-size: 125%;
 	font-weight: bold;
+	text-decoration: underline;
     }
     th {
 	min-width: 20%;
+    }
+    div.telenum,
+    div.teletype {
+	display: inline-block;
     }
 }
 
@@ -77,6 +82,14 @@
     .section {
 	font-size: 125%;
 	font-weight: bold;
+	text-decoration: underline;
+    }
+    th {
+	min-width: 20%;
+    }
+    div.telenum,
+    div.teletype {
+	display: inline-block;
     }
 }
 

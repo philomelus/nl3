@@ -60,12 +60,15 @@ class InactiveForm(FlaskForm):
 
 class InfoForm(FlaskForm):
     action = HiddenField()
-    id_ = BooleanField('Customer ID')
+    adjustments = BooleanField('Adjustments')
     billing = BooleanField('Billing')
     billing_note = BooleanField('Billing Note')
     balance = BooleanField('Balance')
     delivery_note = BooleanField('Delivery Note')
+    id_ = BooleanField('Customer ID')
     notes = BooleanField('Notes')
+    payments = BooleanField('Payments')
     rate = BooleanField('Rate')
     route = BooleanField('Route')
+    #service = BooleanField('Service Changes')
 
