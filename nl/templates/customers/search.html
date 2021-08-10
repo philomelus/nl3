@@ -9,8 +9,8 @@
 
 {% block content %}
     {% if form.errors %}
-	{% for message in form.errors %}
-	    <div class="error">{{ message }}</div>
+	{% for c,m in form.errors %}
+	    <div class="error">{{ m }}</div>
 	{% endfor %}
     {% endif %}
     <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.search') }}">

@@ -248,7 +248,7 @@ def search():
             # billing
             active = form.billing.data
             if active == '2':
-                qry = qry.filter_by(active='Y')
+                qry = qry.filter_by(active='N')
             elif active == '1':
                 qry = qry.filter_by(active='Y')
 
