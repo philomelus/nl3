@@ -106,4 +106,8 @@
 	</div>
 	{{ form.hidden_tag() }}
     </form>
+    {% if result %}
+	<hr>
+	{{ result|safe }}
+    {% endif %}
 {% endblock %}

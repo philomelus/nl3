@@ -1,6 +1,6 @@
 
 from decimal import Decimal
-from datetime import date, datetime
+from datetime import datetime
 
 from flask import redirect, render_template, url_for
 from flask_login import login_required
@@ -16,46 +16,27 @@ from nl.customers.payments.forms import CreateForm, SearchForm
 def create():
     form = CreateForm()
     if form.validate_on_submit():
-        from nl.models import Configuration, Customer, CustomerPayments
+        import requests
 
-        p = CustomerPayments()
-        p.customer_id = int(form.customer.data)
-        p.created = datetime.today()
-        type_ = form.type_.data
-        if type_ == PaymentType.CHECK.value:
-            p.type = 'CHECK'
-            p.extra1 = form.id_.data
-            p.extra2 = ''
-        elif type_ == PaymentType.MONEYORDER.value:
-            p.type = 'MONEYORDER'
-            p.extra1 = form.id_.data
-            p.extra2 = ''
-        elif type_ == PaymentType.CASH.value:
-            p.type = 'CASH'
-            p.extra1 = p.extra2 = ''
-        elif type_ == PaymentType.CREDIT.value:
-            p.type = 'CREDIT'
-            p.extra1 = p.extra2 = ''
-        p.amount = form.amount.data
-        tip = form.tip.data
-        if tip is None:
-            tip = 0
-        p.tip = tip
-        p.notes = form.notes.data
-        p.period_id = Configuration.get('billing-period')
-        p.date = date.today()
-        db.session.add(p)
+        customer_id = form.customer.data
+        amount = form.amount.data
+        data = dict(customer_id=customer_id,
+                    type=form.type_.data,
+                    tip=form.tip.data,
+                    amount=amount,
+                    notes=form.notes.data)
+        cookies = 
+        r = requests.post(url_for('api.customers.payments.create', _external=True), data)
+        r.raise_for_status()
+        
+        flash_success(f'Added payment of {amount} to customer {customer_id}')
 
-        c = Customer.query.filter_by(id=p.customer_id).first()
-        c.balance = c.balance - Decimal.from_float(p.amount) - Decimal.from_float(p.tip)
-        db.session.commit()
-
-        flash_success(f'Added payment of {p.amount} to customer {p.customer_id}')
-
-        return redirect(url_for('customers.payments.create'))
-    
+        #return redirect(url_for('customers.payments.create'))
+        text = r.text
+    else:
+        text=''
     return render_template('customers/payments/create.html', path='Customers / Payments / Add',
-                           form=form)
+                           form=form, result=text)
 
 
 @bp.route('/search', methods=('GET', 'POST'))

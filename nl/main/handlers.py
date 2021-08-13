@@ -14,7 +14,7 @@ def index():
     from nl.models import (Configuration, Customer, CustomerBills,
                            CustomerTypes, Period, Route)
     import calendar
-    import datetime
+    from datetime import datetime
     
     totalCount = Customer.query.filter(or_(Customer.routeList=='Y',
                                            Customer.active=='Y')).count()
@@ -49,8 +49,8 @@ def index():
         cpdt.append(row)
 
     c = calendar.HTMLCalendar(firstweekday=6)
-    calendar = c.formatmonth(datetime.date.today().year,
-                             datetime.date.today().month)
+    cur = datetime.now().date()
+    calendar = c.formatmonth(cur.year, cur.month)
     
     vars = {
         'path': 'Home',

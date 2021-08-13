@@ -256,7 +256,6 @@ class CustomerNames(db.Model):
 
     customer = db.relationship('Customer', primaryjoin='CustomerNames.customer_id == Customer.id', backref='names')
 
-    # TODO:  These are common for address, names, and telephones ... but not all are used in all of them
     NAM_DELIVERY1 = 1
     NAM_DELIVERY2 = 2
     NAM_BILLING1 = 101

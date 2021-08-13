@@ -18,7 +18,7 @@ def add():
     record = CustomerCombinedBills()
     record.customer_id_main = id1
     record.customer_id_secondary = id2
-    record.created = datetime.today()
+    record.created = datetime.now()
     db.session.add(record)
     db.session.commit()
     flash_success(f'Added additional combined customer successfully.')
@@ -33,7 +33,7 @@ def create():
     record = CustomerCombinedBills()
     record.customer_id_main = id1
     record.customer_id_secondary = id2
-    record.created = datetime.today()
+    record.created = datetime.now()
     db.session.add(record)
     db.session.commit()
     flash_success(f'Created new combined customer successfully.')

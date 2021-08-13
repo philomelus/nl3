@@ -22,13 +22,12 @@ function payment(cid, name, address, type)
 
 function payment_click()
 {
-    // Hide form
-    $('#payment').css('display', 'none');
-
     // Request payment be added
-
+    $("#payment-form").submit()
+    
     // Report success/fail/error message on completion
     // $('.flashes') add '<div class="">message</div>' 
+    $('#payment').css('display', 'none');
 }
 
 function service(cid)
