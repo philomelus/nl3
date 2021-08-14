@@ -1,7 +1,0 @@
-{
-    "require": {
-        "phpoffice/phpspreadsheet": "^1.14",
-        "pear/mail_mime": "^1.10",
-        "pear/mail": "^1.4"
-    }
-}

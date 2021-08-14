@@ -133,3 +133,4 @@ dmypy.json
 nl.old/
 
 *.db
+*.old/

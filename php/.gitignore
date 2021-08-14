@@ -1,8 +1,0 @@
-index.php
-tmpl/tmpl_c/
-
-*.swp
-vendor/
-tmpl/template.tpl
-trace/
-perms
