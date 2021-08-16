@@ -6,20 +6,20 @@ from nl import db
 
 
 __all__ = [
-    'Addresses',
-    'Adjustments',
-    'Bills',
-    'BillLogs',
-    'CombinedBills',
-    'Complaints',
+    'Address',
+    'Adjustment',
+    'Bill',
+    'BillLog',
+    'CombinedBill',
+    'Complaint',
     'Customer',
-    'Names',
-    'Payments',
-    'Rates',
-    'ServiceChanges',
-    'ServiceTypes',
-    'Telephones',
-    'Types',
+    'Name',
+    'Payment',
+    'Rate',
+    'ServiceChange',
+    'ServiceType',
+    'Telephone',
+    'Type',
 ]
 
 class Customer(db.Model):
@@ -29,9 +29,9 @@ class Customer(db.Model):
     __tablename__ = 'customers'
 
     id = db.Column(db.Integer, primary_key=True)
-    route_id = db.Column(db.ForeignKey('Route.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    route_id = db.Column(db.ForeignKey('routes.id', ondelete='RESTRICT', onupdate='CASCADE'),
                          nullable=False, index=True)
-    type_id = db.Column(db.ForeignKey('Type.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    type_id = db.Column(db.ForeignKey('customers_types.id', ondelete='RESTRICT', onupdate='CASCADE'),
                         nullable=False, index=True)
     active = db.Column(db.Enum('N', 'Y'), nullable=False)
     routeList = db.Column(db.Enum('N', 'Y'), nullable=False)
@@ -42,7 +42,7 @@ class Customer(db.Model):
     billBalance = db.Column(db.Numeric(10, 2), nullable=False)
     billStopped = db.Column(db.Enum('N', 'Y'), nullable=False)
     billCount = db.Column(db.SmallInteger, nullable=False)
-    billPeriod = db.Column(db.ForeignKey('Period.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    billPeriod = db.Column(db.ForeignKey('periods.id', ondelete='RESTRICT', onupdate='CASCADE'),
                            nullable=True, index=True)
     billQuantity = db.Column(db.SmallInteger, nullable=False)
     billStart = db.Column(db.Date, nullable=True)
@@ -50,20 +50,20 @@ class Customer(db.Model):
     billDue = db.Column(db.Date, nullable=True)
     balance = db.Column(db.Numeric(10, 2), nullable=False)
     lastPayment = db.Column(db.ForeignKey('Payment.id', ondelete='RESTRICT', onupdate='CASCADE'),
-                            nullabe=True, index=True)
+                            nullable=True, index=True)
     billNote = db.Column(db.Text())
     notes = db.Column(db.Text())
     deliveryNote = db.Column(db.Text(), nullable=False)
 
-    period = db.relationship('Period', primaryjoin='Customer.billPeriod == Period.id')
+    period = db.relationship('Period', primaryjoin='Customer.billPeriod == periods.c.id')
     route = db.relationship('Route', primaryjoin='Customer.route_id == Route.id',
                             backref='customer')
-    type = db.relationship('Types', primaryjoin='Customer.type_id == Types.id',
+    type = db.relationship('Type', primaryjoin='Customer.type_id == customers_types.c.id',
                            backref='customer')
 
     def address(self, sequence=1):
         """Return specific customer address."""
-        return CustomerAddresses.query.filter_by(customer_id=self.id, sequence=sequence).first()
+        return Address.query.filter_by(customer_id=self.id, sequence=sequence).first()
 
     def combineds(self):
         return CombinedBills.query.filter_by(customer_id_main=self.id).all()
@@ -77,7 +77,7 @@ class Customer(db.Model):
             return self.rateOverride
 
         # Locate currently active rate
-        period = Config.get('billing-period')
+        period = Configs.get('billing-period')
         r = Rates.query\
             .filter(Rates.type_id==self.type_id)\
             .filter(Rates.period_id_begin<=period)\
@@ -102,13 +102,13 @@ class Customer(db.Model):
         return Telephones.query.filter_by(customer_id=self.id, sequence=sequence).first()
 
 
-class Addresses(db.Model):
+class Address(db.Model):
     """
     Customer addresses.
     """
     __tablename__ = 'customers_addresses'
 
-    customer_id = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             primary_key=True)
     sequence = db.Column(db.SmallInteger, primary_key=True)  # TODO:  Convert to Integer
     address1 = db.Column(db.String(30), nullable=False)
@@ -117,23 +117,23 @@ class Addresses(db.Model):
     state = db.Column(db.String(2), nullable=False)
     zip = db.Column(db.String(10), nullable=False) # TODO:  Rename to postal
 
-    customer = db.relationship('Customer', primaryjoin='Addresses.customer_id == Customer.id', backref='addresses')
+    customer = db.relationship('Customer', primaryjoin='Address.customer_id == customers.c.id', backref='addresses')
 
     # (types) sequence of addresses
     ADD_DELIVERY = 1
     ADD_BILLING = 101
 
 
-class Adjustments(db.Model):
+class Adjustment(db.Model):
     """
     Details of amounts to charge or credit to customer.  Summarized on bill.
     """
     __tablename__ = 'customers_adjustments'
 
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             nullable=False, index=True)
-    period_id = db.Column(db.ForeignKey('Period.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    period_id = db.Column(db.ForeignKey('periods.id', ondelete='RESTRICT', onupdate='CASCADE'),
                           nullable=True, index=True)
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False)
@@ -141,12 +141,12 @@ class Adjustments(db.Model):
     amount = db.Column(db.Numeric(6, 2), nullable=False)
     note = db.Column(db.Text())
 
-    customer = db.relationship('Customer', primaryjoin='Adjustments.customer_id == Customer.id',
+    customer = db.relationship('Customer', primaryjoin='Adjustment.customer_id == customers.c.id',
                                backref='adjustments')
-    period = db.relationship('Period', primaryjoin='Adjustments.period_id == Period.id')
+    period = db.relationship('Period', primaryjoin='Adjustment.period_id == periods.c.id')
 
 
-class Bills(db.Model):
+class Bill(db.Model):
     """
     Customer bills, for mail merge.
 
@@ -155,7 +155,7 @@ class Bills(db.Model):
     __tablename__ = 'customers_bills'
 
     cid = db.Column(db.String(6), primary_key=True)
-    iid = db.Column(db.ForeignKey('Period.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    iid = db.Column(db.ForeignKey('periods.id', ondelete='RESTRICT', onupdate='CASCADE'),
                     primary_key=True)
     rateType = db.Column(db.Enum('STANDARD', 'REPLACE', 'SURCHARGE'), nullable=False)
     rateOverride = db.Column(db.Numeric(10, 2), nullable=False)
@@ -191,10 +191,10 @@ class Bills(db.Model):
     nt3 = db.Column(db.String(36), nullable=False)
     nt4 = db.Column(db.String(36), nullable=False)
 
-    period = db.relationship('Period', primaryjoin='Bills.iid == Period.id')
+    period = db.relationship('Period', primaryjoin='Bill.iid == Period.id')
 
 
-class BillLogs(db.Model):
+class BillLog(db.Model):
     """
     Detailed process when generating bill.  Usefull to see what a bill was unable to
     be generated without an error.
@@ -210,12 +210,12 @@ class BillLogs(db.Model):
                           nullable=False, index=True)
     what = db.Column(db.String(255), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='BillLogs.customer_id == Customer.id',
+    customer = db.relationship('Customer', primaryjoin='BillLog.customer_id == Customer.id',
                                backref='bill_logs')
-    period = db.relationship('Period', primaryjoin='BillLogs.period_id == Period.id')
+    period = db.relationship('Period', primaryjoin='BillLog.period_id == Period.id')
 
 
-class CombinedBills(db.Model):
+class CombinedBill(db.Model):
     """
     When billing, add secondary bill amount/adjustments/payments to main bill.
     Don't bill secondary directly.
@@ -230,16 +230,16 @@ class CombinedBills(db.Model):
     updated = db.Column(db.DateTime, nullable=False)
 
     
-class Complaints(db.Model):
+class Complaint(db.Model):
     """
     Customer delivery problems.
     """
     __tablename__ = 'customers_complaints'
 
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             nullable=False, index=True)
-    period_id = db.Column(db.ForeignKey('Period.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    period_id = db.Column(db.ForeignKey('periods.id', ondelete='RESTRICT', onupdate='CASCADE'),
                           index=True)
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False)
@@ -253,17 +253,17 @@ class Complaints(db.Model):
     ignoreOnBill = db.Column(db.Enum('N', 'Y'), nullable=False)
     note = db.Column(db.Text())
 
-    customer = db.relationship('Customer', primaryjoin='Complaints.customer_id == Customer.id',
+    customer = db.relationship('Customer', primaryjoin='Complaint.customer_id == Customer.id',
                                backref='complaints')
 
 
-class Names(db.Model):
+class Name(db.Model):
     """
     Customer names.
     """
     __tablename__ = 'customers_names'
 
-    customer_id = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             primary_key=True)
     sequence = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, nullable=False)
@@ -273,7 +273,7 @@ class Names(db.Model):
     last = db.Column(db.String(30), nullable=False)
     surname = db.Column(db.String(10), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='CustomerNames.customer_id == Customer.id',
+    customer = db.relationship('Customer', primaryjoin='Name.customer_id == Customer.id',
                                backref='names')
 
     # sequence types
@@ -283,16 +283,16 @@ class Names(db.Model):
     NAM_BILLING2 = 102
     
 
-class Payments(db.Model):
+class Payment(db.Model):
     """
     Payments from customers.
     """
     __tablename__ = 'customers_payments'
 
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             nullable=False, index=True)
-    period_id = db.Column(db.ForeignKey('Period.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    period_id = db.Column(db.ForeignKey('periods.id', ondelete='RESTRICT', onupdate='CASCADE'),
                           nullable=False, index=True)
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False, server_default=db.FetchedValue())
@@ -304,22 +304,22 @@ class Payments(db.Model):
     tip = db.Column(db.Numeric(10, 2), nullable=False)
     note = db.Column(db.Text())
 
-    customer = db.relationship('Customer', primaryjoin='Payments.customer_id == Customer.id',
+    customer = db.relationship('Customer', primaryjoin='Payment.customer_id == Customer.id',
                                backref='payments')
 
     
-class Rates(db.Model):
+class Rate(db.Model):
     """
     Rates to charge for specific delivery type.
     """
     __tablename__ = 'customers_rates'
 
     id = db.Column(db.Integer, primary_key=True)
-    type_id = db.Column(db.ForeignKey('Types.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    type_id = db.Column(db.ForeignKey('customers_types.id', ondelete='RESTRICT', onupdate='CASCADE'),
                         nullable=False, index=True)
-    period_id_begin = db.Column(db.ForeignKey('Period.id', onupdate='CASCADE'),
+    period_id_begin = db.Column(db.ForeignKey('periods.id', onupdate='CASCADE'),
                                 nullable=False, index=True)
-    period_id_end = db.Column(db.ForeignKey('Period.id', onupdate='CASCADE'),
+    period_id_end = db.Column(db.ForeignKey('periods.id', onupdate='CASCADE'),
                               nullable=True, index=True)
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False)
@@ -327,19 +327,19 @@ class Rates(db.Model):
     daily_credit = db.Column(db.Numeric(6, 2), nullable=False)
     sunday_credit = db.Column(db.Numeric(6, 2), nullable=False)
 
-    type = db.relationship('Types', primaryjoin='Rates.type_id == Types.id', backref='rates')
+    type = db.relationship('Type', primaryjoin='Rate.type_id == Type.id', backref='rates')
 
 
-class ServiceChanges(db.Model):
+class ServiceChange(db.Model):
     """
     Customer delivery status changes.
     """
     __tablename__ = 'customers_service'
 
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             nullable=False, index=True)
-    period_id = db.Column(db.ForeignKey('Period.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    period_id = db.Column(db.ForeignKey('periods.id', ondelete='RESTRICT', onupdate='CASCADE'),
                           nullable=True, index=True)
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False)
@@ -349,43 +349,43 @@ class ServiceChanges(db.Model):
     ignoreOnBill = db.Column(db.Enum('N', 'Y'), nullable=False)
     note = db.Column(db.Text())
 
-    customer = db.relationship('Customer', primaryjoin='ServicesChanges.customer_id == Customer.id',
+    customer = db.relationship('Customer', primaryjoin='ServiceChange.customer_id == Customer.id',
                                backref='service_changes')
 
 
-class ServiceTypes(db.Model):
+class ServiceType(db.Model):
     """
     Customer changing from one delivery type to another.
     """
     __tablename__ = 'customers_service_types'
 
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             nullable=False, index=True)
-    period_id = db.Column(db.ForeignKey('Period.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    period_id = db.Column(db.ForeignKey('periods.id', ondelete='RESTRICT', onupdate='CASCADE'),
                           nullable=True, index=True)
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False)
     when = db.Column(db.Date, nullable=False)
     why = db.Column(db.String(), nullable=False)
-    type_id_from = db.Column(db.ForeignKey('Types.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    type_id_from = db.Column(db.ForeignKey('customers_types.id', ondelete='RESTRICT', onupdate='CASCADE'),
                              nullable=False, index=True)
-    type_id_to = db.Column(db.ForeignKey('Types.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    type_id_to = db.Column(db.ForeignKey('customers_types.id', ondelete='RESTRICT', onupdate='CASCADE'),
                            nullable=False, index=True)
     ignoreOnBill = db.Column(db.Enum('N', 'Y'), nullable=False)
     note = db.Column(db.Text())
 
-    customer = db.relationship('Customer', primaryjoin='ServiceTypes.customer_id == Customer.id',
+    customer = db.relationship('Customer', primaryjoin='ServiceType.customer_id == Customer.id',
                                backref='service_types')
 
 
-class Telephones(db.Model):
+class Telephone(db.Model):
     """
     Customers telephones.
     """
     __tablename__ = 'customers_telephones'
 
-    customer_id = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             nullable=False, primary_key=True)
     sequence = db.Column(db.SmallInteger, nullable=False, primary_key=True)
     created = db.Column(db.DateTime, nullable=False)
@@ -393,7 +393,7 @@ class Telephones(db.Model):
     type = db.Column(db.String(20), nullable=False)
     number = db.Column(db.String(30), nullable=False)
 
-    customer = db.relationship('Customer', primaryjoin='Telephones.customer_id == Customer.id',
+    customer = db.relationship('Customer', primaryjoin='Telephone.customer_id == Customer.id',
                                backref='telephones')
 
     # sequence values
@@ -405,7 +405,7 @@ class Telephones(db.Model):
     TEL_BILLING3 = 103
 
     
-class Types(db.Model):
+class Type(db.Model):
     """
     Customer delivery type.
     """
