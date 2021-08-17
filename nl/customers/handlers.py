@@ -168,7 +168,7 @@ def css():
 
     from nl.models.customers import Type
 
-    types = CustomerTypes.query.all()
+    types = Type.query.all()
     css = '.dt0000 { background-color: white; }\n'
     for t in types:
         css += f'.dt{t.id:04d} {{ background-color: #{t.color:06x}; }}\n'
