@@ -1,0 +1,83 @@
+{# -*- mode: jinja2; -*- #}
+
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/reports/behind.css') }}">
+{% endblock %}
+
+{% block content %}
+    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.reports.behind') }}">
+	<div class="w3-row">
+	    <div class="control">
+		<input class="w3-input w3-border control" id="one" type="radio" name="what" value="one"{{ one }}>
+		<label class="control" for="one">Behind 1 period</label>
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="control">
+		<input class="w3-input w3-border control" id="many" type="radio" name="what" value="many"{{ many }}>
+		<label class="control" for="many">Behind more than 1 period</label>
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="control">
+		<input class="w3-input w3-border control" id="nopmts" type="radio" name="what" value="nopmts"{{ nopmts }}>
+		<label class="control" for="nopmts">Behind more than 1 period and have No Payments</label>
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="update">
+		Update
+	    </button>
+	</div>
+	{{ form.hidden_tag() }}
+    </form>
+    {% if doReport %}
+	<form class="w3-container w3-margin-top w3-center">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="print" onclick="window.print(); return false;">
+		Print report
+	    </button>
+	    <hr>
+	</form>
+	<div id="report-title">{{ report_title }}</div>
+	<div id="report-sub-title">{{ subtitle }}</div>
+	<table class="w3-table w3-bordered w3-center">
+	    <thead>
+		<tr>
+		    <th>Account</th>
+		    <th>Name</th>
+		    <th>Address</th>
+		    <th>Telephone</th>
+		    <th>Start Date</th>
+		    <th>Type</th>
+		    <th>Route</th>
+		    <th>Balance</th>
+		</tr>
+	    </thead>
+	    <tbody>
+		{% if count > 0 %}
+		    {% for c in report %}
+			<tr class="dt{{ '%04d'|format(c.tid) }}">
+			    <td>{{ '%06d'|format(c.id) }}</td>
+			    <td>{{ c.name }}</td>
+			    <td>{{ c.address }}</td>
+			    <td>{{ c.telephone }}</td>
+			    <td>{{ c.started }}</td>
+			    <td>{{ c.type }}</td>
+			    <td>{{ c.route }}</td>
+			    {% if c.balance < 0 %}
+				<td>$<span class="w3-text-red">{{ c.balance }}</span></td>
+			    {% else %}
+				<td>${{ c.balance }}</td>
+			    {% endif %}
+			</tr>
+		    {% endfor %}
+		{% else %}
+		    <tr><td colspan="8" class="w3-center">None</td></tr>
+		{% endif %}
+	    </tbody>
+	</table>
+    {% endif %}
+{% endblock %}
+

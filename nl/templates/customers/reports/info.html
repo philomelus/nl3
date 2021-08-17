@@ -1,0 +1,274 @@
+{# -*- mode: jinja2; -*- #}
+
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/reports/info.css') }}">
+{% endblock %}
+
+{% macro oneortwo(one, two) %}
+    {{ one }}
+    {% if two %}
+	<br>
+	{{ two }}
+    {% endif %}
+{% endmacro %}
+
+{% macro header(billing, id, c) %}
+    {% if billing %}
+	<tr class="separator">
+	    <td class="section">Delivery</td>
+	</tr>
+	{% if id %}
+	    <tr>
+		<th>Customer ID</th>
+		<td>{{ '%06d'|format(c.id) }}</td>
+	    </tr>
+	{% endif %}
+        <tr>
+	    <th>Name</th>
+	    <td>{{ oneortwo(c.name, c.name2) }}</td>
+	</tr>
+    {% else %}
+	{% if id %}
+	    <tr class="separator">
+		<th>Customer ID</th>
+		<td>{{ '%06d'|format(c.id) }}</td>
+	    </tr>
+            <tr>
+		<th>Name</th>
+		<td>{{ oneortwo(c.name, c.name2) }}</td>
+	    </tr>
+	{% else %}
+            <tr class="separator">
+		<th>Name</th>
+		<td>{{ oneortwo(c.name, c.name2) }}</td>
+	    </tr>
+	{% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro control(left, field) %}
+    {% if left %}
+	<div class="left">
+	    {{ field.label(class='control') }}
+	    {{ field(class='w3-input w3-border control') }}
+	</div>
+    {% else %}
+	<div class="right">
+	    {{ field.label(class='control') }}
+	    {{ field(class='w3-input w3-border control') }}
+	</div>
+    {% endif %}
+{% endmacro %}
+
+{% macro row(left, right=None) %}
+    <div class="w3-row">
+	{{ control(True, left) }}
+	{% if right %}
+	    {{ control(False, right) }}
+	{% else %}
+	    <div class="right">&nbsp;</div>
+	{% endif %}
+    </div>
+{% endmacro %}
+
+{% macro tele(rec) %}
+    <div class="telenum">{{ rec.number }}</div>
+    &nbsp;&nbsp;<div class="teletype">{{ rec.type }}</div>
+{% endmacro %}
+
+{% macro teles(one, two, three) %}
+    {{ tele(one) }}
+    {% if two %}
+	<br>
+	{{ tele(two) }}
+    {% endif %}
+    {% if three %}
+	<br>
+	{{ tele(three) }}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+    <form class="w3-container w3-margin-top w3-center" method="POST" action="{{ url_for('customers.reports.info') }}">
+	{{ row(form.adjustments, form.billing) }}
+	{{ row(form.billing_note, form.balance) }}
+	{{ row(form.delivery_note, form.id_) }}
+	{{ row(form.notes, form.payments) }}
+	{{ row(form.rate, form.route) }}
+	<div class="w3-row">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="update">
+		Update
+	    </button>
+	</div>
+	{{ form.hidden_tag() }}
+    </form>
+    {% if doReport %}
+	<form class="w3-container w3-margin-top w3-center">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="print" onclick="window.print(); return false;">
+		Print report
+	    </button>
+	    <hr>
+	</form>
+	<div id="report-title">Customers Report</div>
+	<div id="report-subtitle">{{ subtitle }}</div>
+	<table class="w3-table w3-center">
+	    <tbody>
+		{% if count > 0 %}
+		    {% for c in report %}
+			{{ header(form.billing.data and c.billing, form.id_.data, c) }}
+		        <tr>
+			    <th>Address</th>
+			    <td>
+				{{ oneortwo(c.address1, c.address2) }}<br>
+				{{ c.city }},&nbsp;{{ c.state }}&nbsp;&nbsp;{{ c.postal }}
+			    </td>
+			</tr>
+		        <tr>
+			    <th>Telephone</th>
+			    <td>{{ teles(c.telephone1, c.telephone2, c.telephone3) }}</td>
+			</tr>
+			{% if form.route.data %}
+		            <tr>
+				<th>Route</th>
+				<td>{{ c.route }}</td>
+			    </tr>
+			{% endif %}
+         	        <tr>
+			    <th>Delivery Type</th>
+			    <td>({{ c.type_abbr }})&nbsp;{{ c.type }}<td>
+			</tr>
+			{% if form.rate.data %}
+		            <tr>
+				<th>Rate</th>
+				<td>
+				    {% if c.rate_type == 'SURCHARGE' %}
+					Additional: {{ c.rate_extra }}<br>
+					Total: {{ c.rate_final }}
+				    {% elif c.rate_type == 'OVERRIDE' %}
+					{{ c.rate_extra }}
+				    {% else %}
+					{{ c.rate_final }}
+				    {% endif %}
+				</td>
+			    </tr>
+			{% endif %}
+			{% if form.balance.data %}
+			    <tr>
+				<th>Balance</th>
+				<td>{{ c.balance }}</td>
+			    </tr>
+			{% endif %}
+			{% if form.notes.data and c.notes %}
+		            <tr>
+				<th>Note</th>
+				<td>{{ c.notes }}</td>
+			    </tr>
+			{% endif %}
+			{% if form.delivery_note.data and c.delivery_note %}
+			    <tr>
+				<th>Delivery Note</th>
+				<td>{{ c.delivery_note }}</td>
+			    </tr>
+			{% endif %}
+			{% if form.billing_note.data and c.billing_note %}
+			    <tr>
+				<th>Billing Note</th>
+				<td>{{ c.billing_note }}</td>
+			    </tr>
+			{% endif %}
+			{% if form.billing.data and c.billing %}
+			    <tr>
+				<td class="section">Billing</td>
+			    </tr>
+			    {% if c.billing.name %}
+				<tr>
+				    <th>Name</th>
+				    <td>
+					{{ c.billing.name }}
+					{% if c.billing.name2 %}
+					    <br>
+					    {{ c.billing.name2 }}
+					{% endif %}
+				    </td>
+				</tr>
+			    {% endif %}
+		            <tr>
+				<th>Address</th>
+				<td>
+				    {{ oneortwo(c.billing.address1, c.billing.address2) }}<br>
+				    {{ c.billing.city }},&nbsp;{{ c.billing.state }}&nbsp;&nbsp;{{ c.billing.postal }}
+				</td>
+			    </tr>
+			    {% if c.billing.telephone1 %}
+				<tr>
+				    <th>Telephone</th>
+				    <td>{{ teles(c.billing.telephone1, c.billing.telephone2, c.billing.telephone3) }}</td>
+				</tr>
+			    {% endif %}
+			{% endif %}
+			{% if form.adjustments.data %}
+			    <tr>
+				<th>Adjustments</th>
+				<td>
+				    <table>
+					<thead>
+					    <tr>
+						<th>Period</th>
+						<th>Amount</th>
+						<th>Description</th>
+					    </tr>
+					</thead>
+					<tbody>
+					    {% for a in c.adjustments %}
+						<tr>
+						    <td>{{ a.period }}</td>
+					            <td>${{ '%02.2f'|format(a.amount) }}</td>
+						    <td>{{ a.desc }}</td>
+						</tr>
+					    {% endfor %}
+					</tbody>
+				    </table>
+				</td>
+			    </tr>
+			{% endif %}
+			{% if form.payments.data %}
+			    <tr>
+				<th>Payments</th>
+				<td>
+				    <table>
+					<thead>
+					    <tr>
+						<th>Period</th>
+						<th>Type</th>
+						<th>Amount</th>
+						<th>Tip</th>
+						<th>ID</th<
+					    </tr>
+					</thead>
+					<tbody>
+					    {% for p in c.payments %}
+						<tr>
+						    <td>{{ p.period }}</td>
+						    <td>{{ p.type }}</td>
+					            <td>${{ '%02.2f'|format(p.amount) }}</td>
+						    <td>{{ '%02.2f'|format(p.tip) }}</td>
+						    <td>{{ p.extra1 }}</td>
+						</tr>
+					    {% endfor %}
+					</tbody>
+				    </table>
+				</td>
+			    </tr>
+			{% endif %}
+		    {% endfor %}
+		{% else %}
+		    <tr><td class="w3-center" span="6">None</td></tr>
+		{% endif %}
+	    </tbody>
+	</table>
+    {% endif %}
+    
+{% endblock %}
+

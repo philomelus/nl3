@@ -20,12 +20,12 @@ class Config(db.Model):
     key = db.Column(db.String(255), primary_key=True)
     value = db.Column(db.String(255), nullable=False)
 
-    # @staticmethod
-    # def get(key, default=None):
-    #     value = Config.query.filter_by(key=key).first().value
-    #     if value is None:
-    #         return default
-    #     return value
+    @staticmethod
+    def get(key, default=None):
+        value = Config.query.filter_by(key=key).first().value
+        if value is None:
+            return default
+        return value
 
 
 # class GroupConfig(db.Model):

@@ -21,6 +21,10 @@ class Route(db.Model):
     title = db.Column(db.String(20), nullable=False)
     active = db.Column(db.Enum('N', 'Y'), nullable=False)
 
+    #customers = db.relationship('Customer', primaryjoin='Route.id == customers.c.route_id')
+    sequences = db.relationship('Sequence', primaryjoin='Route.id == routes_sequence.c.route_id',
+                                backref='route')
+    
 
 class ChangeNote(db.Model):
     """
@@ -55,8 +59,8 @@ class Sequence(db.Model):
                          primary_key=True)
     order = db.Column(db.Integer, nullable=False)
 
-    route = db.relationship('Route', primaryjoin='Sequence.route_id == Route.id',
-                            backref='sequences')
-    customer = db.relationship('Customer', primaryjoin='Sequence.tag_id == Customer.id',
+#    route = db.relationship('Route', primaryjoin='Sequence.route_id == routes.c.id',
+#                            backref='sequences')
+    customer = db.relationship('Customer', primaryjoin='Sequence.tag_id == customers.c.id',
                                backref='sequence')
     

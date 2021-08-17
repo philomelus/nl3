@@ -1,0 +1,111 @@
+{# -*- mode: jinja2; -*- #}
+
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/combined/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.combined.index') }}">
+    <button type="submit" name="action" value="Refresh" class="w3-button w3-border">
+	<img src="{{ url_for('static', filename='img/refresh.png') }}" alt="Refresh"/>
+    </button>
+    <button onclick="create_combined(); return false;" class="w3-button w3-border">
+	<img src="{{ url_for('static', filename='img/add_s.png') }}" alt="Add New"/>
+    </button>
+    <table class="w3-table w3-bordered w3-margin-top centered">
+        <thead>
+            <tr>
+                <th class="w3-center" colspan="2">{{ count }}</th>
+                <th>Main ID</th>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Second ID</th>
+                <th>Name</th>
+                <th colspan="3">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+	    {% for c in combined %}
+		{% if c.count > 1 %}
+		    <tr>
+			<td class="icon-link">
+			    <img onclick="delete_combined({{ c.id }}, {{ c.others[0].id }})" src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete Combined Customer">
+			</td>
+			<td class="icon-link">
+			    <img onclick="add_combined({{ c.id }})" src="{{ url_for('static', filename='img/add.png') }}" alt="A" title="Add another Customer to this Combined Customer">
+			</td>
+			<td>{{ '%06d'|format(c.id) }}</td>
+			<td>{{ c.name }}</td>
+			<td>{{ c.address }}</td>
+			<td>{{ '%06d'|format(c.others[0].id) }}</td>
+			<td>{{ c.others[0].name }}</td>
+			<td>{{ c.others[0].address }}</td>
+			<td class="icon-link">
+			    <img onclick="update_combined({{ c.id }},{{ c.others[0].id }})" src="{{ url_for('static', filename='img/edit.png') }}" alt="E" title="Edit this Combined Customer">
+			</td>
+			<td class="icon-link">
+			    <img onclick="delete_combined({{ c.id }}, {{ c.others[0].id }})" src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete this Combined Customer">
+			</td>
+		    </tr>
+		    {% for o in c.others[1:] %}
+			<tr>
+			    <td class="icon-link">&nbsp;</td>
+			    <td class="icon-link">&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>&nbsp;</td>
+			    <td>{{ '%06d'|format(o.id) }}</td>
+			    <td>{{ o.name }}</td>
+			    <td>{{ o.address }}</td>
+			    <td class="icon-link">
+				<img onclick="update_combined({{ c.id }},{{ o.id }})" src="{{ url_for('static', filename='img/edit.png') }}" alt="E" title="Edit this Combined Customer">
+			    </td>
+			    <td class="icon-link">
+				<img onclick="delete_combined({{ c.id }},{{ o.id }})" src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete this Combined Customer">
+			    </td>
+			</tr>
+		    {% endfor %}
+		{% else %}
+		    <tr>
+			<td class="icon-link">
+			    <img onclick="delete_combined({{ c.id }}, {{ c.others[0].id }})" src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete Combined Customer">
+			</td>
+			<td class="icon-link">
+			    <img onclick="add_combined({{ c.id }})" src="{{ url_for('static', filename='img/add.png') }}" alt="A" title="Add another Customer to this Combined Customer">
+			</td>
+			<td>{{ '%06d'|format(c.id) }}</td>
+			<td>{{ c.name }}</td>
+			<td>{{ c.address }}</td>
+			<td>{{ '%06d'|format(c.others[0].id) }}</td>
+			<td>{{ c.others[0].name }}</td>
+			<td>{{ c.others[0].address }}</td>
+			<td class="icon-link">
+			    <img onclick="update_combined({{ c.id }},{{ c.others[0].id }})" src="{{ url_for('static', filename='img/edit.png') }}" alt="E" title="Edit this Combined Customer">
+			</td>
+			<td class="icon-link">&nbsp;</td>
+		    </tr>
+		{% endif %}
+	    {% endfor %}
+	</tbody>
+    </table>
+</form>
+<div id="create" class="w3-modal">
+    {% include 'customers/combined/create.html' %}
+</div>
+<div id="add" class="w3-modal">
+    {% include 'customers/combined/add.html' %}
+</div>
+<div id="update" class="w3-modal">
+    {% include 'customers/combined/update.html' %}
+</div>
+<div id="delete">
+    {% include 'customers/combined/delete.html' %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/customers/combined/index.js') }}"></script>
+{% endblock %}

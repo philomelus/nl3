@@ -1,35 +1,30 @@
 
 from pprint import pprint
 
-from flask import current_app
 from sqlalchemy import distinct, func, select, and_, or_
 
-from nl import create_app, db
+import nl
+from nl import app, db
 from nl import models
 from nl.models import auth, config, customers, routes
 
 
-app = create_app()
-
 @app.shell_context_processor
 def make_shell_context():
     return {
-        'app': current_app,
+        'app': app,
         'db': db,
-        'security': current_app.security,
+        'security': app.security,
+        'user_store': app.user_datastore,
         # nl.models
-        'AuditLog': models.AuditLog,
         'Error': models.Error,
         'Period': models.Period,
         # nl.models.auth
-        #'Group': Group,
         'Role': auth.Role,
-        #'Security': Security,
         'RolesUsers': auth.RolesUsers,
         'User': auth.User,
         # nl.models.config
         'Config': config.Config,
-        #'GroupConfig': GroupConfig,
         'UserConfig': config.UserConfig,
         # nl.models.customers
         'Customer': customers.Customer,
@@ -48,8 +43,8 @@ def make_shell_context():
         'Type': customers.Type,
         # nl.models.routes
         'Route': routes.Route,
-        'ChangeNotes': routes.ChangeNote,
-        'Sequences': routes.Sequence,
+        'ChangeNote': routes.ChangeNote,
+        'Sequence': routes.Sequence,
         # sqlalchemy
         'distinct': distinct,
         'func': func,

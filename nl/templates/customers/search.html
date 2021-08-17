@@ -1,0 +1,197 @@
+{# -*- mode: jinja2; -*- #}
+
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customers/search.css') }}">
+<link rel="stylesheet" href="{{ url_for('customers.css') }}">
+{% endblock %}
+
+{% block content %}
+    {% if form.errors %}
+	{% for c,m in form.errors %}
+	    <div class="error">{{ m }}</div>
+	{% endfor %}
+    {% endif %}
+    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.search') }}">
+	<div class="w3-row">
+            <div class="left">
+		{{ form.customer.label(class_='control') }}
+		{{ form.customer(size=6, class_='w3-input w3-border control') }}
+		<button class="w3-button w3-border" type="submit" onclick="return false;" tabindex="2">
+		    <img src="{{ url_for('static', filename='img/view.png') }}" alt="V">
+		</button>
+		<button class="w3-button w3-border" type="submit" onclick="return false;" tabindex="3">
+		    <img src="{{ url_for('static', filename='img/edit.png') }}" alt="E">
+		</button>
+		{% for error in form.customer.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+            </div>
+            <div class="gutter">&nbsp;</div>
+            <div class="right">
+		{{ form.route.label(class_='control') }}
+		{{ form.route(class_='w3-select w3-border control') }}
+		{% for error in form.route.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+	    </div>
+	</div>
+	<div class="w3-row">
+            <div class="left">
+		{{ form.telephone.label(class_='control') }}
+		{{ form.telephone(size=30, class_='w3-input w3-border control') }}
+		{% for error in form.telephone.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+            </div>
+            <div class="gutter">&nbsp;</div>
+            <div class="right">
+		{{ form.dtype.label(class_='control') }}
+		{{ form.dtype(class_='w3-select w3-border control') }}
+		{% for error in form.dtype.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+            </div>
+	</div>
+	<div class="w3-row">
+            <div class="left">
+		{{ form.name.label(class_='control') }}
+		{{ form.name(size="30", class_='w3-input w3-border control') }}
+		{% for error in form.name.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+            </div>
+            <div class="gutter">&nbsp;</div>
+            <div class="right">
+		{{ form.routeList.label(class_='control') }}
+		{{ form.routeList(class_='w3-select w3-border control') }}
+		{% for error in form.routeList.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+            </div>
+	</div>
+	<div class="w3-row">
+            <div class="left">
+		{{ form.address.label(class_='control') }}
+		{{ form.address(size=30, class_='w3-input w3-border control') }}
+		{% for error in form.address.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+            </div>
+            <div class="gutter">&nbsp;</div>
+            <div class="right">
+		{{ form.billing.label(class_='control') }}
+		{{ form.billing(class_='w3-select w3-border control') }}
+		{% for error in form.billing.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+            </div>
+	</div>
+	<div class="row">
+            <div class="left">
+		{{ form.postal.label(class_='control') }}
+		{{ form.postal(size=10, class_='w3-input w3-border control') }}
+		{% for error in form.postal.errors %}
+		    <div class="error">[{{ error }}]</div>
+		{% endfor %}
+            </div>
+            <div class="gutter">&nbsp;</div>
+            <div class="right">&nbsp;</div>
+	</div>
+	<div class="w3-row w3-margin-top">
+	    {{ paginate|safe }}
+	</div>
+	{{ form.hidden_tag() }}
+    </form>
+    {% if doResults %}
+	<table class="w3-table w3-bordered w3-margin-top">
+	    <thead>
+		<tr>
+		    <th colspan="7">{{ count }}</th>
+		    <th>ID</th>
+		    <th>Name</th>
+		    <th>Address</th>
+		    <th>Telephone</th>
+		    <th>Route</th>
+		    <th>Type</th>
+		    <th>Balance</th>
+		</tr>
+	    </thead>
+	    <tbody>
+		{% if count > 0 %}
+    		    {% for c in customers %}
+			<tr class="dt{{ '%04d'|format(c.type_id) }}">
+			    <td class="icon-link">
+				<img onclick="payment({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+				     src="{{ url_for('static', filename='img/payments.png') }}" alt="P" title="Add payment for Customer">
+			    </td>
+			    <td class="icon-link">
+				{% if c.type == flagStopId %}
+				    <img onclick="service({{ c.id }})" src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Start and/or Stop for Customer">
+				{% else %}
+				    <img onclick="service({{ c.id }})" src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Stop and/or Start for Customer">
+				{% endif %}
+			    </td>
+			    <td class="icon-link">
+				<img onclick="complaint({{ c.id }})" src="{{ url_for('static', filename='img/complaints.png') }}" alt="C" title="Add Complaint by Customer">
+			    </td>
+			    <td class="icon-link">
+				<img onclick="adjustment({{ c.id }})" src="{{ url_for('static', filename='img/adjustments.png') }}" alt="A" title="Add Adjustment for Customer">
+			    </td>
+			    <td class="icon-link">
+				<img onclick="type({{ c.id }})" src="{{ url_for('static', filename='img/changes.png') }}" alt="T" title="Change Customer Delivery Type">
+			    </td>
+			    <td class="icon-link">
+				<img onclick="view({{ c.id }})" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
+			    </td>
+			    <td class="icon-link">
+				<img onclick="update({{ c.id }})" src="{{ url_for('static', filename='img/edit.png') }}" alt="E" title="Edit Customer">
+			    </td>
+			    <td>{{ '%06d'|format(c.id) }}</td>
+			    <td>{{ c.name }}</td>
+			    <td>{{ c.address }}</td>
+			    <td>{{ c.telephone }}</td>
+			    <td>{{ c.route }}</td>
+			    <td>{{ c.type }}</td>
+			    {% if c.balance < 0 %}
+				<td class="w3-text-red">{{ c.balance }}</td>
+			    {% else %}
+				<td>${{ c.balance }}</td>
+			    {% endif %}
+			</tr>
+		    {% endfor %}
+		{% else %}
+		    <tr><td class="w3-center" colspan="14">None</td></tr>
+		{% endif %}
+	    </tbody>
+	</table>
+    {% endif %}
+    <div id="adjustment" class="w3-modal">
+	{% include 'customers/popups/adjustment.html' %}
+    </div>
+    <div id="complaint" class="w3-modal">
+	{% include 'customers/popups/complaint.html' %}
+    </div>
+    <div id="payment" class="w3-modal">
+	{% include 'customers/popups/payment.html' %}
+    </div>
+    <div id="service" class="w3-modal">
+	{% include 'customers/popups/service.html' %}
+    </div>
+    <div id="type" class="w3-modal">
+	{% include 'customers/popups/type.html' %}
+    </div>
+    <div id="update" class="w3-modal">
+	{% include 'customers/popups/update.html' %}
+    </div>
+    <div id="view" class="w3-modal">
+	{% include 'customers/popups/view.html' %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/customers/search.js') }}"></script>
+{% endblock %}
+

@@ -49,17 +49,16 @@ class Customer(db.Model):
     billEnd = db.Column(db.Date, nullable=True)
     billDue = db.Column(db.Date, nullable=True)
     balance = db.Column(db.Numeric(10, 2), nullable=False)
-    lastPayment = db.Column(db.ForeignKey('Payment.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    lastPayment = db.Column(db.ForeignKey('customers_payments.id', ondelete='RESTRICT', onupdate='CASCADE'),
                             nullable=True, index=True)
     billNote = db.Column(db.Text())
     notes = db.Column(db.Text())
     deliveryNote = db.Column(db.Text(), nullable=False)
 
     period = db.relationship('Period', primaryjoin='Customer.billPeriod == periods.c.id')
-    route = db.relationship('Route', primaryjoin='Customer.route_id == Route.id',
-                            backref='customer')
-    type = db.relationship('Type', primaryjoin='Customer.type_id == customers_types.c.id',
-                           backref='customer')
+    route = db.relationship('Route', primaryjoin='Customer.route_id == routes.c.id',
+                            backref='customers')
+    type = db.relationship('Type', primaryjoin='Customer.type_id == customers_types.c.id')
 
     def address(self, sequence=1):
         """Return specific customer address."""
@@ -73,16 +72,18 @@ class Customer(db.Model):
         Return the customers current rate.
         """
         # Simply replace standard rate?
+        from nl.models.config import Config
+        
         if self.rateType == 'REPLACE':
             return self.rateOverride
 
         # Locate currently active rate
-        period = Configs.get('billing-period')
-        r = Rates.query\
-            .filter(Rates.type_id==self.type_id)\
-            .filter(Rates.period_id_begin<=period)\
-            .filter(or_(Rates.period_id_end>=period,
-                        Rates.period_id_end==None))\
+        period = Config.get('billing-period')
+        r = Rate.query\
+            .filter(Rate.type_id == self.type_id)\
+            .filter(Rate.period_id_begin <= period)\
+            .filter(or_(Rate.period_id_end >= period,
+                        Rate.period_id_end == None))\
             .first()
 
         # Standard rate
@@ -95,11 +96,11 @@ class Customer(db.Model):
         
     def name(self, sequence=1):
         """Return specific customer name."""
-        return Names.query.filter_by(customer_id=self.id, sequence=sequence).first()
+        return Name.query.filter_by(customer_id=self.id, sequence=sequence).first()
     
     def telephone(self, sequence=1):
         """Return specific customer telephone."""
-        return Telephones.query.filter_by(customer_id=self.id, sequence=sequence).first()
+        return Telephone.query.filter_by(customer_id=self.id, sequence=sequence).first()
 
 
 class Address(db.Model):
@@ -117,7 +118,8 @@ class Address(db.Model):
     state = db.Column(db.String(2), nullable=False)
     zip = db.Column(db.String(10), nullable=False) # TODO:  Rename to postal
 
-    customer = db.relationship('Customer', primaryjoin='Address.customer_id == customers.c.id', backref='addresses')
+    customer = db.relationship('Customer', primaryjoin='Address.customer_id == customers.c.id',
+                               backref='addresses', lazy="noload")
 
     # (types) sequence of addresses
     ADD_DELIVERY = 1
@@ -142,7 +144,7 @@ class Adjustment(db.Model):
     note = db.Column(db.Text())
 
     customer = db.relationship('Customer', primaryjoin='Adjustment.customer_id == customers.c.id',
-                               backref='adjustments')
+                               backref='adjustments', lazy="noload")
     period = db.relationship('Period', primaryjoin='Adjustment.period_id == periods.c.id')
 
 
@@ -191,7 +193,8 @@ class Bill(db.Model):
     nt3 = db.Column(db.String(36), nullable=False)
     nt4 = db.Column(db.String(36), nullable=False)
 
-    period = db.relationship('Period', primaryjoin='Bill.iid == Period.id')
+    period = db.relationship('Period', primaryjoin='Bill.iid == Period.id',
+                             lazy="noload")
 
 
 class BillLog(db.Model):
@@ -211,8 +214,9 @@ class BillLog(db.Model):
     what = db.Column(db.String(255), nullable=False)
 
     customer = db.relationship('Customer', primaryjoin='BillLog.customer_id == Customer.id',
-                               backref='bill_logs')
-    period = db.relationship('Period', primaryjoin='BillLog.period_id == Period.id')
+                               backref='bill_logs', lazy="noload")
+    period = db.relationship('Period', primaryjoin='BillLog.period_id == Period.id',
+                             lazy="noload")
 
 
 class CombinedBill(db.Model):
@@ -254,7 +258,7 @@ class Complaint(db.Model):
     note = db.Column(db.Text())
 
     customer = db.relationship('Customer', primaryjoin='Complaint.customer_id == Customer.id',
-                               backref='complaints')
+                               backref='complaints', lazy="noload")
 
 
 class Name(db.Model):
@@ -305,7 +309,8 @@ class Payment(db.Model):
     note = db.Column(db.Text())
 
     customer = db.relationship('Customer', primaryjoin='Payment.customer_id == Customer.id',
-                               backref='payments')
+                               backref='payments', lazy="noload")
+    period = db.relationship('Period')
 
     
 class Rate(db.Model):
@@ -327,7 +332,8 @@ class Rate(db.Model):
     daily_credit = db.Column(db.Numeric(6, 2), nullable=False)
     sunday_credit = db.Column(db.Numeric(6, 2), nullable=False)
 
-    type = db.relationship('Type', primaryjoin='Rate.type_id == Type.id', backref='rates')
+    type = db.relationship('Type', primaryjoin='Rate.type_id == Type.id', backref='rates',
+                           lazy="noload")
 
 
 class ServiceChange(db.Model):
@@ -350,7 +356,7 @@ class ServiceChange(db.Model):
     note = db.Column(db.Text())
 
     customer = db.relationship('Customer', primaryjoin='ServiceChange.customer_id == Customer.id',
-                               backref='service_changes')
+                               backref='service_changes', lazy="noload")
 
 
 class ServiceType(db.Model):
@@ -376,7 +382,7 @@ class ServiceType(db.Model):
     note = db.Column(db.Text())
 
     customer = db.relationship('Customer', primaryjoin='ServiceType.customer_id == Customer.id',
-                               backref='service_types')
+                               backref='service_types', lazy="noload")
 
 
 class Telephone(db.Model):
@@ -394,7 +400,7 @@ class Telephone(db.Model):
     number = db.Column(db.String(30), nullable=False)
 
     customer = db.relationship('Customer', primaryjoin='Telephone.customer_id == Customer.id',
-                               backref='telephones')
+                               backref='telephones', lazy="noload")
 
     # sequence values
     TEL_DELIVERY1 = 1

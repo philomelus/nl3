@@ -1,0 +1,85 @@
+{# -*- mode: jinja2; -*- #}
+
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/reports/ahead.css') }}">
+    <link rel="stylesheet" href="{{ url_for('customers.css') }}">
+{% endblock %}
+
+{% block content %}
+    {% if form.errors %}
+	{% for message in form.errors %}
+	    <div class="error">{{ message }}</div>
+	{% endfor %}
+    {% endif %}
+    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.reports.ahead') }}">
+	<div class="w3-row">
+	    <div class="control">
+		<input class="w3-input w3-border control" id="c-one" type="radio" name="count" value="one"{{ c_one }}>
+		<label class="control" for="c-one">Customers Ahead 1 Period</label>
+	    </div>
+	</div>
+	<div class="w3-row">
+	    <div class="control">
+		<input class="w3-input w3-border control" id="c-many" type="radio" name="count" value="many"{{ c_many }}>
+		<label class="control" for="c-many">Customers Ahead</label>
+		<input class="w3-input w3-border control" id="many" type="text" name="many" value="{{ many }}" size="2">
+		<label class="control" for="many">Periods</label>
+	    </div>
+	</div>
+	<div class="w3-row">
+            <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="update">
+		Update
+	    </button>
+	</div>
+	{{ form.hidden_tag() }}
+    </form>
+    {% if report %}
+	<form class="w3-container w3-margin-top w3-center">
+	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="print" onclick="window.print(); return false;">
+		Print report
+	    </button>
+	    <hr>
+	</form>
+	<div id="report-title">{{ report_title }}</div>
+	<div id="report-sub-title">{{ subtitle }}</div>
+	<table class="w3-table w3-bordered">
+	    <thead>
+		<tr>
+		    <th>CustID</th>
+		    <th>Name</th>
+		    <th>Address</th>
+		    <th>Type</th>
+		    <th>Rte</th>
+		    <th>Balance</th>
+		</tr>
+	    </thead>
+	    <tbody>
+		{% for r in report %}
+		    <tr class="dt{{ '%04d'|format(r.tid) }}">
+			<td>{{ '%06d'|format(r.id) }}</td>
+			<td>{{ r.name }}</td>
+			<td>{{ r.address }}</td>
+			<td>{{ r.type }}</td>
+			<td>{{ r.route }}</td>
+			{% if r.balance < 0 %}
+			    <td><span class="w3-text-red">({{ r.balance }})</span>&nbsp;+{{ '%d'|format(r.count) }}</td>
+			{% else %}
+			    <td>{{ r.balance }}&nbsp;+{{ '%d'|format(r.count) }}</td>
+			{% endif %}
+		    </tr>
+		{% endfor %}
+		<tr>
+		    <td colspan="5">Total (for specified period(s)</td>
+		    <td>{{ '$%01.2f'|format(total) }}</td>
+		</tr>
+		<tr>
+		    <td colspan="5">Total (all prepaid&quot;s)</td>
+		    <td>{{ '$%01.2f'|format(totalall) }}</td>
+		</tr>
+	    </tbody>
+	</table>
+    {% endif %}
+{% endblock %}
+

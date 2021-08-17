@@ -30,7 +30,7 @@ class Config(object):
     ADMINS = ['user@domain']
 
     SECURITY_URL_PREFIX = '/auth'
-    SECURITY_CONFIRMABLE = True
+    #SECURITY_CONFIRMABLE = True
     SECURITY_CHANGEABLE = True
     SECURITY_RECOVERABLE = True
     SECURITY_REGISTERABLE = True
