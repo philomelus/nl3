@@ -1,5 +1,5 @@
 {# -*- mode: jinja2; -*- #}
-<form id="payment-form" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('api.customers.payments.create') }}">
+<form id="payment-form" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.popups.create_payment') }}">
     <div class="w3-modal-content w3-card-4">
 	<div class="w3-center w3-padding w3-light-blue">
 	    Add Payment
@@ -23,7 +23,6 @@
 			<option value="{{ PaymentType.CHECK.value }}">Check</option>
 			<option value="{{ PaymentType.MONEYORDER.value }}">Money Order</option>
 			<option value="{{ PaymentType.CASH.value }}">Cash</option>
-			<option value="{{ PaymentType.CREDIT.value }}">Credit</option>
 		    </select>
 		</div>
 	    </div>
@@ -54,7 +53,7 @@
 	    </div>
 	</div>
 	<div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
-	    <button onclick="payment_click()" class="w3-button w3-border" type="submit">Add Payment</button>
+	    <button class="w3-button w3-border" type="submit">Add Payment</button>
 	    <button onclick="document.getElementById('payment').style.display='none'; return false;"
 		    type="button" class="w3-button w3-border">
 		Cancel
