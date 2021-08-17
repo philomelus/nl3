@@ -23,16 +23,16 @@ def config():
     return render_template('working.html', path='Admin / Configuration')
 
 
-@bp.route('/groups', methods=('GET', 'POST'))
-@login_required
-def groups():
-    return render_template('working.html', path='Admin / Groups')
-
-
 @bp.route('/periods', methods=('GET', 'POST'))
 @login_required
 def periods():
     return render_template('working.html', path='Admin / Periods')
+
+
+@bp.route('/roles', methods=('GET', 'POST'))
+@login_required
+def roles():
+    return render_template('working.html', path='Admin / Roles')
 
 
 @bp.route('/security', methods=('GET', 'POST'))
