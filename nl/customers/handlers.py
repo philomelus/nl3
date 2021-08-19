@@ -1,6 +1,12 @@
 
-from flask import render_template, request, flash, current_app, url_for, redirect, make_response
-from flask_login import login_required
+from flask import (
+    make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask_security import login_required
 
 from nl import db
 from nl.customers import bp

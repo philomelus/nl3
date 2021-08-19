@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from flask_login import current_user
+from flask_security import current_user
 
 from nl import db
 

@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from flask import request, url_for, redirect
-from flask_login import login_required
+from flask_security import login_required
 
 from nl import db
 from nl.api.customers.combined import bp

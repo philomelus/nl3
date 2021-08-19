@@ -3,7 +3,7 @@ from decimal import Decimal
 from datetime import datetime
 
 from flask import redirect, render_template, url_for
-from flask_login import login_required
+from flask_security import login_required
 
 from nl import db
 from nl.utils import flash_success, MoneyOps, pagination, PaymentType, period_choices

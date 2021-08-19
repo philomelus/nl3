@@ -1,6 +1,6 @@
 
 from flask import render_template
-from flask_login import login_required
+from flask_security import login_required
 from sqlalchemy import or_, and_
 
 from nl import db

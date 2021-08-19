@@ -1,6 +1,6 @@
 
 from flask import jsonify, request
-from flask_login import login_required
+from flask_security import login_required
 from werkzeug.http import HTTP_STATUS_CODES
 
 from nl import db
