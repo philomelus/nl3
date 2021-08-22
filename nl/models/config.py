@@ -27,28 +27,6 @@ class Config(db.Model):
             return default
         return value
 
-
-# class GroupConfig(db.Model):
-#     """
-#     Settings related to specific groups of users.
-#     """
-#     __tablename__ = 'groups_configuration'
-#
-#     key = db.Column(db.String(255), primary_key=True)
-#     group_id = db.Column(db.ForeignKey('groups.id', ondelete='CASCADE', onupdate='CASCADE'),
-#                          nullable=False, index=True)
-#     value = db.Column(db.String(255), nullable=False)
-#
-#     group = db.relationship('Group', primaryjoin='GroupConfig.group_id == Group.id',
-#                             backref='configs')
-#
-#     @staticmethod
-#     def get(key, group, default=None):
-#         value = GroupConfig.query.filter_by(key=key, group=group).first().value
-#         if value is None:
-#             return default
-#         return value
-
     
 class UserConfig(db.Model):
     """
@@ -63,11 +41,11 @@ class UserConfig(db.Model):
 
     user = db.relationship('User', backref='configs')
 
-    # @staticmethod
-    # def get(key, user=None, default=None):
-    #     if user == None:
-    #         user = current_user.id
-    #     value = UserConfig.query.filter_by(key=key, user=user).first().value
-    #     if value is None:
-    #         return default
-    #     return value
+    @staticmethod
+    def get(key, user=None, default=None):
+        if user == None:
+            user = current_user.id
+        value = UserConfig.query.filter_by(key=key, user=user).first().value
+        if value is None:
+            return default
+        return value

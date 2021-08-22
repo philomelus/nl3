@@ -1,29 +1,30 @@
 {# -*- mode: jinja2; -*- #}
-<form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('api.customers.combined.add') }}">
+<form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.combined.popups.create') }}">
     <div class="w3-modal-content w3-card-4">
 	<div class="w3-center w3-padding w3-light-blue">
 	    Add Combined
 	    <br>
-	    <span onclick="document.getElementById('add').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+	    <span onclick="document.getElementById('create').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
 	</div>
 	<div class="w3-container w3-margin-bottom">
 	    <div class="w3-padding">
-		Enter Customer ID of customer to add to mains bill:
+		Enter Customer ID&apos;s of customers who&apos;s bills to combine<br>
+		(secondary is added to main&apos;s bill):
 	    </div>
 	    <div class="w3-row">
 		<label class="control">Main ID</label>
-		<input class="w3-input w3-border control" type="text" id="add-id1" name="add-id1" size="10" readonly>
+		<input class="w3-input w3-border control" type="text" id="create-id1" name="create-id1" size="10" required>
 		<img class="w3-button w3-border" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
 	    </div>
 	    <div class="w3-row">
 		<label class="control">Secondary ID</label>
-		<input class="w3-input w3-border control" type="text" id="add-id2" name="add-id2" size="10" required>
+		<input class="w3-input w3-border control" type="text" id="create-id2" name="create-id2" size="10" required>
 		<img class="w3-button w3-border" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
 	    </div>
 	</div>
 	<div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
 	    <button class="w3-button w3-border" type="submit">Add Combined</button>
-	    <button onclick="document.getElementById('add').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
+	    <button onclick="document.getElementById('create').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
 	</div>
     </div>
 </form>

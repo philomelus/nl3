@@ -56,10 +56,6 @@ app.security = Security(app, app.user_datastore)
 from nl import main
 app.register_blueprint(main.bp)
 
-# Register API blueprint
-from nl import api
-app.register_blueprint(api.bp, url_prefix='/api')
-    
 # Register administration blueprint
 from nl import admin
 app.register_blueprint(admin.bp)
