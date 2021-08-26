@@ -12,7 +12,7 @@
 	    <div class="error">{{ message }}</div>
 	{% endfor %}
     {% endif %}
-    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.reports.inactive') }}">
+    <form data-turbo="false" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.reports.inactive') }}">
 	<div class="w3-row">
 	    <div class="left">
 		{{ form.routeList.label(class='control') }}
@@ -29,7 +29,7 @@
 	{{ form.hidden_tag() }}
     </form>
     {% if doReport %}
-	<form class="w3-container w3-margin-top w3-center">
+	<form data-turbo="false" class="w3-container w3-margin-top w3-center">
 	    <button class="w3-button w3-border w3-margin-top control" type="submit" name="action" value="print" onclick="window.print(); return false;">
 		Print report
 	    </button>

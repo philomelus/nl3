@@ -9,7 +9,7 @@ __all__ = [
     'ahead',
     'behind',
     'inactive',
-    'orders'
+    'info'
 ]
 
 @bp.route('/ahead', methods=('GET', 'POST'))
