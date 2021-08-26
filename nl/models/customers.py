@@ -226,9 +226,9 @@ class CombinedBill(db.Model):
     """
     __tablename__ = 'customers_combined_bills'
 
-    customer_id_main = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id_main = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                                  primary_key=True)
-    customer_id_secondary = db.Column(db.ForeignKey('Customer.id', ondelete='RESTRICT', onupdate='CASCADE'),
+    customer_id_secondary = db.Column(db.ForeignKey('customers.id', ondelete='RESTRICT', onupdate='CASCADE'),
                                       primary_key=True)
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False)

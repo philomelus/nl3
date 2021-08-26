@@ -1,12 +1,12 @@
 
-{% extends "base.html" %}
+{%- extends "base.html" -%}
 
-{% block styles %}
+{%- block styles -%}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/combined/index.css') }}">
-{% endblock %}
+{%- endblock -%}
 
-{% block content %}
-<form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.combined.index') }}">
+{%- block content -%}
+<form data-turbo="false" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.combined.index') }}">
     <button type="submit" name="action" value="Refresh" class="w3-button w3-border">
 	<img src="{{ url_for('static', filename='img/refresh.png') }}" alt="Refresh"/>
     </button>
@@ -26,14 +26,14 @@
             </tr>
         </thead>
         <tbody>
-	    {% for c in combined %}
-		{% if c.count > 1 %}
+	    {%- for c in combined -%}
+		{%- if c.count > 1 -%}
 		    <tr>
 			<td class="icon-link">
 			    <img onclick="delete_combined({{ c.id }}, {{ c.others[0].id }})" src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete Combined Customer">
 			</td>
 			<td class="icon-link">
-			    <img onclick="add_combined({{ c.id }})" src="{{ url_for('static', filename='img/add.png') }}" alt="A" title="Add another Customer to this Combined Customer">
+			    <img onclick="add_combined({{ c.id }}); return false;" src="{{ url_for('static', filename='img/add.png') }}" alt="A" title="Add another Customer to this Combined Customer">
 			</td>
 			<td>{{ '%06d'|format(c.id) }}</td>
 			<td>{{ c.name }}</td>
@@ -48,7 +48,7 @@
 			    <img onclick="delete_combined({{ c.id }}, {{ c.others[0].id }})" src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete this Combined Customer">
 			</td>
 		    </tr>
-		    {% for o in c.others[1:] %}
+		    {%- for o in c.others[1:] -%}
 			<tr>
 			    <td class="icon-link">&nbsp;</td>
 			    <td class="icon-link">&nbsp;</td>
@@ -65,14 +65,14 @@
 				<img onclick="delete_combined({{ c.id }},{{ o.id }})" src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete this Combined Customer">
 			    </td>
 			</tr>
-		    {% endfor %}
-		{% else %}
+		    {%- endfor -%}
+		{%- else -%}
 		    <tr>
 			<td class="icon-link">
 			    <img onclick="delete_combined({{ c.id }}, {{ c.others[0].id }})" src="{{ url_for('static', filename='img/delete.png') }}" alt="D" title="Delete Combined Customer">
 			</td>
 			<td class="icon-link">
-			    <img onclick="add_combined({{ c.id }})" src="{{ url_for('static', filename='img/add.png') }}" alt="A" title="Add another Customer to this Combined Customer">
+			    <img onclick="add_combined({{ c.id }}); return false;" src="{{ url_for('static', filename='img/add.png') }}" alt="A" title="Add another Customer to this Combined Customer">
 			</td>
 			<td>{{ '%06d'|format(c.id) }}</td>
 			<td>{{ c.name }}</td>
@@ -85,53 +85,68 @@
 			</td>
 			<td class="icon-link">&nbsp;</td>
 		    </tr>
-		{% endif %}
-	    {% endfor %}
+		{%- endif -%}
+	    {%- endfor -%}
 	</tbody>
     </table>
 </form>
 <div id="create" class="w3-modal">
-    {% include 'customers/combined/popups/create.html' %}
+    {%- include 'customers/combined/popups/create.html' -%}
 </div>
 <div id="add" class="w3-modal">
-    {% include 'customers/combined/popups/add.html' %}
+    {%- include 'customers/combined/popups/add.html' -%}
 </div>
 <div id="update" class="w3-modal">
-    {% include 'customers/combined/popups/update.html' %}
+    {%- include 'customers/combined/popups/update.html' -%}
 </div>
 <div id="delete">
-    {% include 'customers/combined/popups/delete.html' %}
+    {%- include 'customers/combined/popups/delete.html' -%}
 </div>
-{% endblock %}
+{%- endblock -%}
 
-{% block scripts %}
-    <script type="text/javascript" src="{{ url_for('static', filename='js/customers/combined/index.js') }}">
+{%- block scripts -%}
+    <script type="text/javascript">
      function add_combined(id1)
      {
 	 // Set main customer id
-	 document.getElementById('add-id1').value = id1;
+	 $('#add-id1').val(id1);
 	 
 	 // Display window
-	 document.getElementById('add').style.display='block';
+	 show('add');
 	 
 	 // Set focus to secondary id
-	 document.getElementById('add-id2').focus();
+	 $('#add-id2').focus();
      }
      
      function create_combined()
      {
 	 // Display window
-	 document.getElementById('create').style.display='block';
+	 show('create');
 	 
 	 // Set focus to main id
-	 document.getElementById('create-id1').focus();
+	 $('#create-id1').focus();
      }
      
      function delete_combined(id1, id2)
      {
+	 // Set customer id's
 	 $("#delete-id1").val(id1);
 	 $("#delete-id2").val(id2);
+
+	 // Submit form
 	 $("#delete-form").submit();
+     }
+
+     function hide(what)
+     {
+	 // Hide form
+	 $('#' + what).css('display', 'none');
+     }
+
+     function show(what)
+     {
+	 // Show form
+	 $('#' + what).css('display', 'block');
      }
      
      function update_combined(id1, id2)
@@ -142,10 +157,11 @@
 	 $('#update-id2-original').val(id2);
 	 
 	 // Display window
-	 document.getElementById('update').style.display='block';
+	 show('update');
 	 
 	 // Set focus to secondary id
 	 $('#update-id2').focus();
      }
     </script>
-{% endblock %}
+{%- endblock -%}
+
