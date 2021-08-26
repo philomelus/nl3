@@ -1,6 +1,6 @@
 
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import redirect, render_template, url_for
 from flask_security import login_required
@@ -8,31 +8,46 @@ from flask_security import login_required
 from nl import db
 from nl.utils import flash_success, MoneyOps, pagination, PaymentType, period_choices
 from nl.customers.payments import bp
-from nl.customers.payments.forms import CreateForm, SearchForm
 
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
+    from nl.customers.payments.forms import CreateForm
     form = CreateForm()
     if form.validate_on_submit():
-        import requests
+        from nl.models.config import Config
+        from nl.models.customers import Payment
 
-        customer_id = form.customer.data
-        amount = form.amount.data
-        data = dict(customer_id=customer_id,
-                    type=form.type_.data,
-                    tip=form.tip.data,
-                    amount=amount,
-                    notes=form.notes.data)
-
-        r = requests.post(url_for('api.customers.payments.create', _external=True), data)
-        r.raise_for_status()
-        
-        flash_success(f'Added payment of {amount} to customer {customer_id}')
-
-        #return redirect(url_for('customers.payments.create'))
-        text = r.text
+        p = Payment()
+        p.customer_id = form.customer.data
+        p.period_id = Config.get('billing-period')
+        now = datetime.now(timezone.utc)
+        p.created = p.updated = now
+        p.date = now.date()
+        p.amount = form.amount.data
+        type = form.type_.data
+        if type == PaymentType.CHECK.value:
+            p.type = 'CHECK'
+            p.extra1 = form.id_.data
+            p.extra2 = ''
+        elif type == PaymentType.MONEYORDER.value:
+            p.type == 'MONEYORDER'
+            p.extra1 = form.id_.data
+            p.extra2 = ''
+        elif p.type == PaymentType.CASH.value:
+            p.type = 'CASH'
+            p.extra1 = p.extra2 = ''
+        else: # type == PaymentType.CREDIT.value
+            p.type = 'CREDIT'
+            p.extra1 = p.extra2 = ''
+        p.tip=form.tip.data
+        p.amount=form.amount.data
+        p.notes=form.notes.data
+        db.session.add(p)
+        db.session.commit()
+        flash_success(f'Added payment of {p.amount} to customer {p.customer_id}')
+        return redirect(url_for('customers.payments.create'))
     else:
         text=''
     return render_template('customers/payments/create.html', path='Customers / Payments / Add',
@@ -42,6 +57,8 @@ def create():
 @bp.route('/search', methods=('GET', 'POST'))
 @login_required
 def search():
+    from nl.customers.payments.forms import SearchForm
+    
     form = SearchForm()
     form.period.choices = period_choices(any=True)
     
@@ -66,16 +83,18 @@ def search():
             doResults = True
 
         if doResults:
-            from nl.models import (Customer,
-                                   CustomerAddresses,
-                                   CustomerNames,
-                                   CustomerPayments,
-                                   CustomerTelephones,
-                                   CustomerTypes,
-                                   Route)
+            from nl.models.customers import (
+                Customer,
+                Address,
+                Name,
+                Payment,
+                Telephone,
+                Type
+            )
+            from nl.models.routes import Route
             from sqlalchemy import and_, or_, func
         
-            qry = CustomerPayments.query
+            qry = Payment.query
 
             # customer id
             customer = form.customer.data
@@ -87,15 +106,15 @@ def search():
             if amount:
                 op = int(form.amount_op.data)
                 if op == MoneyOps.GREATER_EQUAL.value:
-                    qry = qry.filter(CustomerPayments.amount>=amount)
+                    qry = qry.filter(Payment.amount>=amount)
                 elif op == MoneyOps.GREATER.value:
-                    qry = qry.filter(CustomerPayments.amount>amount)
+                    qry = qry.filter(Payment.amount>amount)
                 elif op == MoneyOps.EQUAL.value:
-                    qry = qry.filter(CustomerPayments.amount==amount)
+                    qry = qry.filter(Payment.amount==amount)
                 elif op == MoneyOps.LESS.value:
-                    qry = qry.filter(CustomerPayments.amount<amount)
+                    qry = qry.filter(Payment.amount<amount)
                 else:  #op == MoneyOps.LESS_EQUAL.value
-                    qry = qry.filter(CustomerPayments.amount<=amount)
+                    qry = qry.filter(Payment.amount<=amount)
             
             # tip
             # TODO: BUGBUG: 0 doesn't work as value for tip.  Not sure how
@@ -107,15 +126,15 @@ def search():
             if tip:
                 op = int(form.tip_op.data)
                 if op == MoneyOps.GREATER_EQUAL.value:
-                    qry = qry.filter(CustomerPayments.tip>=tip)
+                    qry = qry.filter(Payment.tip>=tip)
                 elif op == MoneyOps.GREATER.value:
-                    qry = qry.filter(CustomerPayments.tip>tip)
+                    qry = qry.filter(Payment.tip>tip)
                 elif op == MoneyOps.EQUAL.value:
-                    qry = qry.filter(CustomerPayments.tip==tip)
+                    qry = qry.filter(Payment.tip==tip)
                 elif op == MoneyOps.LESS.value:
-                    qry = qry.filter(CustomerPayments.tip<tip)
+                    qry = qry.filter(Payment.tip<tip)
                 else:  #op == MoneyOps.LESS_EQUAL.value
-                    qry = qry.filter(CustomerPayments.tip<=tip)
+                    qry = qry.filter(Payment.tip<=tip)
             
             # payment id
             id_ = form.payment.data
@@ -126,14 +145,14 @@ def search():
             id_ = form.id_.data
             if (id_):
                 ids = ['%'+i.upper()+'%' for i in id_.split(' ')]
-                cond = [func.upper(CustomerPayments.extra1).like(iuc) for iuc in ids]
+                cond = [func.upper(Payment.extra1).like(iuc) for iuc in ids]
                 qry = qry.filter(or_(*cond))
             
             # notes
             notes = form.notes.data
             if notes:
                 words = ['%'+w.upper()+'%' for w in notes.split(' ')]
-                cond = [func.upper(CustomerPayments.note).like(wuc) for wuc in words]
+                cond = [func.upper(Payment.note).like(wuc) for wuc in words]
                 qry = qry.filter(and_(*cond))
             
             # period
@@ -156,12 +175,12 @@ def search():
             # after date/time
             after = form.after.data
             if after:
-                qry = qry.filter(CustomerPayments.created>after)
+                qry = qry.filter(Payment.created>after)
                 
             # before date/time
             before = form.before.data
             if before:
-                qry = qry.filter(CustomerPayments.created<before)
+                qry = qry.filter(Payment.created<before)
             
             # Get total matching records
             count = qry.count()
@@ -177,7 +196,7 @@ def search():
                 form.offset.data = offset
 
             # Get the data and message into form data
-            records = qry.order_by(CustomerPayments.id).limit(limit).offset(offset).all()
+            records = qry.order_by(Payment.id).limit(limit).offset(offset).all()
             payments = []
             for p in records:
                 payments.append({

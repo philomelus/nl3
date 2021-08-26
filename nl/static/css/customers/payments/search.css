@@ -34,7 +34,6 @@ div.right {
     margin-bottom: 1em;
 }
 
-/*
 td.icon-link
 {
     text-align: center;
@@ -47,7 +46,7 @@ td.icon-link:first-child {
     border-left: 1px solid #ddd;
 }
 
-td.icon-link:nth-child(7) {
+td.icon-link:nth-child(3) {
     padding-right: 8px;
     border-right: 1px solid #ddd;
 }
@@ -58,7 +57,3 @@ td.icon-link img.icon-link {
     margin: 0;
 }
 
-td:nth-child(14) {
-    text-align: right;
-}
-*/

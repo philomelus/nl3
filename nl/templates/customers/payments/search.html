@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.payments.search') }}">
+    <form data-turbo="false" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.payments.search') }}">
 	<div class="w3-row">
 	    <div class="left">
 		{{ form.amount.label(class='control') }}
@@ -99,7 +99,7 @@
     </form>
     {% if doResults %}
 	<div class="w3-row"><hr></div>
-	<table class="w3-table w3-bordered w3-margin-top">
+	<table data-turbo="false" class="w3-table w3-bordered w3-margin-top">
 	    <thead>
 		<tr>
 		    <th colspan="3">{{ count }}</th>
