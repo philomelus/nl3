@@ -35,6 +35,9 @@ body {
 .flashes {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.flashes hr {
     border-bottom: 2px solid black;
 }
 

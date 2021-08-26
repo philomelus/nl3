@@ -6,11 +6,18 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask, g
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
+from turbo_flask import Turbo
 
 from config import Config
 
 
-db = SQLAlchemy()
+__all__ = [
+    'app',
+    'db',
+    'turbo',
+]
+
+
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -44,8 +51,9 @@ if not app.debug and not app.testing:
     app.logger.setLevel(logging.INFO)
     app.logger.info('Newsledger startup.')
 
-# Initialize flask-sqlalchemy
-db.init_app(app)
+# Initialize add ons
+db = SQLAlchemy(app)
+turbo = Turbo(app)
 
 # Set up flask-security
 from nl.models.auth import Role, User

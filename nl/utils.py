@@ -35,11 +35,19 @@ def customer_type_choices(any=True):
     return types
 
 
-def flash_success(message):
+def flash_success(message, inline=False):
+    if inline:
+        return '<div class="flash"><span class="success">'\
+            + message\
+            + '</span></div>'
     flash('<span class="success">' + message + '</span>')
 
     
-def flash_fail(message):
+def flash_fail(message, inline=False):
+    if inline:
+        return '<div class="flash"><span class="fail">'\
+            + message\
+            + '</span></div>'
     flash('<span class="fail">' + message + '</span>')
 
 

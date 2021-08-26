@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width:device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <head>
         <title>{%- block title -%}{%- endblock -%}</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/w3.css') }}">
@@ -10,7 +10,7 @@
 	{{ turbo() }}
 	{%- block styles -%}{%- endblock -%}
     </head>
-    <body data-turbo="false">
+    <body>
 	{%- block header -%}
 	    <div class="w3-row w3-display-container" id="header">
 		<div class="w3-display-bottomleft">{{ path }}</div>
@@ -27,13 +27,14 @@
 	{%- endblock -%}
 	{%- block messages -%}
 	    {%- with msgs = get_flashed_messages() -%}
-		{%- if msgs -%}
-		    <div class="flashes">
+		<div id="messages" class="flashes">
+		    {%- if msgs -%}
 			{%- for message in msgs -%}
 			    <div class="flash">{{ message|safe }}</div>
 			{%- endfor -%}
-		    </div>
-		{%- endif -%}
+			<hr>
+		    {%- endif -%}
+		</div>
 	    {%- endwith -%}
 	{%- endblock -%}
 	{%- block content -%}{%- endblock -%}

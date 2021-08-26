@@ -12,7 +12,7 @@
 	    <div class="error">{{ m }}</div>
 	{% endfor %}
     {% endif %}
-    <form class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.search') }}">
+    <form data-turbo="false" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.search') }}">
 	<div class="w3-row">
             <div class="left">
 		{{ form.customer.label(class_='control') }}
@@ -87,7 +87,7 @@
 		{% endfor %}
             </div>
 	</div>
-	<div class="row">
+	<div class="w3-row">
             <div class="left">
 		{{ form.postal.label(class_='control') }}
 		{{ form.postal(size=10, class_='w3-input w3-border control') }}
@@ -210,6 +210,10 @@
 	 $('#payment-dtype').text(type);
 	 $('#payment-dtype').addClass(cls);
 	 $('#payment').css('display', 'block');
+     }
+     function payment_close()
+     {
+	 $('#payment').css('display', 'none');
      }
 
      function service(cid)

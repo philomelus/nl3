@@ -34,3 +34,6 @@ class Config(object):
     SECURITY_CHANGEABLE = True
     SECURITY_RECOVERABLE = True
     SECURITY_REGISTERABLE = True
+
+    TURBO_WEBSOCKET_ROUTE = '/tws'
+
