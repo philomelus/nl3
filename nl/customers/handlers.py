@@ -29,6 +29,8 @@ def create():
     """
     Add new customer form/logic.
     """
+    import re
+    
     form = CreateForm()
     form.delivery.route.choices = route_choices(False)
     form.delivery.dtype.choices = customer_type_choices(False)
@@ -46,6 +48,7 @@ def create():
         )
         from nl.models.routes import Route, Sequence
 
+        
         def add_name(customer, field, seq):
             n = Name()
             n.created = n.updated = datetime.utcnow()
@@ -60,10 +63,19 @@ def create():
             t = Telephone()
             t.created = t.updated = datetime.utcnow()
             t.type = field.type_.data
-            t.number = field.number.data
+            t.number = fix_tele(field.number.data)
             t.sequence = seq
             customer.telephones.append(t)
 
+        def fix_tele(telephone):
+            m = re_tele.match(telephone)
+            if m:
+                return f'({m.group(1)}) {m.group(2)}-{m.group(3)}'
+            else:
+                return telephone
+
+        re_tele = re.compile(r"\(?\b([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})\b")
+        
         with db.session.no_autoflush:
             c = Customer()
             c.route_id = form.delivery.route.data
