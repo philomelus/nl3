@@ -12,6 +12,8 @@ from nl import db
 from nl.customers import bp
 from nl.customers.forms import CreateForm, SearchForm
 from nl.utils import (
+    ComplaintResult,
+    ComplaintType,
     customer_type_choices,
     flash_fail,
     flash_success,
@@ -355,9 +357,15 @@ def search():
         offset = 0
         limit = 10
         customers = []
+    vars = dict(
+        PaymentType=PaymentType,
+        ComplaintType=ComplaintType,
+        ComplaintResult=ComplaintResult
+    )
     return render_template('customers/search.html', path='Customers / Search', form=form,
                            doResults=doResults, count=count, customers=customers,
                            paginate=pagination(offset=offset, limit=limit, max=count),
-                           PaymentType=PaymentType)
+                           **vars)
+
 
 

@@ -5,6 +5,8 @@ from flask import render_template, flash
 
 
 __all__ = [
+    'ComplaintResult',
+    'ComplaintType',
     'customer_type_choices',
     'flash_fail',
     'flash_success',
@@ -18,6 +20,123 @@ __all__ = [
     'state_choices',
     'telephone_type_choices',
 ]
+
+
+class ComplaintResult(Enum):
+    """
+    Methods to resolve customer complaints.
+    """
+    CHARGE = 0
+    CREDIT1DAILY = 1
+    CREDIT1SUNDAY = 2
+    CREDIT = 3
+    NOTHING = 4
+    REDELIVERED = 5
+
+    @staticmethod
+    def choices():
+        """
+        Return list of ComplaintResults value to human readable value
+        (suitable for WTForms choices).
+        """
+        return [
+            # (ComplaintResult.CHARGE.value, 'Charge'),
+            # (ComplaintResult.CREDIT.value, 'Credit'),
+            (ComplaintResult.CREDIT1DAILY.value, 'Credit 1 Daily'),
+            (ComplaintResult.CREDIT1SUNDAY.value, 'Credit 1 Sunday'),
+            (ComplaintResult.NOTHING.value, 'Do Nothing'),
+            (ComplaintResult.REDELIVERED.value, 'Redelivered'),
+        ]
+
+    @staticmethod
+    def from_db(result: int):
+        """
+        Return db enum corresponding to ComplaintResult value.
+        """
+        if result == 'NONE':
+            return ComplaintResult.NOTHING.value
+        elif result == 'CREDITDAILY':
+            return ComplaintResult.CREDIT1DAILY.value
+        elif result == 'CREDITSUNDAY':
+            return ComplaintResult.CREDIT1SUNDAY.value
+        elif result == 'REDELIVERED':
+            return ComplaintResult.REDELIVERED.value
+        elif result == 'CREDIT':
+            return ComplaintResult.CREDIT.value
+        elif result == 'CHARGE':
+            return ComplaintResult.CHARGE.value
+        else:
+            raise ValueError(f'Not a ComplaintResult db enum: {result}')
+
+
+    @staticmethod
+    def to_db(result: str):
+        """
+        Return corresponding ComplaintResult value given db enum.
+        """
+        if result == ComplaintResult.NOTHING.value:
+            return 'NONE'
+        elif result == ComplaintResult.CREDIT1DAILY.value:
+            return 'CREDITDAILY'
+        elif result == ComplaintResult.CREDIT1SUNDAY.value:
+            return 'CREDITSUNDAY'
+        elif result == ComplaintResult.CREDIT.value:
+            return 'CREDIT'
+        elif result == ComplaintResult.REDELIVERED.value:
+            return 'REDELIVERED'
+        elif result == ComplaintResult.CHARGE.value:
+            return 'CHARGE'
+        else:
+            raise ValueError(f'Not a ComplaintResult: {result}')
+
+    
+class ComplaintType(Enum):
+    """
+    Types of customer complaints.
+    """
+    MISSED = 0
+    WET = 1
+    DAMAGED = 2
+    
+    @staticmethod
+    def choices():
+        """
+        Return list of ComplaintTypes value to human readable value
+        (suitable for WTForms choices).
+        """
+        return [
+            (ComplaintType.MISSED.value, 'Missed'),
+            (ComplaintType.WET.value, 'Wet'),
+            (ComplaintType.DAMAGED.value, 'Damaged')
+        ]
+
+    @staticmethod
+    def to_db(type: int):
+        """
+        Return db enum corresponding to ComplaintType value.
+        """
+        if type == ComplaintType.MISSED.value:
+            return 'MISSED'
+        elif type == ComplaintType.WET.value:
+            return 'WET'
+        elif type == ComplaintType.DAMAGED.value:
+            return 'DAMAGED'
+        else:
+            raise ValueError(f'Not a ComplaintType db enum: {type}')
+
+    @staticmethod
+    def from_db(type: str):
+        """
+        Return corresponding ComplaintType value given db enum.
+        """
+        if type == 'MISSED':
+            return ComplaintType.MISSED.value
+        elif type == 'WET':
+            return ComplaintType.WET.value
+        elif type == 'DAMAGED':
+            return ComplaintType.DAMAGED.value
+        else:
+            raise ValueError('Not a ComplaintType: {type}')
 
 
 def customer_type_choices(any=True):
@@ -74,7 +193,7 @@ def pagination(**kwargs):
         clear = True to contain a "Clear" button.
                 Default is True.
         left = True to place Refresh/Clear buttons on left side.
-               Default it False.       
+               Default is False.
     """
 
     prefix = kwargs.pop('prefix', 'dbf_')
@@ -90,22 +209,30 @@ def pagination(**kwargs):
 
 
 class MoneyOps(Enum):
+    """
+    Comparison operators for monetary values.
+    """
     GREATER_EQUAL = 0
     GREATER = 1
     EQUAL = 2
     LESS = 3
     LESS_EQUAL = 4
 
-    @classmethod
-    def choices(cls):
+    @staticmethod
+    def choices():
+        """
+        Return list of MoneyOp value to human readable value
+        (suitable for WTForms choices).
+        """
         return [
             (MoneyOps.GREATER_EQUAL.value, '>='),
             (MoneyOps.GREATER.value, '>'),
             (MoneyOps.EQUAL.value, '='),
             (MoneyOps.LESS.value, '<'),
-            (MoneyOps.LESS_EQUAL.value, '<=')
+            (MoneyOps.LESS_EQUAL.value, '<='),
         ]
 
+    
 name_title_choices = [
     (0, ''),
     (1, 'Mr'),
@@ -115,13 +242,16 @@ name_title_choices = [
 ]
 
 class PaymentType(Enum):
+    """
+    Methods customers can pay.
+    """
     CHECK = 0
     MONEYORDER = 1
     CASH = 2
     CREDIT = 3
 
-    @classmethod
-    def choices(cls):
+    @staticmethod
+    def choices():
         return [
             (PaymentType.CHECK.value, 'Check'),
             (PaymentType.MONEYORDER.value, 'Money Order'),
@@ -129,8 +259,8 @@ class PaymentType(Enum):
             (PaymentType.CREDIT.value, 'Credit')
         ]
 
-    @classmethod
-    def ops_choices(cls):
+    @staticmethod
+    def ops_choices():
         return [(99, 'Any'),] + cls.choices()
 
 

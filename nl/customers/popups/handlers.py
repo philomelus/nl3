@@ -6,7 +6,45 @@ from flask_security import login_required
 
 from nl import db, turbo
 from nl.customers.popups import bp
-from nl.utils import flash_success, PaymentType
+from nl.utils import (
+    ComplaintResult,
+    ComplaintType,
+    flash_success,
+    PaymentType,
+)
+
+
+@bp.route('/complaint', methods=('POST',))
+@login_required
+def complaint():
+    """
+    Add delivery service complaint for customer.
+    """
+
+    from nl.models.customers import Complaint
+
+    c = Complaint()
+    c.customer_id = int(request.form['complaint-cid'])
+    c.period_id = None
+    c.created = c.updated = datetime.now(timezone.utc)
+    c.type = ComplaintType.to_db(int(request.form['complaint-what']))
+    c.result = ComplaintResult.to_db(int(request.form['complaint-result']))
+    c.when = date.fromisoformat(request.form['complaint-when'])
+    why = request.form['complaint-why']
+    if why == None:
+        why = ''
+    c.why = why
+    note = request.form['complaint-note']
+    if note == None:
+        note = ''
+    c.note = note
+    c.amount = 0
+    c.ignoreOnBill = 'N'
+    db.session.add(c)
+    db.session.commit()
+    
+    return turbo.stream(turbo.append(flash_success(f'Added complaint for customer {c.customer_id}',
+                                                   True), target='messages'))
 
 
 @bp.route('/create_payment', methods=('POST',))

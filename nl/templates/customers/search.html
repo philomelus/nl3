@@ -130,11 +130,13 @@
 				    <img onclick="service({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
 					 src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Start and/or Stop for Customer">
 				{% else %}
-				    <img onclick="service({{ c.id }})" src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Stop and/or Start for Customer">
+				    <img onclick="service({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+					 src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Stop and/or Start for Customer">
 				{% endif %}
 			    </td>
 			    <td class="icon-link">
-				<img onclick="complaint({{ c.id }})" src="{{ url_for('static', filename='img/complaints.png') }}" alt="C" title="Add Complaint by Customer">
+				<img onclick="payment({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+				     src="{{ url_for('static', filename='img/complaints.png') }}" alt="C" title="Add Complaint by Customer">
 			    </td>
 			    <td class="icon-link">
 				<img onclick="adjustment({{ c.id }})" src="{{ url_for('static', filename='img/adjustments.png') }}" alt="A" title="Add Adjustment for Customer">
@@ -191,18 +193,27 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script type="text/javascript">
      function adjustment(cid)
      {
-	 document.getElementById('adjustment').style.display='block';
+	 $('#adjustment').css('display', 'block');
      }
      
-     function complaint(cid)
+     function complaint(cid, name, address, type, cls)
      {
-	 document.getElementById('complaint').style.display='block';
+	 $('#complaint-cid').val(cid);
+	 $('#complaint-name').text(name);
+	 $('#complaint-address').text(address);
+	 $('#complaint-dtype').text(type);
+	 $('#complaint-dtype').addClass(cls);
+	 $('#complaint').css('display', 'block');
      }
      
+     function complaint_close()
+     {
+	 $('#complaint').css('display', 'none');
+     }
+
      function payment(cid, name, address, type, cls)
      {
 	 $('#payment-cid').val(cid);
@@ -212,6 +223,7 @@
 	 $('#payment-dtype').addClass(cls);
 	 $('#payment').css('display', 'block');
      }
+     
      function payment_close()
      {
 	 $('#payment').css('display', 'none');
@@ -232,12 +244,6 @@
 	 $('#service').css('display', 'none');
      }
 
-     $(document).ready(function()
-	 {
-	     $('#service-stopdate').css('background-color', '#eeeeee');
-	     $('#service-startdate').css('background-color', '#eeeeee');
-	     
-     });
      function service_stop_changed()
      {
 	 var checked = $('#service-addstop').prop('checked');
@@ -255,23 +261,28 @@
 	 var disabled = checked ? false : true;
 	 
 	 $('#service-startdate').prop('disabled', disabled)
-			       .css('background-color', color);
+				.css('background-color', color);
      }
      
      function type(cid)
      {
-	 document.getElementById('type').style.display='block';
+	 $('#type').css('display', 'block');
      }
 
      function update(cid)
      {
-	 document.getElementById('update').style.display='block';
+	 $('#update').css('display', 'block');
      }
 
      function view(cid)
      {
-	 document.getElementById('view').style.display='block';
+	 $('#view').css('display', 'block');
      }
+     
+     $(document).ready(function() {
+	 $('#service-stopdate').css('background-color', '#eeeeee');
+	 $('#service-startdate').css('background-color', '#eeeeee');
+     });
     </script>
 {% endblock %}
 

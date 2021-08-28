@@ -1,22 +1,64 @@
-<form class="w3-container w3-margin-top w3-center" method="post" action="{# TODO: #}">
+<form id="complaint-form" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.popups.complaint') }}">
     <div class="w3-modal-content w3-card-4">
 	<div class="w3-center w3-padding w3-light-blue">
 	    Add Complaint
 	    <br>
-	    <span onclick="document.getElementById('complaint').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+	    <span onclick="complaint_close()" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
 	</div>
-	<div class="w3-container w3-margin-bottom">
-	    <div class="w3-padding">
-		Content goes here
+	<div id="complaint-inner" class="w3-container w3-margin-top w3-margin-bottom">
+	    <div class="w3-row">
+		<label class="control top-align">Customer</label>
+		<div class="control">
+		    <input type="hidden" id="complaint-cid" name="complaint-cid">
+		    <div id="complaint-name"></div>
+		    <div id="complaint-dtype"></div>
+		    <div id="complaint-address"></div>
+		</div>
 	    </div>
 	    <div class="w3-row">
-		<label class="control">Example Control</label>
-		<input class="w3-input w3-border control" type="text" id="" name="" size="10" required>
+		<label class="control">When</label>
+		<div class="control">
+		    <input class="w3-input w3-border control" type="date" id="complaint-when" name="complaint-when">
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control">Issue</label>
+		<div class="control">
+		    <select class="w3-select w3-border control" id="complaint-what" name="complaint-what">
+			{% for v,h in ComplaintType.choices() %}
+			    <option value="{{ v }}">{{ h  }}</option>
+			{% endfor %}
+		    </select>
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control">Result</label>
+		<div class="control">
+		    <select class="w3-select w3-border control" id="complaint-result" name="complaint-result">
+			{% for v,h in ComplaintResult.choices() %}
+			    <option value="{{ v }}">{{ h }}</option>
+			{% endfor %}
+		    </select>
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control top-align">Why</label>
+		<div class="control">
+		    <input class="w3-input w3-border control" type="text" id="complaint-why" name="complaint-why" maxLength="254">
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control top-align">Notes</label>
+		<div class="control">
+		    <textarea class="w3-input w3-border control" id="complaint-note" name="complaint-note" cols=40 rows=4></textarea>
+		</div>
 	    </div>
 	</div>
 	<div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
-	    <button class="w3-button w3-border" type="submit">Add</button>
-	    <button onclick="document.getElementById('complaint').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
+	    <button onclick="complaint_close();" class="w3-button w3-border" type="submit">Add Complaint</button>
+	    <button onclick="complaint_close(); return false;" type="button" class="w3-button w3-border">
+		Cancel
+	    </button>
 	</div>
     </div>
 </form>
