@@ -2,8 +2,8 @@
 {% extends "base.html" %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/customers/search.css') }}">
-<link rel="stylesheet" href="{{ url_for('customers.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/customers/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('customers.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -127,7 +127,8 @@
 			    </td>
 			    <td class="icon-link">
 				{% if c.type == flagStopId %}
-				    <img onclick="service({{ c.id }})" src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Start and/or Stop for Customer">
+				    <img onclick="service({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+					 src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Start and/or Stop for Customer">
 				{% else %}
 				    <img onclick="service({{ c.id }})" src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Stop and/or Start for Customer">
 				{% endif %}
@@ -216,11 +217,47 @@
 	 $('#payment').css('display', 'none');
      }
 
-     function service(cid)
+     function service(cid, name, address, type, cls)
      {
-	 document.getElementById('service').style.display='block';
+	 $('#service-cid').val(cid);
+	 $('#service-name').text(name);
+	 $('#service-address').text(address);
+	 $('#service-dtype').text(type);
+	 $('#service-dtype').addClass(cls);
+	 $('#service').css('display', 'block');
      }
 
+     function service_close()
+     {
+	 $('#service').css('display', 'none');
+     }
+
+     $(document).ready(function()
+	 {
+	     $('#service-stopdate').css('background-color', '#eeeeee');
+	     $('#service-startdate').css('background-color', '#eeeeee');
+	     
+     });
+     function service_stop_changed()
+     {
+	 var checked = $('#service-addstop').prop('checked');
+	 var color = checked ? '#ffffdf' : '#eeeeee';
+	 var disabled = checked ? false : true;
+	 
+	 $('#service-stopdate').prop('disabled', disabled)
+			       .css('background-color', color);
+     }
+
+     function service_start_changed()
+     {
+	 var checked = $('#service-addstart').prop('checked');
+	 var color = checked ? '#ffffdf' : '#eeeeee';
+	 var disabled = checked ? false : true;
+	 
+	 $('#service-startdate').prop('disabled', disabled)
+			       .css('background-color', color);
+     }
+     
      function type(cid)
      {
 	 document.getElementById('type').style.display='block';

@@ -1,22 +1,56 @@
-<form class="w3-container w3-margin-top w3-center" method="post" action="{# TODO: #}">
+<form id="service-form" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.popups.service') }}">
     <div class="w3-modal-content w3-card-4">
 	<div class="w3-center w3-padding w3-light-blue">
 	    Add Stop/Start
 	    <br>
-	    <span onclick="document.getElementById('service').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+	    <span onclick="service_close()" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
 	</div>
-	<div class="w3-container w3-margin-bottom">
-	    <div class="w3-padding">
-		Content goes here
+	<div id="service-inner" class="w3-container w3-margin-top w3-margin-bottom">
+	    <div class="w3-row">
+		<label class="control top-align">Customer</label>
+		<div class="control">
+		    <input type="hidden" id="service-cid" name="service-cid">
+		    <div id="service-name"></div>
+		    <div id="service-dtype"></div>
+		    <div id="service-address"></div>
+		</div>
 	    </div>
 	    <div class="w3-row">
-		<label class="control">Example Control</label>
-		<input class="w3-input w3-border control" type="text" id="" name="" size="10" required>
+		<div class="left">
+		    <input id="service-addstop" name="service-addstop" class="w3-input w3-border control" type="checkbox" value="addStop" onchange="service_stop_changed()">
+		    <label class="control" for="service-addstop">Stop</label>
+		</div>
+		<div class="right">
+		    <input id="service-stopdate" name="service-stopdate" class="w3-input w3-border control" type="date" value="" disabled>
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<div class="left">
+		    <input id="service-addstart" name="service-addstart" class="w3-input w3-border control" type="checkbox" value="addStart" onchange="service_start_changed()">
+		    <label class="control" for="service-addstart">Start</label>
+		</div>
+		<div class="right">
+		    <input id="service-startdate" name="service-startdate" class="w3-input w3-border control" type="date" value="" disabled>
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control">Why</label>
+		<div class="control">
+		    <input class="w3-input w3-border control" type="text" id="service-why" name="service-why">
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control">Note</label>
+		<div class="control">
+		    <textarea id="service-notes" name="service-notes" rows="4" cols="40"></textarea>
+		</div>
 	    </div>
 	</div>
 	<div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
-	    <button class="w3-button w3-border" type="submit">Add</button>
-	    <button onclick="document.getElementById('service').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
+	    <button onclick="service_close();" class="w3-button w3-border" type="submit">Add</button>
+	    <button onclick="service_close(); return false;" type="button" class="w3-button w3-border">
+		Cancel
+	    </button>
 	</div>
     </div>
 </form>

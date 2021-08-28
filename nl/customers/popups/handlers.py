@@ -13,6 +13,7 @@ from nl.utils import flash_success, PaymentType
 @login_required
 def create_payment():
     """
+    Add payment for customer.
     """
 
     from nl.models.config import Config
@@ -44,4 +45,68 @@ def create_payment():
     return turbo.stream(turbo.append(flash_success(f'Added payment of {p.amount} to'\
                                                    + f' customer {p.customer_id}', True),
                                      target='messages'))
+
+
+@bp.route('/service', methods=('POST',))
+@login_required
+def service():
+    """
+    Add start/stop service for customer.
+    """
+
+    from nl.models.customers import ServiceChange
+
+    def add_change(cust_id, type, when, why, notes):
+        sc = ServiceChange()
+        sc.customer_id = cust_id
+        sc.period_id = None
+        sc.created = sc.updated = datetime.now(timezone.utc)
+        sc.type = type
+        sc.when = when
+        sc.why = why
+        sc.notes = notes
+        sc.ignoreOnBill = 'N'
+        db.session.add(sc)
+        return sc
+
+    cust_id = int(request.form['service-cid'])
+    why = request.form['service-why']
+    if why == None or len(why) == 0:
+        why = 'Customer Request'
+    notes = request.form['service-notes']
+    if notes == None:
+        notes = ''
+
+    updates = []
+
+    stop = None
+    if 'service-addstop' in request.form:
+        when = date.fromisoformat(request.form['service-stopdate'])
+        stop = add_change(cust_id, 'STOP', when, why, notes)
+
+    start = None
+    if 'service-addstart' in request.form:
+        when = date.fromisoformat(request.form['service-startdate'])
+        start = add_change(cust_id, 'START', when, why, notes)
+
+    db.session.commit()
+    
+    if stop != None:
+        if start != None:
+            return turbo.stream([
+                turbo.append(flash_success(f'Added stop on {stop.when}'\
+                                           + f' to customer {cust_id}.', True),
+                             target='messages'),
+                turbo.append(flash_success(f'Added start on {start.when}'\
+                                           + f' to customer {cust_id}.', True),
+                             target='messages')
+            ])
+        else:
+            return turbo.stream(turbo.append(flash_success(f'Added stop on {stop.when}'\
+                                                           + f' to customer {cust_id}.', True),
+                                             target='messages'))
+    else:
+        return turbo.stream(turbo.append(flash_success(f'Added start on {start.when}'\
+                                                       + f' to customer {cust_id}.', True),
+                                         target='messages'))
 
