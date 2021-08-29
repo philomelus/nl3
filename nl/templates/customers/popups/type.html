@@ -1,22 +1,55 @@
-<form class="w3-container w3-margin-top w3-center" method="post" action="{# TODO: #}">
+<form id="type-form" class="w3-container w3-margin-top w3-center" method="post" action="{{ url_for('customers.popups.type') }}">
     <div class="w3-modal-content w3-card-4">
 	<div class="w3-center w3-padding w3-light-blue">
 	    Change Delivery Type
 	    <br>
-	    <span onclick="document.getElementById('type').style.display='none'" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
+	    <span onclick="type_close()" class="w3-button w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
 	</div>
-	<div class="w3-container w3-margin-bottom">
-	    <div class="w3-padding">
-		Content goes here
+	<div id="type-inner" class="w3-container w3-margin-top w3-margin-bottom">
+	    <div class="w3-row">
+		<label class="control top-align">Customer</label>
+		<div class="control">
+		    <input type="hidden" id="type-cid" name="type-cid">
+		    <input type="hidden" id="type-tid" name="type-tid">
+		    <div id="type-name"></div>
+		    <div id="type-dtype"></div>
+		    <div id="type-address"></div>
+		</div>
 	    </div>
 	    <div class="w3-row">
-		<label class="control">Example Control</label>
-		<input class="w3-input w3-border control" type="text" id="" name="" size="10" required>
+		<label class="control">When</label>
+		<div class="control">
+		    <input class="w3-input w3-border control" type="date" id="type-when" name="type-when">
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control">New Type</label>
+		<div class="control">
+		    <select class="w3-select w3-border control" id="type-to" name="type-to">
+			{% for v,h in type_choices %}
+			    <option value="{{ v }}">{{ h }}</option>
+			{% endfor %}
+		    </select>
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control top-align">Why</label>
+		<div class="control">
+		    <input class="w3-input w3-border control" type="text" id="type-why" name="type-why" maxLength="254">
+		</div>
+	    </div>
+	    <div class="w3-row">
+		<label class="control top-align">Notes</label>
+		<div class="control">
+		    <textarea class="w3-input w3-border control" id="type-note" name="type-note" cols=40 rows=4></textarea>
+		</div>
 	    </div>
 	</div>
 	<div class="w3-container w3-border-top w3-light-grey w3-padding w3-center">
-	    <button class="w3-button w3-border" type="submit">Add</button>
-	    <button onclick="document.getElementById('type').style.display='none'; return false;" type="button" class="w3-button w3-border">Cancel</button>
+	    <button onclick="type_close();" class="w3-button w3-border" type="submit">Change Type</button>
+	    <button onclick="type_close(); return false;" type="button" class="w3-button w3-border">
+		Cancel
+	    </button>
 	</div>
     </div>
 </form>

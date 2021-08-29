@@ -122,27 +122,28 @@
     		    {% for c in customers %}
 			<tr class="dt{{ '%04d'|format(c.type_id) }}">
 			    <td class="icon-link">
-				<img onclick="payment({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+				<img onclick="payment({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}','{{ '%04d'|format(c.type_id) }}')"
 				     src="{{ url_for('static', filename='img/payments.png') }}" alt="P" title="Add payment for Customer">
 			    </td>
 			    <td class="icon-link">
 				{% if c.type == flagStopId %}
-				    <img onclick="service({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+				    <img onclick="service({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}','{{ '%04d'|format(c.type_id) }}')"
 					 src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Start and/or Stop for Customer">
 				{% else %}
-				    <img onclick="service({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+				    <img onclick="service({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}','{{ '%04d'|format(c.type_id) }}')"
 					 src="{{ url_for('static', filename='img/stopstarts.png') }}" alt="S" title="Add Stop and/or Start for Customer">
 				{% endif %}
 			    </td>
 			    <td class="icon-link">
-				<img onclick="payment({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}')"
+				<img onclick="complaint({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}','{{ '%04d'|format(c.type_id) }}')"
 				     src="{{ url_for('static', filename='img/complaints.png') }}" alt="C" title="Add Complaint by Customer">
 			    </td>
 			    <td class="icon-link">
 				<img onclick="adjustment({{ c.id }})" src="{{ url_for('static', filename='img/adjustments.png') }}" alt="A" title="Add Adjustment for Customer">
 			    </td>
 			    <td class="icon-link">
-				<img onclick="type({{ c.id }})" src="{{ url_for('static', filename='img/changes.png') }}" alt="T" title="Change Customer Delivery Type">
+				<img onclick="type({{ c.id }},'{{ c.name }}','{{  c.address }}','{{ c.type }}','{{ '%04d'|format(c.type_id) }}', {{ c.type_id }})"
+				     src="{{ url_for('static', filename='img/changes.png') }}" alt="T" title="Change Customer Delivery Type">
 			    </td>
 			    <td class="icon-link">
 				<img onclick="view({{ c.id }})" src="{{ url_for('static', filename='img/view.png') }}" alt="V" title="View Customer">
@@ -201,11 +202,7 @@
      
      function complaint(cid, name, address, type, cls)
      {
-	 $('#complaint-cid').val(cid);
-	 $('#complaint-name').text(name);
-	 $('#complaint-address').text(address);
-	 $('#complaint-dtype').text(type);
-	 $('#complaint-dtype').addClass(cls);
+	 cust_info('complaint', cid, name, address, type, cls);
 	 $('#complaint').css('display', 'block');
      }
      
@@ -214,13 +211,19 @@
 	 $('#complaint').css('display', 'none');
      }
 
+     function cust_info(id, cust_id, name, addr, type, cls)
+     {
+	 var sel = '#' + id + '-'
+	 $(sel + 'cid').val(cust_id);
+	 $(sel + 'name').text(name);
+	 $(sel + 'address').text(addr);
+	 $(sel + 'dtype').text(type);
+	 $(sel + 'dtype').addClass(cls);
+     }
+
      function payment(cid, name, address, type, cls)
      {
-	 $('#payment-cid').val(cid);
-	 $('#payment-name').text(name);
-	 $('#payment-address').text(address);
-	 $('#payment-dtype').text(type);
-	 $('#payment-dtype').addClass(cls);
+	 cust_info('payment', cid, name, address, type, cls);
 	 $('#payment').css('display', 'block');
      }
      
@@ -231,11 +234,7 @@
 
      function service(cid, name, address, type, cls)
      {
-	 $('#service-cid').val(cid);
-	 $('#service-name').text(name);
-	 $('#service-address').text(address);
-	 $('#service-dtype').text(type);
-	 $('#service-dtype').addClass(cls);
+	 cust_info('service', cid, name, address, type, cls);
 	 $('#service').css('display', 'block');
      }
 
@@ -264,16 +263,23 @@
 				.css('background-color', color);
      }
      
-     function type(cid)
+     function type(cust_id, name, address, type, cls, type_id)
      {
+	 cust_info('type', cust_id, name, address, type, cls);
+	 $('#type-tid').val(type_id);
 	 $('#type').css('display', 'block');
+     }
+
+     function type_close()
+     {
+	 $('#type').css('display', 'none');
      }
 
      function update(cid)
      {
 	 $('#update').css('display', 'block');
      }
-
+     
      function view(cid)
      {
 	 $('#view').css('display', 'block');

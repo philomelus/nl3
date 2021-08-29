@@ -115,8 +115,6 @@ def service():
     if notes == None:
         notes = ''
 
-    updates = []
-
     stop = None
     if 'service-addstop' in request.form:
         when = date.fromisoformat(request.form['service-stopdate'])
@@ -147,4 +145,35 @@ def service():
         return turbo.stream(turbo.append(flash_success(f'Added start on {start.when}'\
                                                        + f' to customer {cust_id}.', True),
                                          target='messages'))
+
+    
+@bp.route('/type', methods=('POST',))
+@login_required
+def type():
+    """
+    Change customer delivery type.
+    """
+    from nl.models.customers import ServiceType
+
+    st = ServiceType()
+    st.customer_id = int(request.form['type-cid'])
+    st.period_id = None
+    st.created = st.updated = datetime.now(timezone.utc)
+    st.when = date.fromisoformat(request.form['type-when'])
+    st.type_id_from = int(request.form['type-tid'])
+    st.type_id_to = int(request.form['type-to'])
+    why = request.form['type-why']
+    if why == None or len(why) == 0:
+        why = 'Customer Request'
+    st.why = why
+    note = request.form['type-note']
+    if note == None:
+        note = ''
+    st.note = note
+    st.ignoreOnBill = 'N'
+    db.session.add(st)
+    db.session.commit()
+        
+    return turbo.stream(turbo.append(flash_success(f'Changed customer {st.customer_id}\'s delivery type.',
+                                                   True), target='messages'))
 

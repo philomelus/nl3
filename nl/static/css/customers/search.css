@@ -185,3 +185,49 @@ td:nth-child(14) {
     text-align: left !important;
     margin-left: 70px;
 }
+
+//----- CHANGE TYPE POPUP
+
+#type label.control {
+    display: inline-block;
+    vertical-align: baseline;
+    width: 10px;
+    text-align: left;
+}
+
+#type .top-align {
+    vertical-align: top !important;
+}
+
+#type textarea.control,
+#type input.control {
+    display: inline-block;
+    width: auto;
+    background-color: #ffffdf;
+    margin-bottom: 2px;
+}
+
+#type div.left {
+    display: inline-block;
+    width: auto;
+    margin-bottom: 2px;
+}
+
+#type div.right,
+#type div.control {
+    display: inline-block;
+    min-width: 425px;
+    width: auto;
+    text-align: left;
+}
+
+#type .info {
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+}
+
+#type div.control div.error {
+    text-align: left !important;
+    margin-left: 70px;
+}

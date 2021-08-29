@@ -358,9 +358,10 @@ def search():
         limit = 10
         customers = []
     vars = dict(
-        PaymentType=PaymentType,
+        ComplaintResult=ComplaintResult,
         ComplaintType=ComplaintType,
-        ComplaintResult=ComplaintResult
+        PaymentType=PaymentType,
+        type_choices=customer_type_choices(False),
     )
     return render_template('customers/search.html', path='Customers / Search', form=form,
                            doResults=doResults, count=count, customers=customers,
