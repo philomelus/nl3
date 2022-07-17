@@ -14,6 +14,22 @@ from nl.utils import (
 )
 
 
+@bp.route('/adjustment', methods=('POST',))
+@login_required
+def adjustment():
+    """
+    Add adjustment for customer.
+    """
+    from nl.models.customers import Adjustment
+
+    a = Adjustment()
+    #db.session.add(a)
+    #db.session.commit()
+    
+    return turbo.stream(turbo.append(flash_success(f'Added adjustment for customer c.customer_id',
+                                                   True), target='messages'))
+
+
 @bp.route('/complaint', methods=('POST',))
 @login_required
 def complaint():
@@ -175,5 +191,15 @@ def type():
     db.session.commit()
         
     return turbo.stream(turbo.append(flash_success(f'Changed customer {st.customer_id}\'s delivery type.',
+                                                   True), target='messages'))
+
+
+@bp.route('/update', methods=('POST',))
+@login_required
+def update():
+    """
+    Modify customer data.
+    """
+    return turbo.stream(turbo.append(flash_success(f'Updated customer customer_id\'s record.',
                                                    True), target='messages'))
 
