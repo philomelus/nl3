@@ -4,10 +4,11 @@ from nl import db
 
 
 __all__ = [
-    'AuditLog',
-    'Error',
-    'Period',
+    "AuditLog",
+    "Error",
+    "Period",
 ]
+
 
 class Alert(db.Model):
     """
@@ -17,20 +18,24 @@ class Alert(db.Model):
     This table tracks the data for those messages, and the software uses it to
     pass the messages on to the end user at the desired date/time/etc.
     """
-    __tablename__ = 'alerts'
+
+    __tablename__ = "alerts"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.ForeignKey('auth_users.id', ondelete='CASCADE', onupdate='CASCADE'))
-    type = db.Column(db.Enum('BILLING', 'PAYMENT', 'CUSTOMER', 'LOGIN'), nullable=False)
-    active = db.Column(db.Enum('N', 'Y'), nullable=False)
+    user_id = db.Column(
+        db.ForeignKey("auth_users.id", ondelete="CASCADE", onupdate="CASCADE")
+    )
+    type = db.Column(db.Enum("BILLING", "PAYMENT", "CUSTOMER", "LOGIN"), nullable=False)
+    active = db.Column(db.Enum("N", "Y"), nullable=False)
     created = db.Column(db.DateTime, nullable=False)
     updated = db.Column(db.DateTime, nullable=False)
     ref = db.Column(db.Integer, nullable=False)
     what = db.Column(db.String(), nullable=False)
     msg = db.Column(db.Text(), nullable=False)
 
-    user = db.relationship('User', primaryjoin='Alert.user_id == auth_users.c.id',
-                           backref='alerts')
+    user = db.relationship(
+        "User", primaryjoin="Alert.user_id == auth_users.c.id", backref="alerts"
+    )
 
 
 class AuditLog(db.Model):
@@ -44,15 +49,17 @@ class AuditLog(db.Model):
     agreement (from terminology and niavety rather than malice in 99% of
     cases).
     """
-    __tablename__ = 'audit_log'
+
+    __tablename__ = "audit_log"
 
     id = db.Column(db.Integer, primary_key=True)
     when = db.Column(db.DateTime, nullable=False)
-    user_id = db.Column(db.ForeignKey('auth_users.id'))
+    user_id = db.Column(db.ForeignKey("auth_users.id"))
     what = db.Column(db.Text(), nullable=False)
 
-    user = db.relationship('User', primaryjoin='AuditLog.user_id == User.id',
-                           backref='audit_logs')
+    user = db.relationship(
+        "User", primaryjoin="AuditLog.user_id == User.id", backref="audit_logs"
+    )
 
 
 class Error(db.Model):
@@ -65,7 +72,8 @@ class Error(db.Model):
     icode is internal error code
     ecode is error coded returned from callables (e.g. OS)
     """
-    __tablename__ = 'errors'
+
+    __tablename__ = "errors"
 
     id = db.Column(db.Integer, primary_key=True)
     when = db.Column(db.DateTime, nullable=False)
@@ -80,7 +88,8 @@ class Period(db.Model):
     """
     Date ranges that associate customer rates and customer types.
     """
-    __tablename__ = 'periods'
+
+    __tablename__ = "periods"
 
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, nullable=False)
@@ -92,4 +101,3 @@ class Period(db.Model):
     display_end = db.Column(db.Date, nullable=False)
     due = db.Column(db.Date, nullable=False)
     title = db.Column(db.String(30), nullable=False)
-

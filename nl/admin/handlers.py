@@ -1,54 +1,52 @@
-
 from flask import render_template
 from flask_security import login_required
 
 from nl.admin import bp
 
 
-@bp.route('/auditlog', methods=('GET', 'POST'))
+@bp.route("/auditlog", methods=("GET", "POST"))
 @login_required
 def auditlog():
-    return render_template('working.html', path='Admin / Audit Log')
+    return render_template("working.html", path="Admin / Audit Log")
 
 
-@bp.route('/billing', methods=('GET', 'POST'))
+@bp.route("/billing", methods=("GET", "POST"))
 @login_required
 def billing():
-    return render_template('working.html', path='Admin / Billing')
+    return render_template("working.html", path="Admin / Billing")
 
 
-@bp.route('/config', methods=('GET', 'POST'))
+@bp.route("/config", methods=("GET", "POST"))
 @login_required
 def config():
-    return render_template('working.html', path='Admin / Configuration')
+    return render_template("working.html", path="Admin / Configuration")
 
 
-@bp.route('/periods', methods=('GET', 'POST'))
+@bp.route("/periods", methods=("GET", "POST"))
 @login_required
 def periods():
-    return render_template('working.html', path='Admin / Periods')
+    return render_template("working.html", path="Admin / Periods")
 
 
-@bp.route('/roles', methods=('GET', 'POST'))
+@bp.route("/roles", methods=("GET", "POST"))
 @login_required
 def roles():
-    return render_template('working.html', path='Admin / Roles')
+    return render_template("working.html", path="Admin / Roles")
 
 
-@bp.route('/security', methods=('GET', 'POST'))
+@bp.route("/security", methods=("GET", "POST"))
 @login_required
 def security():
-    return render_template('working.html', path='Admin / Security')
+    return render_template("working.html", path="Admin / Security")
 
 
-@bp.route('/routes', methods=('GET', 'POST'))
+@bp.route("/routes", methods=("GET", "POST"))
 @login_required
 def routes():
-    return render_template('working.html', path='Admin / Routes')
+    return render_template("working.html", path="Admin / Routes")
 
 
-@bp.route('/users', methods=('GET', 'POST'))
+@bp.route("/users", methods=("GET", "POST"))
 @login_required
 def users():
-    return render_template('working.html', path='Admin / Users')
-
+    return render_template("working.html", path="Admin / Users")

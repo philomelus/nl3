@@ -1,4 +1,3 @@
-
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
@@ -35,10 +34,10 @@ from nl.utils import ignore_yes_no
 
 
 __all__ = [
-    'AheadForm',
-    'BehindForm',
-    'InactiveForm',
-    'InfoForm',
+    "AheadForm",
+    "BehindForm",
+    "InactiveForm",
+    "InfoForm",
 ]
 
 
@@ -51,24 +50,23 @@ class AheadForm(FlaskForm):
 class BehindForm(FlaskForm):
     action = HiddenField()
     what = StringField()
-    
-    
+
+
 class InactiveForm(FlaskForm):
     action = HiddenField()
-    routeList = SelectField('Route List', choices=ignore_yes_no)
+    routeList = SelectField("Route List", choices=ignore_yes_no)
 
 
 class InfoForm(FlaskForm):
     action = HiddenField()
-    adjustments = BooleanField('Adjustments')
-    billing = BooleanField('Billing')
-    billing_note = BooleanField('Billing Note')
-    balance = BooleanField('Balance')
-    delivery_note = BooleanField('Delivery Note')
-    id_ = BooleanField('Customer ID')
-    notes = BooleanField('Notes')
-    payments = BooleanField('Payments')
-    rate = BooleanField('Rate')
-    route = BooleanField('Route')
-    #service = BooleanField('Service Changes')
-
+    adjustments = BooleanField("Adjustments")
+    billing = BooleanField("Billing")
+    billing_note = BooleanField("Billing Note")
+    balance = BooleanField("Balance")
+    delivery_note = BooleanField("Delivery Note")
+    id_ = BooleanField("Customer ID")
+    notes = BooleanField("Notes")
+    payments = BooleanField("Payments")
+    rate = BooleanField("Rate")
+    route = BooleanField("Route")
+    # service = BooleanField('Service Changes')
